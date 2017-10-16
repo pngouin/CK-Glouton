@@ -42,6 +42,10 @@ namespace CK.Glouton.Server
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
         {
             var version = Convert.ToInt32( clientSession.ClientData[ "LogEntryVersion" ] );
+
+            _memoryStream.Position = 0;
+            _memoryStream.Write( data, 0, data.Length );
+
             var entry = LogEntry.Read( _binaryReader, version, out var badEndOfFile );
 
             OnGrandOutputEvent?.Invoke( this, new LogEntryEventArgs( entry, clientSession ) );
