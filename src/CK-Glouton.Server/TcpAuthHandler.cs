@@ -4,7 +4,7 @@ namespace CK.Glouton.Server
 {
     internal class TcpAuthHandler : IAuthorizationHandler
     {
-        public bool OnAuthorizeSession(IServerClientSession s)
+        public bool OnAuthorizeSession( IServerClientSession s )
         {
             return true;
         }

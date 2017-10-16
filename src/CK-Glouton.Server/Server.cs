@@ -1,80 +1,85 @@
 ﻿using CK.ControlChannel.Abstractions;
 using CK.ControlChannel.Tcp;
+using CK.Core;
+using CK.Monitoring;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using CK.Core;
-using System.IO;
-using CK.Monitoring;
 
 namespace CK.Glouton.Server
 {
     public class Server : IDisposable
     {
-        private readonly ControlChannelServer _server;
+        private readonly ControlChannelServer _controlChannelServer;
+        private readonly MemoryStream _memoryStream;
+        private readonly CKBinaryReader _binaryReader;
 
         public event EventHandler<LogEntryEventArgs> OnGrandOutputEvent;
+
         public Server(
             string boundIpAddress,
             int port,
             IAuthorizationHandler clientAuthorizationHandler = null,
             X509Certificate2 serverCertificate = null,
             RemoteCertificateValidationCallback userCertificateValidationCallback = null
-            )
+        )
         {
-            _server = new ControlChannelServer(
+            _controlChannelServer = new ControlChannelServer
+            (
                 boundIpAddress,
                 port,
                 clientAuthorizationHandler ?? new TcpAuthHandler(),
                 serverCertificate,
                 userCertificateValidationCallback
-                );
-            _server.RegisterChannelHandler("GrandOutputEventInfo", HandleGrandOutputEventInfo);
+            );
+            _controlChannelServer.RegisterChannelHandler( "GrandOutputEventInfo", HandleGrandOutputEventInfo );
+            _memoryStream = new MemoryStream();
+            _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
         }
 
-        private void HandleGrandOutputEventInfo(IActivityMonitor monitor, byte[] data, IServerClientSession clientSession)
+        private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
         {
-            using (MemoryStream ms = new MemoryStream(data))
-            using (CKBinaryReader br = new CKBinaryReader(ms, Encoding.UTF8, true))
-            {
-                int version = Convert.ToInt32(clientSession.ClientData["LogEntryVersion"]);
-                ILogEntry entry = LogEntry.Read(br, version, out bool badEof);
+            var version = Convert.ToInt32( clientSession.ClientData[ "LogEntryVersion" ] );
+            var entry = LogEntry.Read( _binaryReader, version, out var badEndOfFile );
 
-                OnGrandOutputEvent?.Invoke(this, new LogEntryEventArgs(entry, clientSession));
-            }
+            OnGrandOutputEvent?.Invoke( this, new LogEntryEventArgs( entry, clientSession ) );
+
         }
+
         public void Open()
         {
-            _server.Open();
+            _controlChannelServer.Open();
         }
 
         public void Close()
         {
-            _server.Close();
+            _controlChannelServer.Close();
         }
 
         #region IDisposable Support
-        private bool disposedValue = false;
 
-        protected virtual void Dispose(bool disposing)
+        private bool _disposedValue = false;
+
+        protected virtual void Dispose( bool disposing )
         {
-            if (!disposedValue)
+            if( _disposedValue )
+                return;
+
+            if( disposing )
             {
-                if (disposing)
-                {
-                    Close();
-                    _server.Dispose();
-                }
-                disposedValue = true;
+                Close();
+                _controlChannelServer.Dispose();
             }
+            _disposedValue = true;
         }
 
         public void Dispose()
         {
-            Dispose(true);
+            Dispose( true );
         }
+
         #endregion
     }
 }
