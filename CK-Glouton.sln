@@ -12,6 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C982E810-251B-471F-BB7B-724324369FF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Tests", "Tests\CK.Glouton.Tests\CK.Glouton.Tests.csproj", "{5D4EDBF9-1738-4315-8121-FA02C484D668}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +30,16 @@ Global
 		{131EB284-0872-4D5C-92B2-2C1567EFA357}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{131EB284-0872-4D5C-92B2-2C1567EFA357}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{131EB284-0872-4D5C-92B2-2C1567EFA357}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D4EDBF9-1738-4315-8121-FA02C484D668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D4EDBF9-1738-4315-8121-FA02C484D668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D4EDBF9-1738-4315-8121-FA02C484D668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D4EDBF9-1738-4315-8121-FA02C484D668}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5D4EDBF9-1738-4315-8121-FA02C484D668} = {C982E810-251B-471F-BB7B-724324369FF6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8E7E37B-4242-463D-97BA-18A59701DCA8}
