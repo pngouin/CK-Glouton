@@ -1,7 +1,7 @@
 {
-  "name": "glouton-spa",
+  "name": "ck-glouton-spa",
   "version": "0.0.0-alpha",
-  "description": "SPA for glouton project.",
+  "description": "SPA for ck-glouton project.",
   "scripts": {
     "ngc": "ngc",
     "serve": "npm run http-server -- ./dist -a 0.0.0.0 -p 9000",
@@ -66,10 +66,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ZooPin/Glouton.git"
+    "url": "git+https://github.com/ZooPin/CK-Glouton.git"
   },
   "bugs": {
-    "url": "https://github.com/ZooPin/Glouton/issues"
+    "url": "https://github.com/ZooPin/CK-Glouton/issues"
   },
-  "homepage": "https://github.com/ZooPin/Glouton"
+  "homepage": "https://github.com/ZooPin/CK-Glouton"
 }
