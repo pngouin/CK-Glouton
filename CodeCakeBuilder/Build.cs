@@ -106,7 +106,6 @@ namespace CodeCake
                  } );
 
             Task( "Restore-NuGet-Packages-With-Version" )
-                .WithCriteria( () => gitInfo.IsValid )
                .IsDependentOn( "Clean" )
                .Does( () =>
                 {
@@ -115,7 +114,6 @@ namespace CodeCake
                 } );
 
             Task( "Build-With-Version" )
-                .WithCriteria( () => gitInfo.IsValid )
                 .IsDependentOn( "Check-Repository" )
                 .IsDependentOn( "Clean" )
                 .IsDependentOn( "Restore-NuGet-Packages-With-Version" )
