@@ -97,28 +97,6 @@ namespace CodeCake
                          projectsToPublish.Select( p => p.Name ).Concatenate() );
                  } );
 
-            Task( "Unit-Testing" )
-                .IsDependentOn( "Check-Repository" )
-                .Does( () =>
-                 {
-                     Cake.DotNetCoreRestore();
-
-                     var testNetFrameworkDlls = projects
-                         .Where( p => p.Name.EndsWith( ".NetFramework.Tests" ) )
-                         .Select( p => p.Path.GetDirectory().CombineWithFilePath( "bin/" + configuration + "/net461/" + p.Name + ".dll" ) );
-                     Cake.Information( "Testing: {0}", string.Join( ", ", testNetFrameworkDlls.Select( p => p.GetFilename().ToString() ) ) );
-                     Cake.NUnit( testNetFrameworkDlls, new NUnitSettings { Framework = "v4.6" } );
-
-
-                     var testNetCoreDirectories = projects
-                         .Where( p => p.Name.EndsWith( ".NetCore.Tests" ) )
-                         .Select( p => p.Path.GetDirectory() );
-                     Cake.Information( "Testing: {0}", string.Join( ", ", testNetCoreDirectories.Select( p => p.GetDirectoryName().ToString() ) ) );
-                     foreach( var testNetCoreDirectory in testNetCoreDirectories )
-                         Cake.DotNetCoreRun( testNetCoreDirectory.FullPath );
-
-                 } );
-
             Task( "Clean" )
                 .IsDependentOn( "Check-Repository" )
                 .IsDependentOn( "Unit-Testing" )
@@ -140,7 +118,6 @@ namespace CodeCake
             Task( "Build-With-Version" )
                 .WithCriteria( () => gitInfo.IsValid )
                 .IsDependentOn( "Check-Repository" )
-                .IsDependentOn( "Unit-Testing" )
                 .IsDependentOn( "Clean" )
                 .IsDependentOn( "Restore-NuGet-Packages-With-Version" )
                 .Does( () =>
@@ -155,9 +132,31 @@ namespace CodeCake
                      }
                  } );
 
+            Task( "Unit-Testing" )
+                .IsDependentOn( "Build-With-Version" )
+                .Does( () =>
+                {
+                    Cake.DotNetCoreRestore();
+
+                    var testNetFrameworkDlls = projects
+                        .Where( p => p.Name.EndsWith( ".NetFramework.Tests" ) )
+                        .Select( p => p.Path.GetDirectory().CombineWithFilePath( "bin/" + configuration + "/net461/" + p.Name + ".dll" ) );
+                    Cake.Information( "Testing: {0}", string.Join( ", ", testNetFrameworkDlls.Select( p => p.GetFilename().ToString() ) ) );
+                    Cake.NUnit( testNetFrameworkDlls, new NUnitSettings { Framework = "v4.6" } );
+
+
+                    var testNetCoreDirectories = projects
+                        .Where( p => p.Name.EndsWith( ".NetCore.Tests" ) )
+                        .Select( p => p.Path.GetDirectory() );
+                    Cake.Information( "Testing: {0}", string.Join( ", ", testNetCoreDirectories.Select( p => p.GetDirectoryName().ToString() ) ) );
+                    foreach( var testNetCoreDirectory in testNetCoreDirectories )
+                        Cake.DotNetCoreRun( testNetCoreDirectory.FullPath );
+
+                } );
+
             Task( "Create-NuGet-Packages" )
                 .WithCriteria( () => gitInfo.IsValid )
-                .IsDependentOn( "Build-With-Version" )
+                .IsDependentOn( "Unit-Testing" )
                 .Does( () =>
                  {
                      Cake.CreateDirectory( releasesDir );
