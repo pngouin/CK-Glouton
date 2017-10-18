@@ -3,7 +3,7 @@
     "CK.Glouton.Test": {
       "commandName": "Executable",
       "executablePath": "..\\..\\packages\\NUnit.Runners.Net4.2.6.4\\tools\\nunit.exe",
-      "commandLineArgs": "bin\\Debug\\net461\\CK.Glouton.Tests.dll"
+      "commandLineArgs": "bin\\Debug\\net461\\CK.Glouton.NetFramework.Tests.dll"
     }
   }
 }
