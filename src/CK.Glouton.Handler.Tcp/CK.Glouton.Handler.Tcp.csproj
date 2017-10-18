@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="CK.Monitoring" Version="8.2.0" />
-    <PackageReference Include="CK.ControlChannel.Tcp.Client" Version="0.2.0-a" />
-    <PackageReference Include="CK.ControlChannel.Tcp.Common" Version="0.2.0-a" />
+    <PackageReference Include="CK.ControlChannel.Tcp.Client" Version="0.3.0-a00-01" />
+    <PackageReference Include="CK.ControlChannel.Tcp.Common" Version="0.3.0-a00-01" />
   </ItemGroup>
 
 </Project>

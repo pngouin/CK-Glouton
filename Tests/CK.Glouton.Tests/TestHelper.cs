@@ -7,7 +7,7 @@ namespace CK.Glouton.Tests
     {
         internal static string GetTestLogDirectory()
         {
-            var dllPath = typeof( ServerTests ).GetTypeInfo().Assembly.Location;
+            var dllPath = typeof( GloutonServerTests ).GetTypeInfo().Assembly.Location;
             var dllDir = Path.GetDirectoryName( dllPath );
             var logPath = Path.Combine( dllDir, "Logs" );
             if( !Directory.Exists( logPath ) )

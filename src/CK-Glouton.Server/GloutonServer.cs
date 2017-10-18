@@ -10,7 +10,7 @@ using System.Text;
 
 namespace CK.Glouton.Server
 {
-    public class Server : IDisposable
+    public class GloutonServer : IDisposable
     {
         private readonly ControlChannelServer _controlChannelServer;
         private readonly MemoryStream _memoryStream;
@@ -18,7 +18,7 @@ namespace CK.Glouton.Server
 
         public event EventHandler<LogEntryEventArgs> OnGrandOutputEvent;
 
-        public Server(
+        public GloutonServer(
             string boundIpAddress,
             int port,
             IAuthorizationHandler clientAuthorizationHandler = null,

@@ -1,0 +1,8 @@
+﻿{
+  "profiles": {
+    "CK.Glouton.NetCore.Tests": {
+      "commandName": "Project",
+      "commandLineArgs": "--wait"
+    }
+  }
+}
