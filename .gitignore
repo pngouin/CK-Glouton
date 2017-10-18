@@ -1,15 +1,16 @@
 packages/
 .vs
 .vscode
-src/**/bin/
-src/**/obj/
-src/**/app/node_modules
+**/bin/
+**/obj/
+**/app/node_modules
 
 src/**/app/dll/
 
-src/Glouton.Web/wwwroot/
+src/CK.Glouton.Web/wwwroot/
 
 src/**/*.user
 Private/
 
 Logs
+**/TestResult.xml

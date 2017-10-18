@@ -1,0 +1,1 @@
+get-childitem -Include .vs,bin,obj -Recurse -force | Remove-Item -Force –Recurse
