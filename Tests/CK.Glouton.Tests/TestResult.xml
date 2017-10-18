@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" name="CK.Glouton.Tests.exe" fullname="C:/Intech/CK-Glouton/Tests/CK.Glouton.Tests/bin/Debug/net461/CK.Glouton.Tests.exe" testcasecount="2" result="Passed" start-time="2017-10-18 10:09:28Z" end-time="2017-10-18 10:09:29Z" duration="0.776958" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" random-seed="1060211750">
+  <command-line><![CDATA["C:\Intech\CK-Glouton\Tests\CK.Glouton.Tests\bin\Debug\net461\CK.Glouton.Tests.exe"   ]]></command-line>
+  <filter />
+  <test-suite type="Assembly" id="1003" name="CK.Glouton.Tests.exe" fullname="C:/Intech/CK-Glouton/Tests/CK.Glouton.Tests/bin/Debug/net461/CK.Glouton.Tests.exe" runstate="Runnable" testcasecount="2" result="Passed" start-time="2017-10-18 10:09:28Z" end-time="2017-10-18 10:09:29Z" duration="0.776958" total="2" passed="2" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="0">
+    <environment framework-version="3.8.1.0" clr-version="4.0.30319.42000" os-version="Microsoft Windows NT 6.2.9200.0" platform="Win32NT" cwd="C:\Intech\CK-Glouton\Tests\CK.Glouton.Tests" machine-name="DESKTOP-HVLA8AL" user="hugoz" user-domain="DESKTOP-HVLA8AL" culture="fr-FR" uiculture="en-US" os-architecture="x64" />
+    <settings>
+      <setting name="WorkDirectory" value="C:\Intech\CK-Glouton\Tests\CK.Glouton.Tests" />
+      <setting name="NumberOfTestWorkers" value="4" />
+    </settings>
+    <properties>
+      <property name="_PID" value="6176" />
+      <property name="_APPDOMAIN" value="CK.Glouton.Tests.exe" />
+    </properties>
+    <test-suite type="TestSuite" id="1004" name="CK" fullname="CK" runstate="Runnable" testcasecount="2" result="Passed" start-time="2017-10-18 10:09:28Z" end-time="2017-10-18 10:09:29Z" duration="0.758727" total="2" passed="2" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="0">
+      <test-suite type="TestSuite" id="1005" name="Glouton" fullname="CK.Glouton" runstate="Runnable" testcasecount="2" result="Passed" start-time="2017-10-18 10:09:28Z" end-time="2017-10-18 10:09:29Z" duration="0.757678" total="2" passed="2" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="0">
+        <test-suite type="TestSuite" id="1006" name="Tests" fullname="CK.Glouton.Tests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2017-10-18 10:09:28Z" end-time="2017-10-18 10:09:29Z" duration="0.757619" total="2" passed="2" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="0">
+          <test-suite type="TestFixture" id="1000" name="ServerTests" fullname="CK.Glouton.Tests.ServerTests" classname="CK.Glouton.Tests.ServerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2017-10-18 10:09:28Z" end-time="2017-10-18 10:09:29Z" duration="0.750282" total="2" passed="2" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="0">
+            <test-case id="1001" name="server_can_be_open" fullname="CK.Glouton.Tests.ServerTests.server_can_be_open" methodname="server_can_be_open" classname="CK.Glouton.Tests.ServerTests" runstate="Runnable" seed="1799514049" result="Passed" start-time="2017-10-18 10:09:28Z" end-time="2017-10-18 10:09:29Z" duration="0.622032" asserts="0" />
+            <test-case id="1002" name="simple_test" fullname="CK.Glouton.Tests.ServerTests.simple_test" methodname="simple_test" classname="CK.Glouton.Tests.ServerTests" runstate="Runnable" seed="2017200668" result="Passed" start-time="2017-10-18 10:09:29Z" end-time="2017-10-18 10:09:29Z" duration="0.107415" asserts="0" />
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
