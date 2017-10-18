@@ -13,3 +13,4 @@ src/**/*.user
 Private/
 
 Logs
+**/TestResult.xml
