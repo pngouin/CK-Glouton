@@ -1,10 +1,13 @@
 ﻿using CK.Core;
+using CK.Glouton.Handler.Tcp;
 using CK.Monitoring;
 using CK.Monitoring.Handlers;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
+using System.Reflection;
 using System.Text;
+using Console = System.Console;
 
 namespace CK.Glouton.Tests
 {
@@ -22,14 +25,33 @@ namespace CK.Glouton.Tests
             ActivityMonitor.DefaultFilter = LogFilter.Debug;
             ActivityMonitor.AutoConfiguration += monitor => monitor.Output.RegisterClient( new ActivityMonitorConsoleClient() );
 
-            var grandOutputConfig = new GrandOutputConfiguration();
-            grandOutputConfig.AddHandler( new TextFileConfiguration
+            var grandOutputConfigurationServer = new GrandOutputConfiguration();
+            grandOutputConfigurationServer.AddHandler( new TextFileConfiguration
             {
                 MaxCountPerFile = 10000,
                 Path = "Text",
             } );
-            GrandOutput.EnsureActiveDefault( grandOutputConfig );
+            GrandOutput.EnsureActiveDefault( grandOutputConfigurationServer );
+
+            var grandOutputConfigurationClient = new GrandOutputConfiguration();
+            grandOutputConfigurationClient.AddHandler( new TextFileConfiguration
+            {
+                MaxCountPerFile = 10000,
+                Path = "Text",
+            } );
+            grandOutputConfigurationClient.AddHandler( new TcpHandlerConfiguration
+            {
+                Host = TestHelper.DefaultHost,
+                Port = TestHelper.DefaultPort,
+                IsSecure = false,
+                AppName = typeof( TestHelper ).GetTypeInfo().Assembly.GetName().Name,
+                PresentEnvironmentVariables = true,
+                PresentMonitoringAssemblyInformation = true,
+                HandleSystemActivityMonitorErrors = true
+            } );
+            GrandOutput.EnsureActiveDefault( grandOutputConfigurationClient );
         }
+
 
         [TearDown]
         public void TearDown()
@@ -45,6 +67,27 @@ namespace CK.Glouton.Tests
                 server.Should().NotBeNull();
                 Action open = () => server.Open();
                 open.ShouldNotThrow();
+            }
+        }
+
+        [Test]
+        public void simple_communication()
+        {
+            using( var server = TestHelper.DefaultServer() )
+            {
+                server.Open();
+                server.OnGrandOutputEvent += ( sender, logEntryEvents ) =>
+                {
+                    IActivityMonitor activityMonitorServer = new ActivityMonitor();
+                    activityMonitorServer.Info( logEntryEvents.Entry.Text );
+                    Console.WriteLine( "Hi" );
+                };
+
+                var activityMonitorClient = new ActivityMonitor();
+                var communicationGuid = Guid.NewGuid();
+
+                activityMonitorClient.Info( $"Hello world - {DateTime.Now:R} - {communicationGuid}" );
+
             }
         }
     }
