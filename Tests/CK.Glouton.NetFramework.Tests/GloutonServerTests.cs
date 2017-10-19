@@ -1,5 +1,4 @@
 ﻿using CK.Core;
-using CK.Glouton.Server;
 using CK.Monitoring;
 using CK.Monitoring.Handlers;
 using FluentAssertions;
@@ -41,10 +40,7 @@ namespace CK.Glouton.Tests
         [Test]
         public void server_can_be_open()
         {
-            const string host = "127.0.0.1";
-            const int port = 43712;
-
-            using( var server = new GloutonServer( host, port ) )
+            using( var server = TestHelper.DefaultServer() )
             {
                 server.Should().NotBeNull();
                 Action open = () => server.Open();
