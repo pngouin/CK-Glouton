@@ -7,7 +7,6 @@ using NUnit.Framework;
 using System;
 using System.Reflection;
 using System.Text;
-using Console = System.Console;
 
 namespace CK.Glouton.Tests
 {
@@ -80,7 +79,6 @@ namespace CK.Glouton.Tests
                 {
                     IActivityMonitor activityMonitorServer = new ActivityMonitor();
                     activityMonitorServer.Info( logEntryEvents.Entry.Text );
-                    Console.WriteLine( "Hi" );
                 };
 
                 var activityMonitorClient = new ActivityMonitor();
