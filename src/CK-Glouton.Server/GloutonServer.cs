@@ -46,7 +46,7 @@ namespace CK.Glouton.Server
             _memoryStream.Position = 0;
             _memoryStream.Write( data, 0, data.Length );
 
-            var entry = LogEntry.Read( _binaryReader, version, out var badEndOfFile );
+            var entry = LogEntry.Read( _binaryReader, version, out _ );
 
             OnGrandOutputEvent?.Invoke( this, new LogEntryEventArgs( entry, clientSession ) );
 
