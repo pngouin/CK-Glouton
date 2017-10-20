@@ -33,7 +33,7 @@ namespace CodeCake
                         .Append( $@"/p:Version=""{info.NuGetVersion}""" )
                         .Append( $@"/p:AssemblyVersion=""{info.MajorMinor}.0""" )
                         .Append( $@"/p:FileVersion=""{info.FileVersion}""" )
-                        .Append( $@"/p:InformationalVersion=""{info.SemVer} ({info.NuGetVersion}) - SHA1: {info.CommitSha} - CommitDate: {info.CommitDateUtc.ToString( "u" )}""" );
+                        .Append( $@"/p:InformationalVersion=""{info.SemVer} ({info.NuGetVersion}) - SHA1: {info.CommitSha} - CommitDate: {info.CommitDateUtc:u}""" );
             }
             conf?.Invoke( @this );
             return @this;
@@ -132,15 +132,17 @@ namespace CodeCake
                 {
                     Cake.DotNetCoreRestore();
 
-                    var testNetFrameworkDlls = projects
-                        .Where( p => p.Name.EndsWith( ".NetFramework.Tests" ) )
+                    var testProjects = projects.Where( p => p.Path.Segments.Contains( "Tests" ) );
+
+                    var testNetFrameworkDlls = testProjects
+                        .Where( p => p.Name.EndsWith( ".NetFramework" ) )
                         .Select( p => p.Path.GetDirectory().CombineWithFilePath( "bin/" + configuration + "/net461/" + p.Name + ".dll" ) );
                     Cake.Information( "Testing: {0}", string.Join( ", ", testNetFrameworkDlls.Select( p => p.GetFilename().ToString() ) ) );
                     Cake.NUnit( testNetFrameworkDlls, new NUnitSettings { Framework = "v4.6" } );
 
 
-                    var testNetCoreDirectories = projects
-                        .Where( p => p.Name.EndsWith( ".NetCore.Tests" ) )
+                    var testNetCoreDirectories = testProjects
+                        .Where( p => p.Name.EndsWith( ".NetCore" ) )
                         .Select( p => p.Path.GetDirectory() );
                     Cake.Information( "Testing: {0}", string.Join( ", ", testNetCoreDirectories.Select( p => p.GetDirectoryName().ToString() ) ) );
                     foreach( var testNetCoreDirectory in testNetCoreDirectories )
