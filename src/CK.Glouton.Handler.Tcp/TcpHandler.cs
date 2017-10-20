@@ -53,7 +53,6 @@ namespace CK.Glouton.Handler.Tcp
 
         public void OnTimer( IActivityMonitor m, TimeSpan timerSpan )
         {
-            throw new NotImplementedException();
         }
 
         public void Handle( IActivityMonitor m, GrandOutputEventInfo logEvent )
