@@ -43,8 +43,9 @@ namespace CK.Glouton.Server
         {
             var version = Convert.ToInt32( clientSession.ClientData[ "LogEntryVersion" ] );
 
-            _memoryStream.Position = 0;
-            _memoryStream.Write( data, 0, data.Length );
+            _memoryStream.SetLength(0);
+            _memoryStream.Write(data, 0, data.Length);
+            _memoryStream.Seek(0, SeekOrigin.Begin);
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
 
