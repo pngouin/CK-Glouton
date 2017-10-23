@@ -72,20 +72,34 @@ namespace CK.Glouton.Tests
         [Test]
         public void simple_communication()
         {
-            using( var server = TestHelper.DefaultServer() )
+            var configurationHandler = new TcpHandlerConfiguration()
+            {
+                Host = "127.0.0.1",
+                Port = 43712,
+                IsSecure = false
+            };
+            var handler = new Handler.Tcp.TcpHandler(configurationHandler);
+            var conf = new GrandOutputConfiguration().AddHandler(configurationHandler);
+
+            using (var server = TestHelper.DefaultServer())
             {
                 server.Open();
-                server.OnGrandOutputEvent += ( sender, logEntryEvents ) =>
+                server.OnGrandOutputEvent += (sender, logEntryEvents) =>
                 {
                     IActivityMonitor activityMonitorServer = new ActivityMonitor();
-                    activityMonitorServer.Info( logEntryEvents.Entry.Text );
+                    activityMonitorServer.Info(logEntryEvents.Entry.Text);
                 };
 
-                var activityMonitorClient = new ActivityMonitor();
-                var communicationGuid = Guid.NewGuid();
+                using (var g = new GrandOutput(conf))
+                {
+                    var m = new ActivityMonitor();
+                    g.EnsureGrandOutputClient(m);
 
-                activityMonitorClient.Info( $"Hello world - {DateTime.Now:R} - {communicationGuid}" );
+                    var activityMonitorClient = new ActivityMonitor();
+                    var communicationGuid = Guid.NewGuid();
 
+                    m.Info($"Hello world - {DateTime.Now:R} - {communicationGuid}");
+                }
             }
         }
     }
