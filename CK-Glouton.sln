@@ -24,9 +24,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Tests.NetFramewo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{50868A4A-B729-4F1D-9FCE-FECEB0095E09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Sample.Server", "Sample\CK.Glouton.Sample.Server\CK.Glouton.Sample.Server.csproj", "{AA9CF6EA-A7BE-4E42-910D-A1B9F019AC7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Sample.Server", "Sample\CK.Glouton.Sample.Server\CK.Glouton.Sample.Server.csproj", "{AA9CF6EA-A7BE-4E42-910D-A1B9F019AC7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Sample.Client", "Sample\CK.Glouton.Sample.Client\CK.Glouton.Sample.Client.csproj", "{C69A6E02-C922-4C3C-ACF7-998592D333B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Sample.Client", "Sample\CK.Glouton.Sample.Client\CK.Glouton.Sample.Client.csproj", "{C69A6E02-C922-4C3C-ACF7-998592D333B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Lucene", "src\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj", "{2AEF84EE-1312-49DD-900A-99E127C03856}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +64,10 @@ Global
 		{C69A6E02-C922-4C3C-ACF7-998592D333B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C69A6E02-C922-4C3C-ACF7-998592D333B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C69A6E02-C922-4C3C-ACF7-998592D333B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AEF84EE-1312-49DD-900A-99E127C03856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AEF84EE-1312-49DD-900A-99E127C03856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AEF84EE-1312-49DD-900A-99E127C03856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AEF84EE-1312-49DD-900A-99E127C03856}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
