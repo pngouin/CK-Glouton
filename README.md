@@ -19,14 +19,14 @@ TCP-based implementations of [CK.ControlChannel server and client](https://githu
 
 | Feed             | Handler | Server |
 | ---------------- | ------ | ------ |
-| MyGet preview    |(TBD)   |(TBD)   |
+| MyGet preview    |[![MyGet Badge](https://buildstats.info/myget/glouton-preview/CK.Glouton.Handler.Tcp)](https://www.myget.org/feed/glouton-preview/package/nuget/CK.Glouton.Handler.Tcp) | [![MyGet Badge](https://buildstats.info/myget/glouton-preview/CK.Glouton.Handler.Tcp)](https://www.myget.org/feed/glouton-preview/package/nuget/CK.Glouton.Handler.Tcp)
 
 ## Build status
 
 | Branch   | Visual Studio 2017 |
 | -------- | ------- |
-| `latest` | (TBD) |
-| `develop`  | (TBD) |
+| `latest` | [![Build status](https://ci.appveyor.com/api/projects/status/wfsk213d8ecvri62?svg=true)](https://ci.appveyor.com/project/ZooPin/ck-glouton) |
+| `develop`  | [![Build status](https://ci.appveyor.com/api/projects/status/wfsk213d8ecvri62/branch/develop?svg=true)](https://ci.appveyor.com/project/ZooPin/ck-glouton/branch/develop) |
 
 ## Contributing
 
