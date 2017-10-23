@@ -61,32 +61,15 @@ namespace CK.Glouton.Tests
         [Test]
         public void server_can_be_open()
         {
-            using( var server = TestHelper.DefaultServer() )
+            Action openServer = () =>
             {
+                var server = TestHelper.DefaultServer();
                 server.Should().NotBeNull();
-                Action open = () => server.Open();
-                open.ShouldNotThrow();
-            }
-        }
-
-        [Test]
-        public void simple_communication()
-        {
-            using( var server = TestHelper.DefaultServer() )
-            {
                 server.Open();
-                server.OnGrandOutputEvent += ( sender, logEntryEvents ) =>
-                {
-                    IActivityMonitor activityMonitorServer = new ActivityMonitor();
-                    activityMonitorServer.Info( logEntryEvents.Entry.Text );
-                };
+                server.Dispose();
+            };
 
-                var activityMonitorClient = new ActivityMonitor();
-                var communicationGuid = Guid.NewGuid();
-
-                activityMonitorClient.Info( $"Hello world - {DateTime.Now:R} - {communicationGuid}" );
-
-            }
+            openServer.ShouldNotThrow();
         }
     }
 }
