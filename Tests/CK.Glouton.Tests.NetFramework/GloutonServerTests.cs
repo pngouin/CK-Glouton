@@ -68,39 +68,5 @@ namespace CK.Glouton.Tests
                 open.ShouldNotThrow();
             }
         }
-
-        [Test]
-        public void simple_communication()
-        {
-            var configurationHandler = new TcpHandlerConfiguration()
-            {
-                Host = "127.0.0.1",
-                Port = 43712,
-                IsSecure = false
-            };
-            var handler = new Handler.Tcp.TcpHandler(configurationHandler);
-            var conf = new GrandOutputConfiguration().AddHandler(configurationHandler);
-
-            using (var server = TestHelper.DefaultServer())
-            {
-                server.Open();
-                server.OnGrandOutputEvent += (sender, logEntryEvents) =>
-                {
-                    IActivityMonitor activityMonitorServer = new ActivityMonitor();
-                    activityMonitorServer.Info(logEntryEvents.Entry.Text);
-                };
-
-                using (var g = new GrandOutput(conf))
-                {
-                    var m = new ActivityMonitor();
-                    g.EnsureGrandOutputClient(m);
-
-                    var activityMonitorClient = new ActivityMonitor();
-                    var communicationGuid = Guid.NewGuid();
-
-                    m.Info($"Hello world - {DateTime.Now:R} - {communicationGuid}");
-                }
-            }
-        }
     }
 }
