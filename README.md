@@ -41,8 +41,8 @@ Assets in this repository are licensed with the MIT License. For more informatio
 
 This repository and its components use the following open-source projects:
 
-- [invenietis/CK-ControlChannel](https://github.com/ZooPin/CK-ControlChannel-Tcp/), licensed under the [MIT License](https://github.com/ZooPin/CK-ControlChannel-Tcp/blob/master/LICENSE.md)
-- [invenietis/CK-ControlChannel-Abstractions](https://github.com/invenietis/CK-ControlChannel-Abstractions), licensed under the [MIT License](https://github.com/invenietis/CK-ControlChannel-Abstractions/blob/master/LICENSE.md)
+- [ZooPin/CK-ControlChannel](https://github.com/ZooPin/CK-ControlChannel-Tcp/), licensed under the [MIT License](https://github.com/ZooPin/CK-ControlChannel-Tcp/blob/master/LICENSE.md)
+- [ZooPin/CK-ControlChannel-Abstractions](https://github.com/ZooPin/CK-ControlChannel-Abstractions), licensed under the [MIT License](https://github.com/invenietis/CK-ControlChannel-Abstractions/blob/master/LICENSE.md)
 - [invenietis/CK-Core](https://github.com/invenietis/CK-Core), licensed under the [GNU Lesser General Public License v3.0](https://github.com/invenietis/CK-Core/blob/master/LICENSE)
 - [invenietis/CK-Text](https://github.com/invenietis/CK-Text), licensed under the [MIT License](https://github.com/invenietis/CK-Text/blob/master/LICENSE)
 - [invenietis/CK-ActivityMonitor](https://github.com/invenietis/CK-ActivityMonitor), licensed under the [GNU Lesser General Public License v3.0](https://github.com/invenietis/CK-ActivityMonitor/blob/master/LICENSE)
