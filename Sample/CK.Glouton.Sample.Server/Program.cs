@@ -5,11 +5,13 @@ using CK.Monitoring.Handlers;
 using System;
 using System.IO;
 using System.Reflection;
+using CK.Glouton.Lucene;
 
 namespace CK.Glouton.Sample.Server
 {
     internal class Program
     {
+        static LuceneIndexer indexer = new LuceneIndexer(LuceneConstant.GetPath()); //default path
         private static void Main( string[] args )
         {
             SetupActivityMonitor();
@@ -22,7 +24,8 @@ namespace CK.Glouton.Sample.Server
         {
             var activityMonitor = new ActivityMonitor();
 
-            using( var server = new GloutonServer(
+
+            using ( var server = new GloutonServer(
                 "127.0.0.1",
                 33698,
                 new SampleHandler()
@@ -57,6 +60,7 @@ namespace CK.Glouton.Sample.Server
         {
             IActivityMonitor activityMonitor = new ActivityMonitor();
             activityMonitor.Info( logEntryEventArgs.Entry.Text );
+            indexer.IndexLog((IMulticastLogEntry)logEntryEventArgs.Entry, 0);
         }
 
         private static void SetupActivityMonitor()

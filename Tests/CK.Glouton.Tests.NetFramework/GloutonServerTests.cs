@@ -61,12 +61,15 @@ namespace CK.Glouton.Tests
         [Test]
         public void server_can_be_open()
         {
-            using( var server = TestHelper.DefaultServer() )
+            Action openServer = () =>
             {
+                var server = TestHelper.DefaultServer();
                 server.Should().NotBeNull();
-                Action open = () => server.Open();
-                open.ShouldNotThrow();
-            }
+                server.Open();
+                server.Dispose();
+            };
+
+            openServer.ShouldNotThrow();
         }
     }
 }

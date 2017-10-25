@@ -24,6 +24,7 @@ const webpackConfig = {
    */
   devtool: 'cheap-module-source-map',
   output: {
+    path: path.resolve(__dirname, '../../wwwroot'),
     filename: '[name].bundle.js',
     sourceMapFilename: '[file].map',
     chunkFilename: '[id].chunk.js',
