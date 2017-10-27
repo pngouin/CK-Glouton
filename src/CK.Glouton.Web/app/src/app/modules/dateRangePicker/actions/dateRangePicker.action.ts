@@ -18,7 +18,8 @@ export class SetDateRangeMutationHandler implements IActionHandler {
     public apply(state: IDateRangePickerState, action: SetDateRangeMutation): IDateRangePickerState {
         return {
             ...state,
-            dateRange: action.payload
+            from: action.payload.from,
+            to: action.payload.to
         };
     }
 }
@@ -35,10 +36,7 @@ export class SetDateFromMutationHandler implements IActionHandler {
     public apply(state: IDateRangePickerState, action: SetDateFromMutation): IDateRangePickerState {
         return {
             ...state,
-            dateRange: {
-                ...state.dateRange,
-                from: action.payload
-            }
+            from: action.payload
         };
     }
 }
@@ -55,10 +53,7 @@ export class SetDateToMutationHandler implements IActionHandler {
     public apply(state: IDateRangePickerState, action: SetDateToMutation): IDateRangePickerState {
         return {
             ...state,
-            dateRange: {
-                ...state.dateRange,
-                to: action.payload
-            }
+            to: action.payload
         };
     }
 }
