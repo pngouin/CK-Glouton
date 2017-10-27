@@ -12,7 +12,7 @@ import { reducer } from './app.reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import * as components from './_components';
-// import * as modules from './_modules';
+import * as modules from './_modules';
 // import * as services from './_services';
 // import * as guards from './_guards';
 
@@ -29,7 +29,7 @@ const stateStorageKey: string = 'hln_glouton/state';
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
-    // ...Object.values(modules),
+    ...Object.values(modules),
     StoreModule.provideStore(reducer),
     RouterModule.forRoot(rootRouterConfig),
     SignatureEffectsModule.runAfterBootstrap({

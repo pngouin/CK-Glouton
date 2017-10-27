@@ -4,8 +4,12 @@ import { Component } from '@angular/core';
   selector: 'home',
   template: `
     <h3>Home Page</h3>
-    This our home page!
-    Maybe one day, there will be stuff in there...
+    <div>
+      This is our home page!
+    </div>
+    <div>
+      <dateRangePicker></dateRangePicker>
+    </div>
   `
 })
 export class HomePageComponent {
