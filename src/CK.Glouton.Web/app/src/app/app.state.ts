@@ -1,5 +1,5 @@
-import { IDateRangePickerState } from './modules/dateRangePicker/state/dateRangePicker.state';
+import { ITimeSpanNavigatorState } from './modules/timeSpanNavigator/state/timeSpanNavigator.state';
 
 export interface IAppState {
-    dateRangePicker: IDateRangePickerState;
+    timeSpanNavigator: ITimeSpanNavigatorState;
 }

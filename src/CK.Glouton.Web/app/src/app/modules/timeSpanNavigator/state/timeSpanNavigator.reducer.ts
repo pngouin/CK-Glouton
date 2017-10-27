@@ -1,8 +1,8 @@
 import * as actions from '../actions';
 import { reducerFactory } from '@ck/rx';
-import { IDateRangePickerState } from './dateRangePicker.state';
+import { ITimeSpanNavigatorState } from './timeSpanNavigator.state';
 
-const initial: IDateRangePickerState = {
+const initial: ITimeSpanNavigatorState = {
     from: null,
     to: null
 };

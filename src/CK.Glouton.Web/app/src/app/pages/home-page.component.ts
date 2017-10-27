@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
       This is our home page!
     </div>
     <div>
-      <dateRangePicker></dateRangePicker>
+      <timeSpanNavigator></timeSpanNavigator>
     </div>
   `
 })

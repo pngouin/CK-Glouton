@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DateRangePickerComponent } from './components';
+import { TimeSpanNavigatorComponent } from './components';
 
 @NgModule({
     imports: [
         CommonModule,
    ],
    declarations: [
-        DateRangePickerComponent
+        TimeSpanNavigatorComponent
    ],
    exports: [
-        DateRangePickerComponent
+        TimeSpanNavigatorComponent
    ]
 })
-export class DateRangePickerModule {
+export class TimeSpanNavigatorModule {
 }

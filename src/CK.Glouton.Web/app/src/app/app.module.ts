@@ -16,7 +16,7 @@ import * as modules from './_modules';
 // import * as services from './_services';
 // import * as guards from './_guards';
 
-import * as dateRangePickerRx from './modules/dateRangePicker/actions';
+import * as timeSpanNavigatorRx from './modules/timeSpanNavigator/actions';
 
 const stateStorageKey: string = 'hln_glouton/state';
 
@@ -34,7 +34,7 @@ const stateStorageKey: string = 'hln_glouton/state';
     RouterModule.forRoot(rootRouterConfig),
     SignatureEffectsModule.runAfterBootstrap({
       handlers: [
-        ...Object.values(dateRangePickerRx)
+        ...Object.values(timeSpanNavigatorRx)
       ],
       storage: {key: stateStorageKey}
     }),

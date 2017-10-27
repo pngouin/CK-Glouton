@@ -1,1 +1,1 @@
-export * from './modules/dateRangePicker/dateRangePicker.module';
+export * from './modules/timeSpanNavigator/timeSpanNavigator.module';

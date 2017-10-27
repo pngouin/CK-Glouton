@@ -1,6 +1,6 @@
 import { ActionReducer } from '@ngrx/store';
 
-import dateRangePickerReducer from './modules/dateRangePicker/state/dateRangePicker.reducer';
+import timeSpanNavigatorReducer from './modules/timeSpanNavigator/state/timeSpanNavigator.reducer';
 
 /**
  * The compose function is one of our most handy tools. In basic terms, you give
@@ -37,7 +37,7 @@ import { combineReducers } from '@ngrx/store';
  * the result from right to left.
  */
 const reducers: any = {
-    dateRangePicker: dateRangePickerReducer
+    timeSpanNavigator: timeSpanNavigatorReducer
 };
 
 const developmentReducer: ActionReducer<any> = compose(storeFreeze, combineReducers)(reducers);
