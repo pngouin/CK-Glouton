@@ -11,7 +11,7 @@ const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const webpackConfig = {
   entry: {
     'polyfills': './src/polyfills.browser.ts',
-    'main': './src/main.browser.aot.ts',
+    'main': './src/main.browser.ts',
   },
    /**
      * Developer tool to enhance debugging
@@ -22,7 +22,7 @@ const webpackConfig = {
   devtool: 'source-map',
 
   output: {
-      path: path.resolve(__dirname, '../dist'),
+      path: path.resolve(__dirname, '../../wwwroot'),
       filename: '[name].[chunkhash].bundle.js',
       sourceMapFilename: '[name].[chunkhash].map',
       chunkFilename: '[id].[chunkhash].chunk.js'

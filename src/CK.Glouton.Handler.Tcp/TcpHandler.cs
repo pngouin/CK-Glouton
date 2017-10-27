@@ -4,18 +4,23 @@ using CK.Monitoring;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CK.Glouton.Handler.Tcp
 {
     public class TcpHandler : IGrandOutputHandler
     {
         private readonly TcpHandlerConfiguration _configuration;
+        private readonly MemoryStream _memoryStream;
+        private readonly CKBinaryWriter _ckBinaryWriter;
 
         private ControlChannelClient _controlChannelClient;
 
         public TcpHandler( TcpHandlerConfiguration configuration )
         {
             _configuration = configuration ?? throw new ArgumentNullException( nameof( configuration ) );
+            _memoryStream = new MemoryStream();
+            _ckBinaryWriter = new CKBinaryWriter( _memoryStream, Encoding.UTF8, true );
         }
 
         public bool Activate( IActivityMonitor activityMonitor )
@@ -57,12 +62,12 @@ namespace CK.Glouton.Handler.Tcp
 
         public void Handle( IActivityMonitor m, GrandOutputEventInfo logEvent )
         {
-            using( var memoryStream = new MemoryStream() )
-            using( var binaryWriter = new CKBinaryWriter( memoryStream, Encoding.UTF8, true ) )
-            {
-                logEvent.Entry.WriteLogEntry( binaryWriter );
-                _controlChannelClient.SendAsync( "GrandOutputEventInfo", memoryStream.ToArray() ).GetAwaiter().GetResult();
-            }
+            _memoryStream.Position = 0;
+            _memoryStream.Seek( 0, SeekOrigin.Begin );
+
+            logEvent.Entry.WriteLogEntry( _ckBinaryWriter );
+            Task.Run( () => _controlChannelClient.SendAsync( "GrandOutputEventInfo", _memoryStream.ToArray() ) );
+
         }
     }
 }
