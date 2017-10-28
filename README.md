@@ -19,6 +19,7 @@ TCP-based implementations of [CK.ControlChannel server and client](https://githu
 
 | Feed             | Handler | Server |
 | ---------------- | ------ | ------ |
+| MyGet CI    |[![MyGet Badge](https://buildstats.info/myget/glouton-ci/CK.Glouton.Handler.Tcp)](https://www.myget.org/feed/glouton-preview/package/nuget/CK.Glouton.Handler.Tcp) | [![MyGet Badge](https://buildstats.info/myget/glouton-ci/CK.Glouton.Handler.Tcp)](https://www.myget.org/feed/glouton-preview/package/nuget/CK.Glouton.Handler.Tcp)
 | MyGet preview    |[![MyGet Badge](https://buildstats.info/myget/glouton-preview/CK.Glouton.Handler.Tcp)](https://www.myget.org/feed/glouton-preview/package/nuget/CK.Glouton.Handler.Tcp) | [![MyGet Badge](https://buildstats.info/myget/glouton-preview/CK.Glouton.Handler.Tcp)](https://www.myget.org/feed/glouton-preview/package/nuget/CK.Glouton.Handler.Tcp)
 
 ## Build status
