@@ -18,6 +18,7 @@ namespace CK.Glouton.Sample.Server
             var program = new Program();
             program.Run();
             GrandOutput.Default.Dispose();
+            indexer.Dispose();
         }
 
         private void Run()
@@ -60,7 +61,7 @@ namespace CK.Glouton.Sample.Server
         {
             IActivityMonitor activityMonitor = new ActivityMonitor();
             activityMonitor.Info( logEntryEventArgs.Entry.Text );
-            indexer.IndexLog((IMulticastLogEntry)logEntryEventArgs.Entry, 0);
+            indexer.IndexLog(logEntryEventArgs.Entry, 0);
         }
 
         private static void SetupActivityMonitor()

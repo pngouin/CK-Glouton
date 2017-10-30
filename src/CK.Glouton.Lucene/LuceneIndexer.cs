@@ -30,11 +30,26 @@ namespace CK.Glouton.Lucene
         /// Creation of an indexer, it need to be disposed at the end 
         /// to avoid the .lock file to remain in the targeted index
         /// </summary>
-        /// <param name="indexDirectoryPath">The path where the indexer will store his indexed file</param>
-        public LuceneIndexer (string indexDirectoryPath)
+        /// <param name="indexDirectoryName">The name of the directory where the indexer will store his indexed file</param>
+        /// <param name="indexDirectoryName">The path where will be put the directory, the files will go in the <param name="indexDirectoryName"> </param>
+        public LuceneIndexer(string indexDirectoryName, string directory = null)
         {
-            
-            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(indexDirectoryPath));
+            string path = indexDirectoryName + "\\" + indexDirectoryName;
+            if (!System.IO.Directory.Exists(path))
+                System.IO.Directory.CreateDirectory(path);
+            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(path));
+
+            _writer = new IndexWriter(indexDirectory, new IndexWriterConfig(LuceneVersion.LUCENE_48,
+                new StandardAnalyzer(LuceneVersion.LUCENE_48)));
+            _lastDateTimeStamp = new DateTimeStamp(DateTime.UtcNow, 0);
+            _numberOfFileToCommit = 0;
+            _exceptionDepth = 0;
+            InitializeIdList();
+        }
+
+        public LuceneIndexer(string indexDirectoryName)
+        {
+            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath(indexDirectoryName)));
 
             _writer = new IndexWriter(indexDirectory, new IndexWriterConfig(LuceneVersion.LUCENE_48,
                 new StandardAnalyzer(LuceneVersion.LUCENE_48)));
@@ -276,6 +291,15 @@ namespace CK.Glouton.Lucene
         {
             CheckIds(log, appId);
             Document document = GetLogDocument(log, appId);
+            _writer.AddDocument(document);
+            _numberOfFileToCommit++;
+            CommitIfNeeded();
+        }
+
+        public void IndexLog(ILogEntry log, int appId)
+        {
+            CheckIds((IMulticastLogEntry)log, appId);
+            Document document = GetLogDocument((IMulticastLogEntry)log, appId);
             _writer.AddDocument(document);
             _numberOfFileToCommit++;
             CommitIfNeeded();
