@@ -22,5 +22,10 @@ export class HomePageComponent {
         {name: 'hours', min: 0, max: 24, step: 1},
         {name: 'minutes', min: 0, max: 60, step: 1},
         {name: 'seconds', min: 0, max: 60, step: 1}
-  ]};
+    ],
+    default: {
+      scale: 'hours',
+      value: 12
+    }
+  };
 }

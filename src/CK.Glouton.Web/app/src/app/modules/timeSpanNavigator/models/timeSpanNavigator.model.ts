@@ -5,6 +5,7 @@ export interface ITimeSpanNavigator {
 
 export interface ITimeSpanNavigatorSettings {
     scales: IScale[];
+    default: IDefaultScale;
 }
 
 export interface IScale {
@@ -12,4 +13,9 @@ export interface IScale {
     min: number;
     max: number;
     step: number;
+}
+
+export interface IDefaultScale {
+    scale: string;
+    value: number;
 }
