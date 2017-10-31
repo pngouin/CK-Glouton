@@ -20,6 +20,7 @@ namespace CK.Glouton.Server
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
         private ConcurrentQueue<Action> _blockingQueue;
+        private Task _queueThread;
         private Dictionary<string, LuceneIndexer> _indexerDic;
 
         public event EventHandler<LogEntryEventArgs> OnGrandOutputEvent;
@@ -80,6 +81,13 @@ namespace CK.Glouton.Server
                 _blockingQueue.TryDequeue( out _);
             }
         }
+
+        private void DisposeIndexerByName (string name)
+        {
+            LuceneIndexer indexer;
+            _indexerDic.TryGetValue(name, out indexer);
+            indexer.Dispose();
+        }
         
         private void DisposeAllIndexer()
         {
@@ -89,7 +97,7 @@ namespace CK.Glouton.Server
         public void Open()
         {
             _controlChannelServer.Open();
-            Task task = Task.Factory.StartNew(() => ProcessQueue());
+            _queueThread = Task.Factory.StartNew(() => ProcessQueue());
         }
 
         public void Close()
@@ -110,6 +118,8 @@ namespace CK.Glouton.Server
             {
                 Close();
                 _controlChannelServer.Dispose();
+                System.Threading.SpinWait.SpinUntil(()=> _blockingQueue.IsEmpty);
+                _queueThread.Dispose();
                 DisposeAllIndexer();
             }
             _disposedValue = true;
