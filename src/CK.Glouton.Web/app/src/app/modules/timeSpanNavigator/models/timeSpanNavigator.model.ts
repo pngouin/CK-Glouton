@@ -17,5 +17,6 @@ export interface IScale {
 
 export interface IDefaultScale {
     scale: string;
-    value: number;
+    from: number;
+    to: number;
 }

@@ -25,7 +25,8 @@ export class HomePageComponent {
     ],
     default: {
       scale: 'hours',
-      value: 12
+      from: 0,
+      to: 12
     }
   };
 }

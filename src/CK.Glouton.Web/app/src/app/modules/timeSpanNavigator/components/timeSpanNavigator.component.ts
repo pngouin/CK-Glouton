@@ -18,8 +18,10 @@ export class TimeSpanNavigatorComponent implements OnInit {
     private _to$: Observable<Date>;
     private _subscriptions: Subscription[];
 
-    private _range: number[];
     private _currentScale: string;
+    private _range: number[];
+
+    val1: string;
 
     get timeSpan(): ITimeSpanNavigator { return this._timeSpan.getValue(); }
     private _timeSpan = new BehaviorSubject<ITimeSpanNavigator>({from: null, to: null});
@@ -47,6 +49,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
         if(!this.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
         this._currentScale = this.configuration.default.scale;
         this._timeSpan.next({from: new Date(), to: new Date()});
-        this._range = [10, 20];
+        this._range = [this.configuration.default.from, this.configuration.default.to];
     }
 }
