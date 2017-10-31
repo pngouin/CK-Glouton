@@ -11,20 +11,17 @@ namespace CK.Glouton.Sample.Server
 {
     internal class Program
     {
-        static LuceneIndexer indexer = new LuceneIndexer(LuceneConstant.GetPath()); //default path
         private static void Main( string[] args )
         {
             SetupActivityMonitor();
             var program = new Program();
             program.Run();
             GrandOutput.Default.Dispose();
-            indexer.Dispose();
         }
 
         private void Run()
         {
             var activityMonitor = new ActivityMonitor();
-
 
             using ( var server = new GloutonServer(
                 "127.0.0.1",
@@ -33,8 +30,6 @@ namespace CK.Glouton.Sample.Server
             ) )
             {
                 server.Open();
-
-                server.OnGrandOutputEvent += Server_OnGrandOutputEvent;
 
                 var doContinue = true;
                 while( doContinue )
@@ -51,18 +46,11 @@ namespace CK.Glouton.Sample.Server
                         default:
                             activityMonitor.Warn( $"Unknown key {readKey.Key}" );
                             break;
-
                     }
                 }
             }
         }
 
-        private static void Server_OnGrandOutputEvent( object sender, LogEntryEventArgs logEntryEventArgs )
-        {
-            IActivityMonitor activityMonitor = new ActivityMonitor();
-            activityMonitor.Info( logEntryEventArgs.Entry.Text );
-            indexer.IndexLog(logEntryEventArgs.Entry, 0);
-        }
 
         private static void SetupActivityMonitor()
         {

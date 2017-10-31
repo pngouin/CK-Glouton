@@ -22,8 +22,7 @@ namespace CK.Glouton.Server
         private ConcurrentQueue<Action> _blockingQueue;
         private Task _queueThread;
         private Dictionary<string, LuceneIndexer> _indexerDic;
-
-        public event EventHandler<LogEntryEventArgs> OnGrandOutputEvent;
+        private bool _isDisposing;
 
         public GloutonServer(
             string boundIpAddress,
@@ -58,8 +57,6 @@ namespace CK.Glouton.Server
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
 
-            //OnGrandOutputEvent?.Invoke( this, new LogEntryEventArgs( entry, clientSession ) );
-
             if (_indexerDic.ContainsKey(clientSession.ClientName))
             {
                 LuceneIndexer indexer;
@@ -76,7 +73,7 @@ namespace CK.Glouton.Server
 
         private void ProcessQueue()
         {
-            while (true)
+            while (!_blockingQueue.IsEmpty && !_isDisposing)
             {
                 _blockingQueue.TryDequeue( out _);
             }
@@ -116,9 +113,10 @@ namespace CK.Glouton.Server
 
             if( disposing )
             {
+                _isDisposing = true;
                 Close();
                 _controlChannelServer.Dispose();
-                System.Threading.SpinWait.SpinUntil(()=> _blockingQueue.IsEmpty);
+                System.Threading.SpinWait.SpinUntil(()=> _queueThread.IsCompleted);
                 _queueThread.Dispose();
                 DisposeAllIndexer();
             }
