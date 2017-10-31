@@ -19,7 +19,7 @@ namespace CK.Glouton.Server
         private readonly ControlChannelServer _controlChannelServer;
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
-        private BlockingCollection<Action> _blockingQueue;
+        private ConcurrentQueue<Action> _blockingQueue;
         private Dictionary<string, LuceneIndexer> _indexerDic;
 
         public event EventHandler<LogEntryEventArgs> OnGrandOutputEvent;
@@ -43,7 +43,7 @@ namespace CK.Glouton.Server
             _controlChannelServer.RegisterChannelHandler( "GrandOutputEventInfo", HandleGrandOutputEventInfo );
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
-            _blockingQueue = new BlockingCollection<Action>();
+            _blockingQueue = new ConcurrentQueue<Action>();
             _indexerDic = new Dictionary<string, LuceneIndexer>();
         }
 
@@ -63,13 +63,13 @@ namespace CK.Glouton.Server
             {
                 LuceneIndexer indexer;
                 _indexerDic.TryGetValue(clientSession.ClientName, out indexer);
-                _blockingQueue.Add(() => indexer.IndexLog(entry, 0));
+                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, 0));
             }
             else
             {
                 LuceneIndexer indexer = new LuceneIndexer(clientSession.ClientName);
                 _indexerDic.Add(clientSession.ClientName, indexer);
-                _blockingQueue.Add(() => indexer.IndexLog(entry, 0));
+                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, 0));
             }
         }
 
@@ -77,7 +77,7 @@ namespace CK.Glouton.Server
         {
             while (true)
             {
-                foreach (Action action in _blockingQueue) action.Invoke();
+                _blockingQueue.TryDequeue( out _);
             }
         }
         
