@@ -57,21 +57,18 @@ namespace CK.Glouton.Server
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
             string appName;
-            string machineName;
             clientSession.ClientData.TryGetValue("AppName", out appName);
-            clientSession.ClientData.TryGetValue("ClientName", out machineName);
-            string[] path = { appName, machineName, clientSession.ClientName };
 
-            if (_indexerDic.ContainsKey(machineName + clientSession.ClientName))
+            if (_indexerDic.ContainsKey(appName))
             {
                 LuceneIndexer indexer;
-                _indexerDic.TryGetValue(machineName + clientSession.ClientName, out indexer);
+                _indexerDic.TryGetValue(appName, out indexer);
                 _blockingQueue.Enqueue(() => indexer.IndexLog(entry, appName));
             }
             else
             {
-                LuceneIndexer indexer = new LuceneIndexer(path);
-                _indexerDic.Add(machineName + clientSession.ClientName, indexer);
+                LuceneIndexer indexer = new LuceneIndexer(appName);
+                _indexerDic.Add(appName, indexer);
                 _blockingQueue.Enqueue(() => indexer.IndexLog(entry, appName));
             }
         }

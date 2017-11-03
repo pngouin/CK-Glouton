@@ -47,7 +47,7 @@ namespace CK.Glouton.Lucene
             InitializeIdList();
         }
 
-        public LuceneIndexer(string[] indexDirectoryName)
+        public LuceneIndexer(string indexDirectoryName)
         {
             Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath(indexDirectoryName)));
 
