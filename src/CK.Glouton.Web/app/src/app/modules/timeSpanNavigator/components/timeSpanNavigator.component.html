@@ -1,5 +1,5 @@
 <div>
-    <h3>Range: </h3>{{ _dateRange[0] + ' - ' + _dateRange[1] }}
+    {{ _scaleDescription }}
     <p-slider
         [(ngModel)]="_range" [style]="{'width':'200px'}"
         [range]="true" [min]=0 [max]=100>

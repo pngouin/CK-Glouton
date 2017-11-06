@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { EffectDispatcher } from '@ck/rx';
 import { IAppState } from 'app/app.state';
-import { ITimeSpanNavigator, ITimeSpanNavigatorSettings } from '../models';
+import { ITimeSpanNavigator, ITimeSpanNavigatorSettings, Scale } from '../models';
 import { SubmitTimeSpanEffect } from '../actions';
 
 @Component({
@@ -18,9 +18,10 @@ export class TimeSpanNavigatorComponent implements OnInit {
     private _to$: Observable<Date>;
     private _subscriptions: Subscription[];
 
-    private _currentScale: string;
+    private _currentScale: Scale;
     private _range: number[];
     private _dateRange: Date[];
+    private _scaleDescription: string;
 
     get timeSpan(): ITimeSpanNavigator { return this._timeSpan.getValue(); }
     private _timeSpan = new BehaviorSubject<ITimeSpanNavigator>({from: null, to: null});
@@ -37,19 +38,22 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._subscriptions = [];
         this._subscriptions.push(this._from$.subscribe(d => this._timeSpan.next({from: d, to: this.timeSpan.to})));
         this._subscriptions.push(this._to$.subscribe(d => this._timeSpan.next({from: this.timeSpan.from, to: d})));
-        this._currentScale = 'days';
     }
 
     private validateArgument(argument: any): argument is ITimeSpanNavigatorSettings {
         if(argument === undefined || argument === null) {return false;}
-        return (argument as ITimeSpanNavigatorSettings).scales !== undefined;
+        return (argument as ITimeSpanNavigatorSettings).from !== undefined
+            && (argument as ITimeSpanNavigatorSettings).to !== undefined
+            && (argument as ITimeSpanNavigatorSettings).scale !== undefined;
     }
 
     ngOnInit(): void {
         if(!this.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
-        // TODO: Do something better
         this._timeSpan.next({from: new Date(), to: new Date()});
-        this._dateRange = [this.configuration.default.from, this.configuration.default.to];
+        this._dateRange = [this.configuration.from, this.configuration.to];
+        this._currentScale = this.configuration.scale;
+        this._scaleDescription = `Current scale: ${Scale[this._currentScale]}`;
+
         // TODO: Calculate intial scale
         this._range = [13, 87];
     }
