@@ -12,11 +12,10 @@ export interface IScale {
     name: string;
     min: number;
     max: number;
-    step: number;
+    // Todo: Add raising || falling edge ?
 }
 
 export interface IDefaultScale {
-    scale: string;
-    from: number;
-    to: number;
+    from: Date;
+    to: Date;
 }

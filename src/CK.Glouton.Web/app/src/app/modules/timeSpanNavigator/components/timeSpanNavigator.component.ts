@@ -20,8 +20,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
 
     private _currentScale: string;
     private _range: number[];
-
-    val1: string;
+    private _dateRange: Date[];
 
     get timeSpan(): ITimeSpanNavigator { return this._timeSpan.getValue(); }
     private _timeSpan = new BehaviorSubject<ITimeSpanNavigator>({from: null, to: null});
@@ -38,6 +37,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._subscriptions = [];
         this._subscriptions.push(this._from$.subscribe(d => this._timeSpan.next({from: d, to: this.timeSpan.to})));
         this._subscriptions.push(this._to$.subscribe(d => this._timeSpan.next({from: this.timeSpan.from, to: d})));
+        this._currentScale = 'days';
     }
 
     private validateArgument(argument: any): argument is ITimeSpanNavigatorSettings {
@@ -47,8 +47,10 @@ export class TimeSpanNavigatorComponent implements OnInit {
 
     ngOnInit(): void {
         if(!this.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
-        this._currentScale = this.configuration.default.scale;
+        // TODO: Do something better
         this._timeSpan.next({from: new Date(), to: new Date()});
-        this._range = [this.configuration.default.from, this.configuration.default.to];
+        this._dateRange = [this.configuration.default.from, this.configuration.default.to];
+        // TODO: Calculate intial scale
+        this._range = [13, 87];
     }
 }

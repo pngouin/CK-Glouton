@@ -16,17 +16,16 @@ import { ITimeSpanNavigatorSettings } from '../modules/timeSpanNavigator/models'
 export class HomePageComponent {
   timeSpanNavigatorConfiguration: ITimeSpanNavigatorSettings = {
     scales: [
-        {name: 'years', min: 1900, max: 2117, step: 1},
-        {name: 'months', min: 0, max: 12, step: 1 },
-        {name: 'days', min: 0, max: 31, step: 1},
-        {name: 'hours', min: 0, max: 24, step: 1},
-        {name: 'minutes', min: 0, max: 60, step: 1},
-        {name: 'seconds', min: 0, max: 60, step: 1}
+        {name: 'years', min: 1900, max: 2117},
+        {name: 'months', min: 0, max: 12},
+        {name: 'days', min: 0, max: 31},
+        {name: 'hours', min: 0, max: 24},
+        {name: 'minutes', min: 0, max: 60},
+        {name: 'seconds', min: 0, max: 60}
     ],
     default: {
-      scale: 'hours',
-      from: 0,
-      to: 12
+      from: new Date('1900-01-01'),
+      to: new Date()
     }
   };
 }
