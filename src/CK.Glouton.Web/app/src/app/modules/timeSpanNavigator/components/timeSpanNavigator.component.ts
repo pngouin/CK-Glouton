@@ -47,6 +47,31 @@ export class TimeSpanNavigatorComponent implements OnInit {
             && (argument as ITimeSpanNavigatorSettings).scale !== undefined;
     }
 
+    private setRange(): number[] {
+        return [20, 80];
+    }
+
+    /**
+     * onChange function
+     * @param event The event:
+     * e.originalEvent: Slide event
+     * e.value: New value
+     * e.values: Values in range mode
+     */
+    private handleChange(event: any): void {
+        console.log(`Change: ${event}`);
+    }
+
+    /**
+     * onSlideEnd function
+     * @param event The event:
+     * event.originalEvent: Mouseup event
+     * event.value: New value
+     */
+    private handleSlideEnd(event: any): void {
+        console.log(`SlideEnd: ${event}`);
+    }
+
     ngOnInit(): void {
         if(!this.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
         this._timeSpan.next({from: new Date(), to: new Date()});

@@ -2,6 +2,8 @@
     {{ _scaleDescription }}
     <p-slider
         [(ngModel)]="_range" [style]="{'width':'200px'}"
-        [range]="true" [min]=0 [max]=100>
+        [range]="true" [min]=0 [max]=100
+        (onChange)="handleChange($event)"
+        (onSlideEnd)="handleSlideEnd($event)">
     </p-slider>        
 </div>
