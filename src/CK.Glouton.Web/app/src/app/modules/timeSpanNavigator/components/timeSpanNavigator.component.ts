@@ -69,7 +69,9 @@ export class TimeSpanNavigatorComponent implements OnInit {
      * event.value: New value
      */
     private handleSlideEnd(event: any): void {
-        console.log(`SlideEnd: ${event}`);
+        const width: number = this._range[1] - this._range[0];
+        const offset: number = (100 - width) / 2;
+        this._range = [offset, offset + width];
     }
 
     ngOnInit(): void {
