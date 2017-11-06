@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app',
   templateUrl: './app.component.html',
+  encapsulation: ViewEncapsulation.None,
   styleUrls: [
     '../../node_modules/font-awesome/css/font-awesome.min.css',
     '../../node_modules/primeng/resources/themes/omega/theme.css',
