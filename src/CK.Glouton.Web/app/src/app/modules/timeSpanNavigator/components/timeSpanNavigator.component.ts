@@ -19,8 +19,11 @@ export class TimeSpanNavigatorComponent implements OnInit {
     private _subscriptions: Subscription[];
 
     private _currentScale: Scale;
+    private _currentScaleWidth: number;
+
     private _range: number[];
     private _dateRange: Date[];
+
     private _scaleDescription: string;
 
     get timeSpan(): ITimeSpanNavigator { return this._timeSpan.getValue(); }
@@ -40,6 +43,10 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._subscriptions.push(this._to$.subscribe(d => this._timeSpan.next({from: this.timeSpan.from, to: d})));
     }
 
+    /**
+     * Returns true if the argument is valid, otherwise false.
+     * @param argument The argument passed by the user.
+     */
     private validateArgument(argument: any): argument is ITimeSpanNavigatorSettings {
         if(argument === undefined || argument === null) {return false;}
         return (argument as ITimeSpanNavigatorSettings).from !== undefined
@@ -47,8 +54,33 @@ export class TimeSpanNavigatorComponent implements OnInit {
             && (argument as ITimeSpanNavigatorSettings).scale !== undefined;
     }
 
-    private setRange(): number[] {
-        return [20, 80];
+    /**
+     * Returns the falling and rising edge for the given scale.
+     * Throws an error if the given state is invalid.
+     * @param scale The scale we want to get falling and rising edges.
+     */
+    private getEdges(scale: Scale): number[] {
+        switch(scale) {
+            case Scale.Year: return [1, 100];
+            case Scale.Months: return [2, 12];
+            case Scale.Days: return [5, 31];
+            case Scale.Hours: return [4, 24];
+            case Scale.Minutes: return [10, 60];
+            case Scale.Seconds: return [1, 60];
+            default: throw new Error('Invalid parameter( scale )');
+        }
+    }
+
+    private getScaleItemPercent(scale: Scale): number {
+        return 100 / this.getEdges(scale)[1] * this.getEdges(scale)[0];
+    }
+
+    private updateScale(scale: Scale): void {
+        if(!(scale in Scale)) {throw new Error('Argument error( scale )');}
+        this._currentScale = scale;
+        this._currentScaleWidth = this.getScaleItemPercent(this._currentScale);
+        this._scaleDescription = `Current scale: ${Scale[this._currentScale]}`;
+        this._range = [25, 75]; // Todo: Change me
     }
 
     /**
@@ -59,7 +91,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
      * e.values: Values in range mode
      */
     private handleChange(event: any): void {
-        console.log(`Change: ${event}`);
+        // Todo: Do stuff here...
     }
 
     /**
@@ -70,10 +102,19 @@ export class TimeSpanNavigatorComponent implements OnInit {
      */
     private handleSlideEnd(event: any): void {
         const width: number = this._range[1] - this._range[0];
-        const offset: number = (100 - width) / 2;
-        this._range = [offset, offset + width];
+        if(width < this.getScaleItemPercent(this._currentScale)) {
+            if(this._currentScale !== Scale.Seconds) {this.updateScale(this._currentScale + 1);}
+        } else if(width > 100 - this.getScaleItemPercent(this._currentScale)) {
+            if(this._currentScale !== Scale.Year) {this.updateScale(this._currentScale - 1);}
+        } else {
+            const offset: number = (100 - width) / 2;
+            this._range = [offset, offset + width];
+        }
     }
 
+    /**
+     * Initilization method.
+     */
     ngOnInit(): void {
         if(!this.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
         this._timeSpan.next({from: new Date(), to: new Date()});

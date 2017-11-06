@@ -18,13 +18,6 @@ export interface ITimeSpanNavigatorSettings {
     scale: Scale;
 }
 
-export interface IScale {
-    name: string;
-    min: number;
-    max: number;
-    // Todo: Add raising || falling edge ?
-}
-
 export interface IDefaultScale {
     from: Date;
     to: Date;
