@@ -83,6 +83,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._currentScale = scale;
         this._currentScaleWidth = this.getScaleItemPercent(this._currentScale);
         this._scaleDescription = `Current scale: ${Scale[this._currentScale]}`;
+        this._nextScaleDescription = '';
         this._range = [25, 75]; // Todo: Change me
     }
 
@@ -116,7 +117,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
 
             case TimeSpanNavigatorState.Flagged:
                 this._scaleDescription = this._scaleDescription.substring(0,
-                    this._scaleDescription.length - (<string>this._nextScaleDescription).length
+                    (<string>this._scaleDescription).length - (<string>this._nextScaleDescription).length
                 );
                 this._nextScaleDescription = '';
                 break;
