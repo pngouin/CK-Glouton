@@ -15,8 +15,20 @@ using CK.Glouton.Lucene;
 namespace CK.Glouton.Tests.NetFramework
 {
     [TestFixture]
-    public class LuceneTests : TestsSetupTeardown
+    public class LuceneTests 
     {
+        [SetUp]
+        public void SetUp()
+        {
+            GrandOuputServerHelper.SetupServer();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            GrandOuputServerHelper.TearDown();
+        }
+
         [Test]
         public void log_can_be_indexed ()
         {

@@ -11,8 +11,20 @@ using System.Text;
 namespace CK.Glouton.Tests
 {
     [TestFixture]
-    public class GloutonServerTests : NetFramework.TestsSetupTeardown
+    public class GloutonServerTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            GrandOuputServerHelper.SetupServer();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            GrandOuputServerHelper.TearDown();
+        }
+
         [Test]
         public void server_can_be_open()
         {
