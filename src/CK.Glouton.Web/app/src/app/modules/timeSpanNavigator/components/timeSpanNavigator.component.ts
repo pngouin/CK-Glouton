@@ -102,9 +102,9 @@ export class TimeSpanNavigatorComponent implements OnInit {
      */
     private handleSlideEnd(event: any): void {
         const width: number = this._range[1] - this._range[0];
-        if(width < this.getScaleItemPercent(this._currentScale)) {
+        if(width < 10) {
             if(this._currentScale !== Scale.Seconds) {this.updateScale(this._currentScale + 1);}
-        } else if(width > 100 - this.getScaleItemPercent(this._currentScale)) {
+        } else if(this._range[0] <= 5 || this._range[1] >= 95) {
             if(this._currentScale !== Scale.Year) {this.updateScale(this._currentScale - 1);}
         } else {
             const offset: number = (100 - width) / 2;
@@ -119,10 +119,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
         if(!this.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
         this._timeSpan.next({from: new Date(), to: new Date()});
         this._dateRange = [this.configuration.from, this.configuration.to];
-        this._currentScale = this.configuration.scale;
-        this._scaleDescription = `Current scale: ${Scale[this._currentScale]}`;
-
-        // TODO: Calculate intial scale
-        this._range = [13, 87];
+        this.updateScale(this.configuration.scale);
     }
 }
