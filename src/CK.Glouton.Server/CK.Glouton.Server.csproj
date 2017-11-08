@@ -11,4 +11,8 @@
     <PackageReference Include="CK.Monitoring" Version="8.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
+  </ItemGroup>
+
 </Project>

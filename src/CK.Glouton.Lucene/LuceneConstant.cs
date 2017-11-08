@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace CK.Glouton.Lucene
 {
@@ -17,17 +14,24 @@ namespace CK.Glouton.Lucene
         /// </summary>
         public static string GetPath()
         {
-#if !NET461
-            string path = Path.Combine(Environment.GetEnvironmentVariable(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "LocalAppData" : "Home"), "Glouton", "Logs");
-            if (!System.IO.Directory.Exists(path))
-                System.IO.Directory.CreateDirectory(path);
-            return path;
-#else
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Glouton", "Logs");
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Glouton", "Logs", "Default");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             return path;
-#endif
+        }
+
+        /// <summary>
+        /// Test in the directory of the indexer.
+        /// On windows in appdata, in other os in home.
+        /// If he doesn't find anything create the directory.
+        /// <param name="dirName">The name of the directory where the data will be indexed</param>
+        /// </summary>
+        public static string GetPath(string dirName)
+        {
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Glouton", "Logs", dirName);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
         }
     }
 }

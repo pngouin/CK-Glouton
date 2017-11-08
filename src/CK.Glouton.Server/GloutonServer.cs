@@ -4,9 +4,13 @@ using CK.Core;
 using CK.Monitoring;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using CK.Glouton.Lucene;
 
 namespace CK.Glouton.Server
 {
@@ -15,8 +19,10 @@ namespace CK.Glouton.Server
         private readonly ControlChannelServer _controlChannelServer;
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
-
-        public event EventHandler<LogEntryEventArgs> OnGrandOutputEvent;
+        private ConcurrentQueue<Action> _blockingQueue;
+        private Task _queueThread;
+        private Dictionary<string, LuceneIndexer> _indexerDic;
+        private bool _isDisposing;
 
         public GloutonServer(
             string boundIpAddress,
@@ -37,6 +43,8 @@ namespace CK.Glouton.Server
             _controlChannelServer.RegisterChannelHandler( "GrandOutputEventInfo", HandleGrandOutputEventInfo );
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
+            _blockingQueue = new ConcurrentQueue<Action>();
+            _indexerDic = new Dictionary<string, LuceneIndexer>();
         }
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
@@ -48,14 +56,47 @@ namespace CK.Glouton.Server
             _memoryStream.Seek(0, SeekOrigin.Begin);
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
+            string appName;
+            clientSession.ClientData.TryGetValue("AppName", out appName);
 
-            OnGrandOutputEvent?.Invoke( this, new LogEntryEventArgs( entry, clientSession ) );
+            if (_indexerDic.ContainsKey(appName))
+            {
+                LuceneIndexer indexer;
+                _indexerDic.TryGetValue(appName, out indexer);
+                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, appName));
+            }
+            else
+            {
+                LuceneIndexer indexer = new LuceneIndexer(appName);
+                _indexerDic.Add(appName, indexer);
+                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, appName));
+            }
+        }
 
+        private void ProcessQueue()
+        {
+            while (!_blockingQueue.IsEmpty && !_isDisposing)
+            {
+                _blockingQueue.TryDequeue( out _);
+            }
+        }
+
+        private void DisposeIndexerByName (string name)
+        {
+            LuceneIndexer indexer;
+            _indexerDic.TryGetValue(name, out indexer);
+            indexer.Dispose();
+        }
+        
+        private void DisposeAllIndexer()
+        {
+            foreach (KeyValuePair<string, LuceneIndexer> entry in _indexerDic) entry.Value.Dispose();
         }
 
         public void Open()
         {
             _controlChannelServer.Open();
+            _queueThread = Task.Factory.StartNew(() => ProcessQueue());
         }
 
         public void Close()
@@ -74,8 +115,12 @@ namespace CK.Glouton.Server
 
             if( disposing )
             {
+                _isDisposing = true;
                 Close();
                 _controlChannelServer.Dispose();
+                System.Threading.SpinWait.SpinUntil(()=> _queueThread.IsCompleted);
+                _queueThread.Dispose();
+                DisposeAllIndexer();
             }
             _disposedValue = true;
         }

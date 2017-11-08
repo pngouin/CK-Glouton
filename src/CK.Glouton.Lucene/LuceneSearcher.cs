@@ -21,7 +21,7 @@ namespace CK.Glouton.Lucene
         QueryParser _levelParser;
         Query _query;
         private ISet<string> _monitorIdList;
-        private ISet<string> _appIdList;
+        private ISet<string> _appNameList;
 
         public LuceneSearcher(string[] fields)
         {
@@ -42,15 +42,15 @@ namespace CK.Glouton.Lucene
 
         public ISet<string> MonitorIdList => _monitorIdList;
 
-        public ISet<string> AppIdList => _appIdList;
+        public ISet<string> AppNameList => _appNameList;
 
         internal MultiFieldQueryParser QueryParser => _queryParser;
 
-        public Query CreateQuery(string monitorID, string AppId, string[] fields, string[] logLevel, DateTime startingDate, DateTime endingDate, string searchQuery)
+        public Query CreateQuery(string monitorID, string AppName, string[] fields, string[] logLevel, DateTime startingDate, DateTime endingDate, string searchQuery)
         {
             BooleanQuery bQuery = new BooleanQuery();
             if (monitorID != "All") bQuery.Add(new TermQuery(new Term("MonitorId", monitorID)), Occur.MUST);
-            if (AppId != "All") bQuery.Add(new TermQuery(new Term("AppId", AppId)), Occur.MUST);
+            if (AppName != "All") bQuery.Add(new TermQuery(new Term("AppName", AppName)), Occur.MUST);
             BooleanQuery bFieldQuery = new BooleanQuery();
             foreach (string field in fields)
             {
@@ -103,7 +103,7 @@ namespace CK.Glouton.Lucene
         private void InitializeIdList()
         {
             _monitorIdList = new HashSet<string>();
-            _appIdList = new HashSet<string>();
+            _appNameList = new HashSet<string>();
             TopDocs hits = this.Search(new WildcardQuery(new Term("MonitorIdList", "*")));
             foreach (ScoreDoc doc in hits.ScoreDocs)
             {
@@ -116,7 +116,7 @@ namespace CK.Glouton.Lucene
                 string[] appIds = document.Get("AppIdList").Split(' ');
                 foreach (string id in appIds)
                 {
-                    if (!_appIdList.Contains(id)) _appIdList.Add(id);
+                    if (!_appNameList.Contains(id)) _appNameList.Add(id);
                 }
             }
         }

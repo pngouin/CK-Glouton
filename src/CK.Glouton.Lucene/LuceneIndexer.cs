@@ -24,17 +24,32 @@ namespace CK.Glouton.Lucene
         private int _exceptionDepth;
         private LuceneSearcher _searcher;
         private ISet<string> _monitorIdList;
-        private ISet<string> _appIdList;
+        private ISet<string> _appNameList;
 
         /// <summary>
         /// Creation of an indexer, it need to be disposed at the end 
         /// to avoid the .lock file to remain in the targeted index
         /// </summary>
-        /// <param name="indexDirectoryPath">The path where the indexer will store his indexed file</param>
-        public LuceneIndexer (string indexDirectoryPath)
+        /// <param name="indexDirectoryName">The name of the directory where the indexer will store his indexed file</param>
+        /// <param name="indexDirectoryName">The path where will be put the directory, the files will go in the <param name="indexDirectoryName"> </param>
+        public LuceneIndexer(string indexDirectoryName, string directory = null)
         {
-            
-            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(indexDirectoryPath));
+            string path = indexDirectoryName + "\\" + indexDirectoryName;
+            if (!System.IO.Directory.Exists(path))
+                System.IO.Directory.CreateDirectory(path);
+            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(path));
+
+            _writer = new IndexWriter(indexDirectory, new IndexWriterConfig(LuceneVersion.LUCENE_48,
+                new StandardAnalyzer(LuceneVersion.LUCENE_48)));
+            _lastDateTimeStamp = new DateTimeStamp(DateTime.UtcNow, 0);
+            _numberOfFileToCommit = 0;
+            _exceptionDepth = 0;
+            InitializeIdList();
+        }
+
+        public LuceneIndexer(string indexDirectoryName)
+        {
+            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath(indexDirectoryName)));
 
             _writer = new IndexWriter(indexDirectory, new IndexWriterConfig(LuceneVersion.LUCENE_48,
                 new StandardAnalyzer(LuceneVersion.LUCENE_48)));
@@ -52,7 +67,7 @@ namespace CK.Glouton.Lucene
         {
             try
             {
-                _searcher = new LuceneSearcher(new string[] { "MonitorIdList", "AppIdList" });
+                _searcher = new LuceneSearcher(new string[] { "MonitorIdList", "AppNameList" });
             }
             catch (Exception e)
             {
@@ -64,9 +79,9 @@ namespace CK.Glouton.Lucene
         /// Create a Lucene document based on the log given
         /// </summary>
         /// <param name="log">The log to index</param>
-        /// <param name="appId">The app ID given by the Open Block</param>
+        /// <param name="appName">The app Name given by the Open Block</param>
         /// <returns></returns>
-        private Document GetLogDocument(IMulticastLogEntry log, int appId)
+        private Document GetLogDocument(IMulticastLogEntry log, string appName)
         {
             Document document = new Document();
             
@@ -120,11 +135,11 @@ namespace CK.Glouton.Lucene
 
             Field logType = new TextField("LogType", log.LogType.ToString(), Field.Store.YES);
             Field indexTS = new StringField("IndexTS", CreateIndexTS().ToString(), Field.Store.YES);
-            Field AppId = new Int32Field("AppId", appId, Field.Store.YES);
+            Field AppName = new StringField("AppName", appName, Field.Store.YES);
 
             document.Add(logType);
             document.Add(indexTS);
-            document.Add(AppId);
+            document.Add(AppName);
 
             return document;
         }
@@ -203,12 +218,12 @@ namespace CK.Glouton.Lucene
         //{
         //    Document document = new Document();
 
-        //    Field openBlockAppId = new StringField("OpenAppId", openBlock.AppId.ToString(), Field.Store.YES);
+        //    Field openBlockAppName = new StringField("OpenAppName", openBlock.AppName, Field.Store.YES);
         //    Field openStreamVersion = new StringField("OpenStreamVersion", openBlock.StreamVersion.ToString(), Field.Store.YES);
         //    Field openBlockBaseDir = new StringField("OpenBaseDirectory", openBlock.BaseDirectory, Field.Store.YES);
         //    Field openBlockInfos = new StringField("OpenInfos", openBlock.Info.ToString(), Field.Store.YES);
 
-        //    document.Add(openBlockAppId);
+        //    document.Add(openBlockAppName);
         //    document.Add(openBlockBaseDir);
         //    document.Add(openBlockInfos);
         //    document.Add(openStreamVersion);
@@ -232,11 +247,11 @@ namespace CK.Glouton.Lucene
         /// if not, it add them to the known list
         /// </summary>
         /// <param name="log">The log to index</param>
-        /// <param name="appId">The app ID given by the Open Block</param>
-        private void CheckIds(IMulticastLogEntry log, int appId)
+        /// <param name="appName">The app ID given by the Open Block</param>
+        private void CheckIds(IMulticastLogEntry log, string appName)
         {
             if (!_monitorIdList.Contains(log.MonitorId.ToString())) _monitorIdList.Add(log.MonitorId.ToString());
-            if (!_appIdList.Contains(appId.ToString())) _appIdList.Add(appId.ToString());
+            if (!_appNameList.Contains(appName)) _appNameList.Add(appName);
         }
 
         /// <summary>
@@ -246,7 +261,7 @@ namespace CK.Glouton.Lucene
         private void InitializeIdList()
         {
             _monitorIdList = new HashSet<string>();
-            _appIdList = new HashSet<string>();
+            _appNameList = new HashSet<string>();
             InitializeSearcher();
             if (_searcher == null) return;
             TopDocs hits = _searcher.Search(new WildcardQuery(new Term("MonitorIdList", "*")));
@@ -258,10 +273,10 @@ namespace CK.Glouton.Lucene
                 {
                     if (!_monitorIdList.Contains(id) && id != "" && id !=" ") _monitorIdList.Add(id);
                 }
-                string[] appIds = document.Get("AppIdList").Split(' ');
-                foreach (string id in appIds)
+                string[] appNames = document.Get("AppNameList").Split(' ');
+                foreach (string id in appNames)
                 {
-                    if (!_appIdList.Contains(id) && id != "" && id != " ") _appIdList.Add(id);
+                    if (!_appNameList.Contains(id) && id != "" && id != " ") _appNameList.Add(id);
                 }
             }
             if (hits.TotalHits == 0) CreateIdListDoc();
@@ -271,11 +286,20 @@ namespace CK.Glouton.Lucene
         /// Index the log document after creating it
         /// </summary>
         /// <param name="log">The log to index</param>
-        /// <param name="appId"></param>
-        public void IndexLog(IMulticastLogEntry log, int appId)
+        /// <param name="appName"></param>
+        public void IndexLog(IMulticastLogEntry log, string appName)
         {
-            CheckIds(log, appId);
-            Document document = GetLogDocument(log, appId);
+            CheckIds(log, appName);
+            Document document = GetLogDocument(log, appName);
+            _writer.AddDocument(document);
+            _numberOfFileToCommit++;
+            CommitIfNeeded();
+        }
+
+        public void IndexLog(ILogEntry log, string appName)
+        {
+            CheckIds((IMulticastLogEntry)log, appName);
+            Document document = GetLogDocument((IMulticastLogEntry)log, appName);
             _writer.AddDocument(document);
             _numberOfFileToCommit++;
             CommitIfNeeded();
@@ -313,10 +337,10 @@ namespace CK.Glouton.Lucene
         /// Get the string containing the app ID list
         /// </summary>
         /// <returns>the string containing the app ID list</returns>
-        private string GetAppIdList()
+        private string GetAppNameList()
         {
             StringBuilder builder = new StringBuilder();
-            foreach (string id in _appIdList)
+            foreach (string id in _appNameList)
             {
                 builder.Append(id);
                 builder.Append(" ");
@@ -332,10 +356,10 @@ namespace CK.Glouton.Lucene
             Document doc = new Document();
 
             Field monitorIdList = new TextField("MonitorIdList", GetMonitorIdList(), Field.Store.YES);
-            Field appIdList = new TextField("AppIdList", GetAppIdList(), Field.Store.YES);
+            Field appNameList = new TextField("AppNameList", GetAppNameList(), Field.Store.YES);
 
             doc.Add(monitorIdList);
-            doc.Add(appIdList);
+            doc.Add(appNameList);
 
             _writer.AddDocument(doc);
         }
@@ -348,10 +372,10 @@ namespace CK.Glouton.Lucene
             Document doc = new Document();
 
             Field monitorIdList = new TextField("MonitorIdList", GetMonitorIdList(), Field.Store.YES);
-            Field appIdList = new TextField("AppIdList", GetAppIdList(), Field.Store.YES);
+            Field appNameList = new TextField("AppNameList", GetAppNameList(), Field.Store.YES);
 
             doc.Add(monitorIdList);
-            doc.Add(appIdList);
+            doc.Add(appNameList);
 
             Term term = new Term("MonitorIdList", "*");
             WildcardQuery query = new WildcardQuery(term);
