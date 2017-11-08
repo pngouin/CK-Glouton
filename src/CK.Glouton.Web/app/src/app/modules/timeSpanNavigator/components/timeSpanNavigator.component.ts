@@ -25,6 +25,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
     private _dateRange: Date[];
 
     private _scaleDescription: string;
+    private _nextScaleDescription: string;
 
     get timeSpan(): ITimeSpanNavigator { return this._timeSpan.getValue(); }
     private _timeSpan = new BehaviorSubject<ITimeSpanNavigator>({from: null, to: null});
@@ -41,6 +42,8 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._subscriptions = [];
         this._subscriptions.push(this._from$.subscribe(d => this._timeSpan.next({from: d, to: this.timeSpan.to})));
         this._subscriptions.push(this._to$.subscribe(d => this._timeSpan.next({from: this.timeSpan.from, to: d})));
+        this._scaleDescription = '';
+        this._nextScaleDescription = '';
     }
 
     /**
@@ -91,7 +94,41 @@ export class TimeSpanNavigatorComponent implements OnInit {
      * e.values: Values in range mode
      */
     private handleChange(event: any): void {
-        // Todo: Do stuff here...
+        let state: TimeSpanNavigatorState = TimeSpanNavigatorState.None;
+        if(event.values[0] < 5 || event.values[1] > 95) {state |= TimeSpanNavigatorState.Dezoom;}
+        if(event.values[1] - event.values[0] < 10) {state |= TimeSpanNavigatorState.Zoom;}
+        if(!(this._nextScaleDescription.length === 0)) {state |= TimeSpanNavigatorState.Flagged;}
+
+        switch(state) {
+            case TimeSpanNavigatorState.Dezoom:
+                if(this._currentScale !== Scale.Year) {
+                    this._nextScaleDescription = ` -> ${Scale[this._currentScale - 1]}`;
+                    this._scaleDescription += this._nextScaleDescription;
+                }
+                break;
+
+            case TimeSpanNavigatorState.Zoom:
+                if(this._currentScale !== Scale.Seconds) {
+                    this._nextScaleDescription = ` -> ${Scale[this._currentScale + 1]}`;
+                    this._scaleDescription += this._nextScaleDescription;
+                }
+                break;
+
+            case TimeSpanNavigatorState.Flagged:
+                this._scaleDescription = this._scaleDescription.substring(0,
+                    this._scaleDescription.length - (<string>this._nextScaleDescription).length
+                );
+                this._nextScaleDescription = '';
+                break;
+
+            case TimeSpanNavigatorState.None:
+            case TimeSpanNavigatorState.Flagged | TimeSpanNavigatorState.Dezoom:
+            case TimeSpanNavigatorState.Flagged | TimeSpanNavigatorState.Zoom:
+                break;
+
+            default:
+                throw new Error(`State invalid.`);
+        }
     }
 
     /**
@@ -121,4 +158,11 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._dateRange = [this.configuration.from, this.configuration.to];
         this.updateScale(this.configuration.scale);
     }
+}
+
+enum TimeSpanNavigatorState {
+    None = 0,
+    Dezoom = 1 << 0,
+    Zoom = 1 << 1,
+    Flagged = 1 << 2
 }
