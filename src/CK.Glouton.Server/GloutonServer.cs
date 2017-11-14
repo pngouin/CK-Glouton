@@ -66,18 +66,20 @@ namespace CK.Glouton.Server
             var entry = LogEntry.Read(_binaryReader, version, out _);
             string appName;
             clientSession.ClientData.TryGetValue("AppName", out appName);
+            var clientData = clientSession.ClientData;
+
 
             if (_indexerDic.ContainsKey(appName))
             {
                 LuceneIndexer indexer;
                 _indexerDic.TryGetValue(appName, out indexer);
-                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, appName));
+                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, clientData));
             }
             else
             {
                 LuceneIndexer indexer = new LuceneIndexer(appName);
                 _indexerDic.Add(appName, indexer);
-                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, appName));
+                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, clientData));
             }
         }
 
