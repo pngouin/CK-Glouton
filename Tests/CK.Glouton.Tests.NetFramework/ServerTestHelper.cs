@@ -62,12 +62,12 @@ namespace CK.Glouton.Tests
 
         public void Close()
         {
-            _controlChannelServer.Open();
+            _controlChannelServer.Close();
         }
 
         public void Open()
         {
-            _controlChannelServer.Close();
+            _controlChannelServer.Open();
         }
 
         #region IDisposable Support
