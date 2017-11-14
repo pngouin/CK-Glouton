@@ -5,5 +5,6 @@
         [range]="true" [min]=0 [max]=100
         (onChange)="handleChange($event)"
         (onSlideEnd)="handleSlideEnd($event)">
-    </p-slider>        
+    </p-slider>
+    From: {{ _dateRange[0] | date:'EEEE, MMMM d, y, h:mm:ss' }} - To: {{ _dateRange[1] | date:'EEEE, MMMM d, y, h:mm:ss' }}
 </div>
