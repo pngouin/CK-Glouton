@@ -1,36 +1,20 @@
-﻿using CK.Core;
-using CK.Glouton.Handler.Tcp;
+﻿using CK.Glouton.Handler.Tcp;
 using CK.Monitoring;
 using CK.Monitoring.Handlers;
-using FluentAssertions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace CK.Glouton.Tests.NetFramework
+namespace CK.Glouton.Tests
 {
-    public class TestsSetupTeardown
+    public class GrandOutputHandlerHelper 
     {
-        [SetUp]
-        public void Setup()
+        public static void SetupHandler()
         {
-            if (!System.Console.IsOutputRedirected)
-                System.Console.OutputEncoding = Encoding.UTF8;
-
-            LogFile.RootLogPath = TestHelper.GetTestLogDirectory();
-
-            ActivityMonitor.DefaultFilter = LogFilter.Debug;
-            ActivityMonitor.AutoConfiguration += monitor => monitor.Output.RegisterClient(new ActivityMonitorConsoleClient());
-             
-            var grandOutputConfigurationServer = new GrandOutputConfiguration();
-            grandOutputConfigurationServer.AddHandler(new TextFileConfiguration
-            {
-                MaxCountPerFile = 10000,
-                Path = "Text",
-            });
-            GrandOutput.EnsureActiveDefault(grandOutputConfigurationServer);
-
             var grandOutputConfigurationClient = new GrandOutputConfiguration();
             grandOutputConfigurationClient.AddHandler(new TextFileConfiguration
             {
@@ -50,9 +34,7 @@ namespace CK.Glouton.Tests.NetFramework
             GrandOutput.EnsureActiveDefault(grandOutputConfigurationClient);
         }
 
-
-        [TearDown]
-        public void TearDown()
+        public static void TearDown()
         {
             GrandOutput.Default.Dispose();
         }

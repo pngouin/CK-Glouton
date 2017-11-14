@@ -2,42 +2,44 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Reflection;
 using System.Threading.Tasks;
-using CK.Core;
-using CK.Glouton.Handler.Tcp;
-using CK.Monitoring;
-using CK.Monitoring.Handlers;
-using FluentAssertions;
 using NUnit.Framework;
-using CK.Glouton.Lucene;
+using CK.Core;
+using FluentAssertions;
 
 namespace CK.Glouton.Tests.NetFramework
 {
     [TestFixture]
-    public class LuceneTests 
+    public class HandlerTest
     {
         [SetUp]
         public void SetUp()
         {
             GrandOuputServerHelper.SetupServer();
+            GrandOutputHandlerHelper.SetupHandler();
         }
 
         [TearDown]
         public void TearDown()
         {
-            GrandOuputServerHelper.TearDown();
+            //GrandOuputServerHelper.TearDown();
+            //GrandOutputHandlerHelper.TearDown();
         }
 
         [Test]
-        public void log_can_be_indexed ()
+        public void handler_can_send_some_log()
         {
             var server = TestHelper.DefaultServer();
             var m = new ActivityMonitor();
             m.MinimalFilter = LogFilter.Debug;
             server.Open();
-            m.Info("Hello world");
-            m.Error("CriticalError");
+
+            var guid = Guid.NewGuid();
+
+            m.Info(guid.ToString);
+            var response = server.GetLogEntry(guid.ToString());
+
+            response.Should().Be(guid.ToString());
             server.Dispose();
         }
     }

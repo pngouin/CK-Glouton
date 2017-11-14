@@ -14,7 +14,7 @@ using CK.Glouton.Lucene;
 
 namespace CK.Glouton.Server
 {
-    public class GloutonServer : IDisposable
+    public class GloutonServer : IGloutonServer, IDisposable
     {
         private readonly ControlChannelServer _controlChannelServer;
         private readonly MemoryStream _memoryStream;

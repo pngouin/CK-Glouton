@@ -17,13 +17,13 @@ namespace CK.Glouton.Tests
             get { return _defaultAuthHandler ?? ( _defaultAuthHandler = new TestAuthHandler( s => true ) ); }
         }
 
-        internal static GloutonServer DefaultServer
+        internal static ServerTestHelper DefaultServer
         (
             IAuthorizationHandler authorizationHandler = null,
             RemoteCertificateValidationCallback userCertificateValidationCallback = null
         )
         {
-            return new GloutonServer
+            return new ServerTestHelper
             (
                 DefaultHost,
                 DefaultPort,
