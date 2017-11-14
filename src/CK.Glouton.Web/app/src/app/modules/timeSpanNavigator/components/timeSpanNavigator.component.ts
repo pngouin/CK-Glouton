@@ -5,8 +5,9 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { EffectDispatcher } from '@ck/rx';
 import { IAppState } from 'app/app.state';
-import { ITimeSpanNavigator, ITimeSpanNavigatorSettings, Scale } from '../models';
+import { ITimeSpanNavigator, ITimeSpanNavigatorSettings, Scale, IScaleEdge, IEdge, SliderSide } from '../models';
 import { SubmitTimeSpanEffect } from '../actions';
+import { Initializer } from "./initializer";
 
 @Component({
     selector: 'timeSpanNavigator',
@@ -33,6 +34,9 @@ export class TimeSpanNavigatorComponent implements OnInit {
     @Input()
     configuration: ITimeSpanNavigatorSettings;
 
+    @Input()
+    edges : IScaleEdge;
+
     constructor(
         private store: Store<IAppState>,
         private effectDispatcher: EffectDispatcher
@@ -47,35 +51,24 @@ export class TimeSpanNavigatorComponent implements OnInit {
     }
 
     /**
-     * Returns true if the argument is valid, otherwise false.
-     * @param argument The argument passed by the user.
-     */
-    private validateArgument(argument: any): argument is ITimeSpanNavigatorSettings {
-        if(argument === undefined || argument === null) {return false;}
-        return (argument as ITimeSpanNavigatorSettings).from !== undefined
-            && (argument as ITimeSpanNavigatorSettings).to !== undefined
-            && (argument as ITimeSpanNavigatorSettings).scale !== undefined;
-    }
-
-    /**
      * Returns the falling and rising edge for the given scale.
      * Throws an error if the given state is invalid.
      * @param scale The scale we want to get falling and rising edges.
      */
-    private getEdges(scale: Scale): number[] {
+    private getEdges(scale: Scale): IEdge {
         switch(scale) {
-            case Scale.Year: return [1, 100];
-            case Scale.Months: return [2, 12];
-            case Scale.Days: return [5, 31];
-            case Scale.Hours: return [4, 24];
-            case Scale.Minutes: return [10, 60];
-            case Scale.Seconds: return [1, 60];
+            case Scale.Year: return this.edges.Years;
+            case Scale.Months: return this.edges.Months;
+            case Scale.Days: return this.edges.Days;
+            case Scale.Hours: return this.edges.Hours;
+            case Scale.Minutes: return this.edges.Minutes;
+            case Scale.Seconds: return this.edges.Seconds;
             default: throw new Error('Invalid parameter( scale )');
         }
     }
 
     private getScaleItemPercent(scale: Scale): number {
-        return 100 / this.getEdges(scale)[1] * this.getEdges(scale)[0];
+        return 100 / this.getEdges(scale).max * this.getEdges(scale).min;
     }
 
     private updateScale(scale: Scale): void {
@@ -148,13 +141,49 @@ export class TimeSpanNavigatorComponent implements OnInit {
             const offset: number = (100 - width) / 2;
             this._range = [offset, offset + width];
         }
+        this._dateRange[0] = this.updateDate(this._dateRange[0], event.values[0], this._currentScale, SliderSide.Left);
+        this._dateRange[1] = this.updateDate(this._dateRange[1], event.values[1], this._currentScale, SliderSide.Right);
+        console.log(this._dateRange);
+    }
+
+    private updateDate(date: Date, percent: number, scale: Scale, sliderSide : SliderSide) : Date {
+        let value : number = this.getScaleDateValue(date, scale) + (this.getEdges(scale).max * percent);
+        if(value > this.getScaleDateValue(date, scale) && sliderSide == SliderSide.Right)
+            value *= -1;
+
+        return this.setDateScaleValue(date, value, scale);
+    }
+
+    private getScaleDateValue (date: Date, scale: Scale) : number {
+        switch(scale) {
+            case Scale.Year: return date.getFullYear();
+            case Scale.Months: return date.getMonth();
+            case Scale.Days: return date.getDay();
+            case Scale.Hours: return date.getHours();
+            case Scale.Minutes: return date.getMinutes();
+            case Scale.Seconds: return date.getSeconds();
+            default: throw new Error('Invalid parameter( scale )');
+        }
+    }
+
+    private setDateScaleValue(date: Date, value: number, scale: Scale) : Date {
+        switch(scale) {
+            case Scale.Year: date.setFullYear(value); break;
+            case Scale.Months: date.setMonth(value); break;
+            case Scale.Days: date.setDate(value); break;
+            case Scale.Hours: date.setHours(value); break;
+            case Scale.Minutes: date.setMinutes(value); break;
+            case Scale.Seconds: date.setSeconds(value); break;
+            default: throw new Error('Invalid parameter( scale )');
+        }
+        return date;
     }
 
     /**
      * Initilization method.
      */
     ngOnInit(): void {
-        if(!this.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
+        if(!Initializer.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
         this._timeSpan.next({from: new Date(), to: new Date()});
         this._dateRange = [this.configuration.from, this.configuration.to];
         this.updateScale(this.configuration.scale);

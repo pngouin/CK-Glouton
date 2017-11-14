@@ -7,6 +7,11 @@ export enum Scale {
     Seconds
 }
 
+export enum SliderSide {
+    Left,
+    Right
+}
+
 export interface ITimeSpanNavigator {
     from: Date;
     to: Date;
