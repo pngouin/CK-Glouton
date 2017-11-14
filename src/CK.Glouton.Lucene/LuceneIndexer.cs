@@ -75,7 +75,7 @@ namespace CK.Glouton.Lucene
         /// Try to initialize a searcher to get the list of monitor and app IDs
         /// It can fail if the index is empty, in this case the searcher is useless
         /// </summary>
-        public void InitializeSearcher()
+        private void InitializeSearcher()
         {
             try
             {
@@ -161,7 +161,7 @@ namespace CK.Glouton.Lucene
         /// </summary>
         /// <param name="exception">The exception collected</param>
         /// <returns></returns>
-        Document GetExceptionDocuments(CKExceptionData exception)
+        private Document GetExceptionDocuments(CKExceptionData exception)
         {
             Document document = new Document();
 
@@ -219,29 +219,6 @@ namespace CK.Glouton.Lucene
 
             return document;
         }
-
-        /// <summary>
-        /// Create a lucene document with the Open Block
-        /// </summary>
-        /// <param name="openBlock">The open block of this indexer</param>
-        /// <returns></returns>
-        /// 
-        //private Document GetOpenBlockDocument(IOpen openBlock)
-        //{
-        //    Document document = new Document();
-
-        //    Field openBlockAppName = new StringField("OpenAppName", openBlock.AppName, Field.Store.YES);
-        //    Field openStreamVersion = new StringField("OpenStreamVersion", openBlock.StreamVersion.ToString(), Field.Store.YES);
-        //    Field openBlockBaseDir = new StringField("OpenBaseDirectory", openBlock.BaseDirectory, Field.Store.YES);
-        //    Field openBlockInfos = new StringField("OpenInfos", openBlock.Info.ToString(), Field.Store.YES);
-
-        //    document.Add(openBlockAppName);
-        //    document.Add(openBlockBaseDir);
-        //    document.Add(openBlockInfos);
-        //    document.Add(openStreamVersion);
-
-        //    return document;
-        //}
 
         /// <summary>
         /// Create a unique DateTimeStamp to identify each log
@@ -374,7 +351,7 @@ namespace CK.Glouton.Lucene
         /// <summary>
         /// Create the Lucene document that contain all Monitor and App ID list
         /// </summary>
-        public void CreateIdListDoc()
+        private void CreateIdListDoc()
         {
             Document doc = new Document();
 
@@ -390,7 +367,7 @@ namespace CK.Glouton.Lucene
         /// <summary>
         /// Update the Lucene document that contain all Monitor and App ID list
         /// </summary>
-        public void UpdateIdListDoc()
+        private void UpdateIdListDoc()
         {
             Document doc = new Document();
 
@@ -409,7 +386,7 @@ namespace CK.Glouton.Lucene
         /// <summary>
         /// Commit the change in the index if it's needed
         /// </summary>
-        public void CommitIfNeeded()
+        private void CommitIfNeeded()
         {
             if (_numberOfFileToCommit <= 0) return;
             if ((DateTime.UtcNow - _lastCommit).TotalSeconds >= 1 || _lastCommit == null || _numberOfFileToCommit >= 100)
