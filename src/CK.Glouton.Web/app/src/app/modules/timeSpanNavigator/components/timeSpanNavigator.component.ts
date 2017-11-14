@@ -27,6 +27,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
 
     private _scaleDescription: string;
     private _nextScaleDescription: string;
+    private _percentSnapShot: number[];
 
     get timeSpan(): ITimeSpanNavigator { return this._timeSpan.getValue(); }
     private _timeSpan = new BehaviorSubject<ITimeSpanNavigator>({from: null, to: null});
@@ -78,6 +79,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._scaleDescription = `Current scale: ${Scale[this._currentScale]}`;
         this._nextScaleDescription = '';
         this._range = [25, 75]; // Todo: Change me
+        this._percentSnapShot = this._range;
     }
 
     /**
@@ -141,15 +143,27 @@ export class TimeSpanNavigatorComponent implements OnInit {
             const offset: number = (100 - width) / 2;
             this._range = [offset, offset + width];
         }
-        this._dateRange[0] = this.updateDate(this._dateRange[0], event.values[0], this._currentScale, SliderSide.Left);
-        this._dateRange[1] = this.updateDate(this._dateRange[1], event.values[1], this._currentScale, SliderSide.Right);
+        this._dateRange[SliderSide.Left] = this.updateDate(this._dateRange[SliderSide.Left], event.values[SliderSide.Left], this._currentScale, SliderSide.Left);
+        this._dateRange[SliderSide.Right] = this.updateDate(this._dateRange[SliderSide.Right], event.values[SliderSide.Right], this._currentScale, SliderSide.Right);
         console.log(this._dateRange);
     }
 
     private updateDate(date: Date, percent: number, scale: Scale, sliderSide : SliderSide) : Date {
-        let value : number = this.getScaleDateValue(date, scale) + (this.getEdges(scale).max * percent);
-        if(value > this.getScaleDateValue(date, scale) && sliderSide == SliderSide.Right)
-            value *= -1;
+        let edge = this.getEdges(scale);
+        let val = this.getScaleDateValue(date, scale);
+        let value : number = (((this.getEdges(scale).max - this.getEdges(scale).min)/2) * (1 + percent / 100 ));
+
+        if (sliderSide == SliderSide.Left) {
+            if (percent < this._percentSnapShot[SliderSide.Left])
+                value *= -1;
+            this._percentSnapShot[SliderSide.Left] = percent;
+        }
+        else
+        {
+            if (percent > this._percentSnapShot[SliderSide.Right])
+                value *= -1;
+            this._percentSnapShot[SliderSide.Right] = percent;
+        }
 
         return this.setDateScaleValue(date, value, scale);
     }
