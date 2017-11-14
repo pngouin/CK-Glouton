@@ -139,10 +139,10 @@ export class TimeSpanNavigatorComponent implements OnInit {
      * event.value: New value
      */
     private handleSlideEnd(event: any): void {
-        const width: number = this._range[1] - this._range[0];
+        const width: number = event.values[1] - event.values[0];
         if(width < 10) {
             if(this._currentScale !== Scale.Seconds) {this.updateScale(this._currentScale + 1);}
-        } else if(this._range[0] <= 5 || this._range[1] >= 95) {
+        } else if(event.values[0] < 5 || event.values[1] > 95) {
             if(this._currentScale !== Scale.Year) {this.updateScale(this._currentScale - 1);}
         } else {
             const offset: number = (100 - width) / 2;
