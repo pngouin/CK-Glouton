@@ -15,7 +15,7 @@ using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
 {
-    public class LuceneIndexer : IDisposable
+    public class LuceneIndexer : IDisposable, IIndexer
     {
         private IndexWriter _writer;
         private DateTimeStamp _lastDateTimeStamp;
@@ -38,6 +38,18 @@ namespace CK.Glouton.Lucene
             if (!System.IO.Directory.Exists(path))
                 System.IO.Directory.CreateDirectory(path);
             Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(path));
+
+            _writer = new IndexWriter(indexDirectory, new IndexWriterConfig(LuceneVersion.LUCENE_48,
+                new StandardAnalyzer(LuceneVersion.LUCENE_48)));
+            _lastDateTimeStamp = new DateTimeStamp(DateTime.UtcNow, 0);
+            _numberOfFileToCommit = 0;
+            _exceptionDepth = 0;
+            InitializeIdList();
+        }
+
+        public LuceneIndexer()
+        {
+            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath()));
 
             _writer = new IndexWriter(indexDirectory, new IndexWriterConfig(LuceneVersion.LUCENE_48,
                 new StandardAnalyzer(LuceneVersion.LUCENE_48)));
@@ -300,6 +312,17 @@ namespace CK.Glouton.Lucene
         {
             CheckIds((IMulticastLogEntry)log, appName);
             Document document = GetLogDocument((IMulticastLogEntry)log, appName);
+            _writer.AddDocument(document);
+            _numberOfFileToCommit++;
+            CommitIfNeeded();
+        }
+
+        public void IndexLog(ILogEntry entry, IReadOnlyDictionary<string, string> clientData)
+        {
+            string appName;
+            clientData.TryGetValue("AppName", out appName);
+            CheckIds((IMulticastLogEntry)entry, appName);
+            Document document = GetLogDocument((IMulticastLogEntry)entry, appName);
             _writer.AddDocument(document);
             _numberOfFileToCommit++;
             CommitIfNeeded();
