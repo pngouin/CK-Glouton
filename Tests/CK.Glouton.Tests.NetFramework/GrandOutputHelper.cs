@@ -10,27 +10,11 @@ namespace CK.Glouton.Tests
         private static GrandOutput _grandOutputServer;
         private static GrandOutput _grandOutputClient;
 
-        internal static GrandOutput GrandOutputServer
-        {
-            get
-            {
-                if( _grandOutputServer == null )
-                    InitializeGrandOutputServer();
-                return _grandOutputServer;
-            }
-        }
+        internal static GrandOutput GrandOutputServer => _grandOutputServer ?? ( _grandOutputServer = InitializeGrandOutputServer() );
 
-        internal static GrandOutput GrandOutputClient
-        {
-            get
-            {
-                if( _grandOutputClient == null )
-                    InitializeGrandOutputClient();
-                return _grandOutputClient;
-            }
-        }
+        internal static GrandOutput GrandOutputClient => _grandOutputClient ?? ( _grandOutputClient = InitializeGrandOutputClient() );
 
-        private static void InitializeGrandOutputServer()
+        private static GrandOutput InitializeGrandOutputServer()
         {
             var textFileConfiguration = new TextFileConfiguration
             {
@@ -38,19 +22,10 @@ namespace CK.Glouton.Tests
                 Path = "Text",
             };
 
-            var grandOutputServer = new GrandOutput
-            (
-                new GrandOutputConfiguration
-                {
-                    Handlers = { textFileConfiguration }
-                },
-                true
-            );
-
-            _grandOutputServer = grandOutputServer;
+            return new GrandOutput( new GrandOutputConfiguration { Handlers = { textFileConfiguration } } );
         }
 
-        private static void InitializeGrandOutputClient()
+        private static GrandOutput InitializeGrandOutputClient()
         {
             var textFileConfiguration = new TextFileConfiguration
             {
@@ -68,14 +43,7 @@ namespace CK.Glouton.Tests
                 HandleSystemActivityMonitorErrors = true
             };
 
-            var grandOutputClient = new GrandOutput(
-                new GrandOutputConfiguration
-                {
-                    Handlers = { textFileConfiguration, tcpHandlerConfiguration }
-                }
-            );
-
-            _grandOutputClient = grandOutputClient;
+            return new GrandOutput( new GrandOutputConfiguration { Handlers = { textFileConfiguration, tcpHandlerConfiguration } } );
         }
 
         internal static void DisposeGrandOutputs()
