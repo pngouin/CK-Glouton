@@ -163,26 +163,21 @@ export class TimeSpanNavigatorComponent implements OnInit {
         }
     }
 
-    private getScaleDateValue (date: Date, scale: Scale): number {
-        switch(scale) {
-            case Scale.Year: return date.getFullYear();
-            case Scale.Months: return date.getMonth();
-            case Scale.Days: return date.getDay();
-            case Scale.Hours: return date.getHours();
-            case Scale.Minutes: return date.getMinutes();
-            case Scale.Seconds: return date.getSeconds();
-            default: throw new Error('Invalid parameter( scale )');
-        }
-    }
-
+    /**
+     * setDateScaleValue function.
+     * Add value to the date with the correct scale.
+     * @param date The date that we want to modify
+     * @param value The value that we want to add to the date
+     * @param scale The scale of the value
+     */
     private setDateScaleValue(date: Date, value: number, scale: Scale): Date {
         switch(scale) {
-            case Scale.Year: date.setFullYear(value); break;
-            case Scale.Months: date.setMonth(value); break;
-            case Scale.Days: date.setDate(value); break;
-            case Scale.Hours: date.setHours(value); break;
-            case Scale.Minutes: date.setMinutes(value); break;
-            case Scale.Seconds: date.setSeconds(value); break;
+            case Scale.Year: date.setFullYear(date.getFullYear() + value); break;
+            case Scale.Months: date.setMonth(date.getMonth() + value); break;
+            case Scale.Days: date.setDate(date.getDate() + value); break;
+            case Scale.Hours: date.setHours(date.getHours() + value); break;
+            case Scale.Minutes: date.setMinutes(date.getMinutes() + value); break;
+            case Scale.Seconds: date.setSeconds( date.getSeconds() + value); break;
             default: throw new Error('Invalid parameter( scale )');
         }
         return date;
