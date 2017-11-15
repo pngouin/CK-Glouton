@@ -1,8 +1,9 @@
 ﻿using CK.ControlChannel.Abstractions;
-using CK.Glouton.Server;
+using CK.Core;
 using System.IO;
 using System.Net.Security;
-using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace CK.Glouton.Tests
 {
@@ -33,14 +34,25 @@ namespace CK.Glouton.Tests
             );
         }
 
+        internal static void Setup()
+        {
+            if( !System.Console.IsOutputRedirected )
+                System.Console.OutputEncoding = Encoding.UTF8;
+
+            LogFile.RootLogPath = GetTestLogDirectory();
+
+            ActivityMonitor.DefaultFilter = LogFilter.Debug;
+            ActivityMonitor.AutoConfiguration += monitor => monitor.Output.RegisterClient( new ActivityMonitorConsoleClient() );
+        }
+
         internal static string GetTestLogDirectory()
         {
-            var dllPath = typeof( GloutonServerTests ).GetTypeInfo().Assembly.Location;
-            var dllDir = Path.GetDirectoryName( dllPath );
-            var logPath = Path.Combine( dllDir, "Logs" );
+            var logPath = Path.Combine( GetProjectPath(), "Logs" );
             if( !Directory.Exists( logPath ) )
                 Directory.CreateDirectory( logPath );
             return logPath;
         }
+
+        private static string GetProjectPath( [CallerFilePath]string path = null ) => Path.GetDirectoryName( path );
     }
 }

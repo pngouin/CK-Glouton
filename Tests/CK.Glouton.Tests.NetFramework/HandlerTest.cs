@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using CK.Core;
+﻿using CK.Core;
 using FluentAssertions;
+using NUnit.Framework;
+using System;
 
 namespace CK.Glouton.Tests.NetFramework
 {
@@ -15,32 +11,26 @@ namespace CK.Glouton.Tests.NetFramework
         [SetUp]
         public void SetUp()
         {
-            GrandOuputServerHelper.SetupServer();
-            GrandOutputHandlerHelper.SetupHandler();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            //GrandOuputServerHelper.TearDown();
-            //GrandOutputHandlerHelper.TearDown();
+            TestHelper.Setup();
         }
 
         [Test]
         public void handler_can_send_some_log()
         {
-            var server = TestHelper.DefaultServer();
-            var m = new ActivityMonitor();
-            m.MinimalFilter = LogFilter.Debug;
-            server.Open();
+            var m = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
+            GrandOutputHelper.GrandOutputServer.EnsureGrandOutputClient( m );
 
-            var guid = Guid.NewGuid();
+            using( var server = TestHelper.DefaultServer() )
+            {
+                server.Open();
 
-            m.Info(guid.ToString);
-            var response = server.GetLogEntry(guid.ToString());
+                var guid = Guid.NewGuid();
 
-            response.Should().Be(guid.ToString());
-            server.Dispose();
+                m.Info( guid.ToString );
+
+                var response = server.GetLogEntry( guid.ToString() );
+                response.Should().Be( guid.ToString() );
+            }
         }
     }
 }
