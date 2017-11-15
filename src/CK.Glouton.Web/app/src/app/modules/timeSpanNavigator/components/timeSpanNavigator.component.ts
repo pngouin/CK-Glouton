@@ -28,6 +28,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
     private _scaleDescription: string;
     private _nextScaleDescription: string;
     private _percentSnapShot: number[];
+    private _timeValueSnapshot: number[];
 
     get timeSpan(): ITimeSpanNavigator { return this._timeSpan.getValue(); }
     private _timeSpan = new BehaviorSubject<ITimeSpanNavigator>({from: null, to: null});
@@ -49,6 +50,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._subscriptions.push(this._to$.subscribe(d => this._timeSpan.next({from: this.timeSpan.from, to: d})));
         this._scaleDescription = '';
         this._nextScaleDescription = '';
+        this._timeValueSnapshot = [0,0];
     }
 
     /**
@@ -101,6 +103,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
                     this._nextScaleDescription = ` -> ${Scale[this._currentScale - 1]}`;
                     this._scaleDescription += this._nextScaleDescription;
                 }
+                this._timeValueSnapshot = [0,0];
                 break;
 
             case TimeSpanNavigatorState.Zoom:
@@ -108,6 +111,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
                     this._nextScaleDescription = ` -> ${Scale[this._currentScale + 1]}`;
                     this._scaleDescription += this._nextScaleDescription;
                 }
+                this._timeValueSnapshot = [0,0];
                 break;
 
             case TimeSpanNavigatorState.Flagged:
@@ -151,20 +155,24 @@ export class TimeSpanNavigatorComponent implements OnInit {
     private updateDate(date: Date, percent: number, scale: Scale, sliderSide : SliderSide) : Date {
         let edge = this.getEdges(scale);
         let val = this.getScaleDateValue(date, scale);
-        let value : number = (((this.getEdges(scale).max - this.getEdges(scale).min)/2) * (1 + percent / 100 ));
+        let value : number = Math.abs((((this.getEdges(scale).max - this.getEdges(scale).min)/2) * (percent / 100 )) - this._timeValueSnapshot[sliderSide]);
+        this._timeValueSnapshot[sliderSide] = value;
 
-        if (sliderSide == SliderSide.Left) {
+        if (sliderSide === SliderSide.Left) {
             if (percent < this._percentSnapShot[SliderSide.Left])
                 value *= -1;
             this._percentSnapShot[SliderSide.Left] = percent;
         }
         else
         {
-            if (percent > this._percentSnapShot[SliderSide.Right])
+            if (percent < this._percentSnapShot[SliderSide.Right])
                 value *= -1;
             this._percentSnapShot[SliderSide.Right] = percent;
-        }
 
+            let dateNow = new Date();
+            if (this.setDateScaleValue(date, value, scale).getTime() > dateNow.getTime() && scale <= Scale.Minutes)
+                return dateNow;
+        }
         return this.setDateScaleValue(date, value, scale);
     }
 
