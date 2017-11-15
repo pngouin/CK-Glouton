@@ -31,10 +31,10 @@ namespace CK.Glouton.Tests
                 var guid = Guid.NewGuid();
                 clientActivityMonitor.Info( guid.ToString );
 
-                Thread.Sleep( 10000 );
+                Thread.Sleep( 500 );
 
                 var response = server.GetLogEntry( guid.ToString() );
-                response.Should().Be( guid.ToString() );
+                response.Text.Should().Be( guid.ToString() );
 
                 serverActivityMonitor.CloseGroup();
                 clientActivityMonitor.CloseGroup();
