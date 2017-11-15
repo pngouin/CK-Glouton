@@ -2,8 +2,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System;
+using System.Threading;
 
-namespace CK.Glouton.Tests.NetFramework
+namespace CK.Glouton.Tests
 {
     [TestFixture]
     public class HandlerTest
@@ -17,19 +18,26 @@ namespace CK.Glouton.Tests.NetFramework
         [Test]
         public void handler_can_send_some_log()
         {
-            var m = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
-            GrandOutputHelper.GrandOutputServer.EnsureGrandOutputClient( m );
-
             using( var server = TestHelper.DefaultServer() )
             {
                 server.Open();
 
-                var guid = Guid.NewGuid();
+                var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                GrandOutputHelper.GrandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
 
-                m.Info( guid.ToString );
+                var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                GrandOutputHelper.GrandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
+
+                var guid = Guid.NewGuid();
+                clientActivityMonitor.Info( guid.ToString );
+
+                Thread.Sleep( 10000 );
 
                 var response = server.GetLogEntry( guid.ToString() );
                 response.Should().Be( guid.ToString() );
+
+                serverActivityMonitor.CloseGroup();
+                clientActivityMonitor.CloseGroup();
             }
         }
     }

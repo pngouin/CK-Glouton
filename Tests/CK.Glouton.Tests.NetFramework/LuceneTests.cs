@@ -1,7 +1,7 @@
 ﻿using CK.Core;
 using NUnit.Framework;
 
-namespace CK.Glouton.Tests.NetFramework
+namespace CK.Glouton.Tests
 {
     [TestFixture]
     public class LuceneTests
@@ -15,15 +15,18 @@ namespace CK.Glouton.Tests.NetFramework
         [Test]
         public void log_can_be_indexed()
         {
-            var m = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
-            GrandOutputHelper.GrandOutputClient.EnsureGrandOutputClient( m );
-
             using( var server = TestHelper.DefaultServer() )
             {
                 server.Open();
 
+                var m = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
+                GrandOutputHelper.GrandOutputClient.EnsureGrandOutputClient( m );
+
                 m.Info( "Hello world" );
                 m.Error( "CriticalError" );
+
+                server.Dispose();
+                GrandOutputHelper.DisposeGrandOutputs();
             }
         }
     }
