@@ -12,6 +12,7 @@ src/CK.Glouton.Web/wwwroot/
 src/**/*.user
 Private/
 
+Logs
 **/TestResult.xml
 
 *.user
