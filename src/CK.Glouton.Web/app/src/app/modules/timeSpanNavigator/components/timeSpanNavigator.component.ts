@@ -7,7 +7,7 @@ import { EffectDispatcher } from '@ck/rx';
 import { IAppState } from 'app/app.state';
 import { ITimeSpanNavigator, ITimeSpanNavigatorSettings, Scale, IScaleEdge, IEdge, SliderSide } from '../models';
 import { SubmitTimeSpanEffect } from '../actions';
-import { Initializer } from "./initializer";
+import { Initializer } from './initializer';
 
 @Component({
     selector: 'timeSpanNavigator',
@@ -23,12 +23,11 @@ export class TimeSpanNavigatorComponent implements OnInit {
     private _currentScaleWidth: number;
 
     private _range: number[];
+    private _rangeSnapshot: number[];
     private _dateRange: Date[];
 
     private _scaleDescription: string;
     private _nextScaleDescription: string;
-    private _percentSnapShot: number[];
-    private _timeValueSnapshot: number[];
 
     get timeSpan(): ITimeSpanNavigator { return this._timeSpan.getValue(); }
     private _timeSpan = new BehaviorSubject<ITimeSpanNavigator>({from: null, to: null});
@@ -50,7 +49,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._subscriptions.push(this._to$.subscribe(d => this._timeSpan.next({from: this.timeSpan.from, to: d})));
         this._scaleDescription = '';
         this._nextScaleDescription = '';
-        this._timeValueSnapshot = [0,0];
     }
 
     /**
@@ -81,7 +79,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._scaleDescription = `Current scale: ${Scale[this._currentScale]}`;
         this._nextScaleDescription = '';
         this._range = [25, 75]; // Todo: Change me
-        this._percentSnapShot = this._range;
+        this._rangeSnapshot = this._range.slice();
     }
 
     /**
@@ -93,8 +91,8 @@ export class TimeSpanNavigatorComponent implements OnInit {
      */
     private handleChange(event: any): void {
         let state: TimeSpanNavigatorState = TimeSpanNavigatorState.None;
-        if(event.values[0] < 5 || event.values[1] > 95) {state |= TimeSpanNavigatorState.Dezoom;}
-        if(event.values[1] - event.values[0] < 10) {state |= TimeSpanNavigatorState.Zoom;}
+        if(event.values[SliderSide.Left] <= 0 || event.values[SliderSide.Right] >= 100) {state |= TimeSpanNavigatorState.Dezoom;}
+        if(event.values[SliderSide.Right] - event.values[SliderSide.Left] < 10) {state |= TimeSpanNavigatorState.Zoom;}
         if(!(this._nextScaleDescription.length === 0)) {state |= TimeSpanNavigatorState.Flagged;}
 
         switch(state) {
@@ -103,7 +101,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
                     this._nextScaleDescription = ` -> ${Scale[this._currentScale - 1]}`;
                     this._scaleDescription += this._nextScaleDescription;
                 }
-                this._timeValueSnapshot = [0,0];
                 break;
 
             case TimeSpanNavigatorState.Zoom:
@@ -111,7 +108,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
                     this._nextScaleDescription = ` -> ${Scale[this._currentScale + 1]}`;
                     this._scaleDescription += this._nextScaleDescription;
                 }
-                this._timeValueSnapshot = [0,0];
                 break;
 
             case TimeSpanNavigatorState.Flagged:
@@ -138,45 +134,36 @@ export class TimeSpanNavigatorComponent implements OnInit {
      * event.value: New value
      */
     private handleSlideEnd(event: any): void {
-        const width: number = event.values[1] - event.values[0];
+        const width: number = event.values[SliderSide.Right] - event.values[SliderSide.Left];
         if(width < 10) {
             if(this._currentScale !== Scale.Seconds) {this.updateScale(this._currentScale + 1);}
-        } else if(event.values[0] < 5 || event.values[1] > 95) {
+        } else if(event.values[0] <= 0 || event.values[1] >= 100) {
             if(this._currentScale !== Scale.Year) {this.updateScale(this._currentScale - 1);}
         } else {
-            const offset: number = (100 - width) / 2;
-            this._range = [offset, offset + width];
+            let difference: number = this._rangeSnapshot[SliderSide.Left] - event.values[SliderSide.Left];
+            const updatedSlider : SliderSide = difference !== 0 ? SliderSide.Left : SliderSide.Right;
+            if(updatedSlider === SliderSide.Right) {difference = this._rangeSnapshot[SliderSide.Right] - event.values[SliderSide.Right];}
+            // Todo: Cache me <3 ! (Cache only max, not all the expression)
+            let actualDifference: number =
+                (this.getEdges(this._currentScale).max - this.getEdges(this._currentScale).min) / Math.abs(difference);
+            actualDifference *= Math.pow(-1, difference < 0 ? 0 : 1);
+            console.log(this._dateRange[SliderSide.Left]);
+            console.log(this._dateRange[SliderSide.Right]);
+            if(updatedSlider === SliderSide.Left) {
+                this._dateRange[SliderSide.Left] =
+                this.setDateScaleValue(this._dateRange[SliderSide.Left], actualDifference, this._currentScale);
+            } else {
+                this._dateRange[SliderSide.Right] =
+                this.setDateScaleValue(this._dateRange[SliderSide.Right], actualDifference, this._currentScale);
+            }
+            console.log(this._dateRange[SliderSide.Left]);
+            console.log(this._dateRange[SliderSide.Right]);
+
+            this._rangeSnapshot = event.values.slice();
         }
-        this._dateRange[SliderSide.Left] = this.updateDate(this._dateRange[SliderSide.Left], event.values[SliderSide.Left], this._currentScale, SliderSide.Left);
-        this._dateRange[SliderSide.Right] = this.updateDate(this._dateRange[SliderSide.Right], event.values[SliderSide.Right], this._currentScale, SliderSide.Right);
-        console.log(this._dateRange);
     }
 
-    private updateDate(date: Date, percent: number, scale: Scale, sliderSide : SliderSide) : Date {
-        let edge = this.getEdges(scale);
-        let val = this.getScaleDateValue(date, scale);
-        let value : number = Math.abs((((this.getEdges(scale).max - this.getEdges(scale).min)/2) * (percent / 100 )) - this._timeValueSnapshot[sliderSide]);
-        this._timeValueSnapshot[sliderSide] = value;
-
-        if (sliderSide === SliderSide.Left) {
-            if (percent < this._percentSnapShot[SliderSide.Left])
-                value *= -1;
-            this._percentSnapShot[SliderSide.Left] = percent;
-        }
-        else
-        {
-            if (percent < this._percentSnapShot[SliderSide.Right])
-                value *= -1;
-            this._percentSnapShot[SliderSide.Right] = percent;
-
-            let dateNow = new Date();
-            if (this.setDateScaleValue(date, value, scale).getTime() > dateNow.getTime() && scale <= Scale.Minutes)
-                return dateNow;
-        }
-        return this.setDateScaleValue(date, value, scale);
-    }
-
-    private getScaleDateValue (date: Date, scale: Scale) : number {
+    private getScaleDateValue (date: Date, scale: Scale): number {
         switch(scale) {
             case Scale.Year: return date.getFullYear();
             case Scale.Months: return date.getMonth();
@@ -188,7 +175,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         }
     }
 
-    private setDateScaleValue(date: Date, value: number, scale: Scale) : Date {
+    private setDateScaleValue(date: Date, value: number, scale: Scale): Date {
         switch(scale) {
             case Scale.Year: date.setFullYear(value); break;
             case Scale.Months: date.setMonth(value); break;
