@@ -44,7 +44,7 @@ namespace CK.Glouton.Lucene
             _lastDateTimeStamp = new DateTimeStamp(DateTime.UtcNow, 0);
             _numberOfFileToCommit = 0;
             _exceptionDepth = 0;
-            InitializeIdList();
+            InitializeIdList(indexDirectoryName);
         }
 
         public LuceneIndexer()
@@ -68,7 +68,7 @@ namespace CK.Glouton.Lucene
             _lastDateTimeStamp = new DateTimeStamp(DateTime.UtcNow, 0);
             _numberOfFileToCommit = 0;
             _exceptionDepth = 0;
-            InitializeIdList();
+            InitializeIdList(indexDirectoryName);
         }
 
         /// <summary>
@@ -77,9 +77,24 @@ namespace CK.Glouton.Lucene
         /// </summary>
         private void InitializeSearcher()
         {
+            var file = new DirectoryInfo(LuceneConstant.GetPath()).EnumerateFiles();
+            if (!file.Any()) return;
             try
             {
-                _searcher = new LuceneSearcher(new string[] { "MonitorIdList", "AppNameList" });
+                _searcher = new LuceneSearcher( new string[] { "MonitorIdList", "AppNameList" });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        private void InitializeSearcher(string indexDirectoryName)
+        {
+            var file = new DirectoryInfo(LuceneConstant.GetPath(indexDirectoryName)).EnumerateFiles();
+            if (!file.Any()) return;
+            try
+            {
+                _searcher = new LuceneSearcher(indexDirectoryName, new string[] { "MonitorIdList", "AppNameList" });
             }
             catch (Exception e)
             {
@@ -261,6 +276,30 @@ namespace CK.Glouton.Lucene
                 foreach (string id in monitorIds)
                 {
                     if (!_monitorIdList.Contains(id) && id != "" && id !=" ") _monitorIdList.Add(id);
+                }
+                string[] appNames = document.Get("AppNameList").Split(' ');
+                foreach (string id in appNames)
+                {
+                    if (!_appNameList.Contains(id) && id != "" && id != " ") _appNameList.Add(id);
+                }
+            }
+            if (hits.TotalHits == 0) CreateIdListDoc();
+        }
+
+        private void InitializeIdList(string indexDirectoryName)
+        {
+            _monitorIdList = new HashSet<string>();
+            _appNameList = new HashSet<string>();
+            InitializeSearcher(indexDirectoryName);
+            if (_searcher == null) return;
+            TopDocs hits = _searcher.Search(new WildcardQuery(new Term("MonitorIdList", "*")));
+            foreach (ScoreDoc doc in hits.ScoreDocs)
+            {
+                Document document = _searcher.GetDocument(doc);
+                string[] monitorIds = document.Get("MonitorIdList").Split(' ');
+                foreach (string id in monitorIds)
+                {
+                    if (!_monitorIdList.Contains(id) && id != "" && id != " ") _monitorIdList.Add(id);
                 }
                 string[] appNames = document.Get("AppNameList").Split(' ');
                 foreach (string id in appNames)
