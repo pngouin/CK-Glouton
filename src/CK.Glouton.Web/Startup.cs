@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CK.Glouton.Model;
+using CK.Glouton.Service;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,8 @@ namespace CK.Glouton.Web
 
         public void ConfigureServices( IServiceCollection services )
         {
+            services.AddSingleton<ILuceneSearcherService, LuceneSearcherService>();
+
             services.AddMvc();
         }
 
