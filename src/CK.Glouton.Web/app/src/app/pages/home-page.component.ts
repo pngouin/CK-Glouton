@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { ITimeSpanNavigatorSettings, Scale, IScaleEdge } from '../modules/timeSpanNavigator/models';
 
 @Component({
@@ -9,13 +9,24 @@ import { ITimeSpanNavigatorSettings, Scale, IScaleEdge } from '../modules/timeSp
       This is our home page!
     </div>
     <div>
-      <timeSpanNavigator [configuration]="timeSpanNavigatorConfiguration" [edges]="edgesConfiguration"></timeSpanNavigator>
+      <timeSpanNavigator [configuration]="timeSpanNavigatorConfiguration" [edges]="edgesConfiguration" (onDateChange)="onDateChange($event)"></timeSpanNavigator>
     </div>
+    <div *ngFor="let date of _dateRange" >
+    {{ date | date:'EEEE, MMMM d, y, h:mm:ss' }}
+</div>
   `
 })
 export class HomePageComponent {
+
+  private _dateRange: Date[];
+
+  constructor(private changeRef: ChangeDetectorRef) {
+    this._dateRange = new Array<Date>();
+  }
+
+
   timeSpanNavigatorConfiguration: ITimeSpanNavigatorSettings = {
-    from: new Date('2017-01-01'),
+    from: new Date('2017-11-01'),
     to: new Date(),
     scale: Scale.Hours
   };
@@ -28,4 +39,9 @@ export class HomePageComponent {
     Minutes :  {min: 10, max: 60},
     Seconds :  {min: 1, max: 60}
   };
+
+  onDateChange(date: Date[]) {
+    this._dateRange = date;
+    console.log(this._dateRange);
+  }
 }

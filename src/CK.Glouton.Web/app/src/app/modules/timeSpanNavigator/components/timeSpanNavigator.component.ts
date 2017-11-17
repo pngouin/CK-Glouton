@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output , OnInit, EventEmitter } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -37,6 +37,9 @@ export class TimeSpanNavigatorComponent implements OnInit {
 
     @Input()
     edges : IScaleEdge;
+
+    @Output()
+    onDateChange = new EventEmitter<Date[]>();
 
     constructor(
         private store: Store<IAppState>,
@@ -147,18 +150,9 @@ export class TimeSpanNavigatorComponent implements OnInit {
             let actualDifference: number =
                 (this.getEdges(this._currentScale).max - this.getEdges(this._currentScale).min) / Math.abs(difference);
             actualDifference *= Math.pow(-1, difference < 0 ? 0 : 1);
-            console.log(this._dateRange[SliderSide.Left]);
-            console.log(this._dateRange[SliderSide.Right]);
-            if(updatedSlider === SliderSide.Left) {
-                this._dateRange[SliderSide.Left] =
-                this.setDateScaleValue(this._dateRange[SliderSide.Left], actualDifference, this._currentScale);
-            } else {
-                this._dateRange[SliderSide.Right] =
-                this.setDateScaleValue(this._dateRange[SliderSide.Right], actualDifference, this._currentScale);
-            }
-            console.log(this._dateRange[SliderSide.Left]);
-            console.log(this._dateRange[SliderSide.Right]);
-
+            this._dateRange[updatedSlider] =
+                this.setDateScaleValue(this._dateRange[updatedSlider], actualDifference, this._currentScale);
+            this.onDateChange.emit(this._dateRange);
             this._rangeSnapshot = event.values.slice();
         }
     }
