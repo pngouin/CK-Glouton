@@ -15,7 +15,7 @@ namespace CK.Glouton.Tests
         [Test]
         public void log_can_be_indexed()
         {
-            using( var g = GrandOutputHelper.GetGrandOutputClient() )
+            using( var g = GrandOutputHelper.GetNewGrandOutputClient() )
             using( var server = TestHelper.DefaultGloutonServer() )
             {
                 server.Open();

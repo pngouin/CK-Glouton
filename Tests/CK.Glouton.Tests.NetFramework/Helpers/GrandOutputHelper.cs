@@ -7,7 +7,12 @@ namespace CK.Glouton.Tests
 {
     internal static class GrandOutputHelper
     {
-        internal static GrandOutput GetGrandOutputServer()
+        /// <summary>
+        /// Returns a new Grand Output Server.
+        /// It only contains a <see cref="TextFileConfiguration"/>.
+        /// </summary>
+        /// <returns></returns>
+        internal static GrandOutput GetNewGrandOutputServer()
         {
             var textFileConfiguration = new TextFileConfiguration
             {
@@ -18,7 +23,13 @@ namespace CK.Glouton.Tests
             return new GrandOutput( new GrandOutputConfiguration { Handlers = { textFileConfiguration } } );
         }
 
-        internal static GrandOutput GetGrandOutputClient()
+        /// <summary>
+        /// Returns a new Grand Output Client.
+        /// It contains a <see cref="TextFileConfiguration"/> and also a <see cref="TcpHandlerConfiguration"/>.
+        /// The tcp handler will use <see cref="TestHelper.DefaultHost"/> and <see cref="TestHelper.DefaultPort"/> from <see cref="TestHelper"/>.
+        /// </summary>
+        /// <returns></returns>
+        internal static GrandOutput GetNewGrandOutputClient()
         {
             var textFileConfiguration = new TextFileConfiguration
             {

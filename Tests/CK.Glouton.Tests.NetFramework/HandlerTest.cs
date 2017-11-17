@@ -21,9 +21,10 @@ namespace CK.Glouton.Tests
             using( var server = TestHelper.DefaultMockServer() )
             {
                 server.Open();
+                server.ListLog.Clear();
 
-                using( var grandOutputServer = GrandOutputHelper.GetGrandOutputServer() )
-                using( var grandOutputClient = GrandOutputHelper.GetGrandOutputClient() )
+                using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
+                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
                     grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
