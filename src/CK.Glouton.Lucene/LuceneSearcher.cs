@@ -39,6 +39,21 @@ namespace CK.Glouton.Lucene
             InitializeIdList();
         }
 
+        public LuceneSearcher(string dir, string[] fields)
+        {
+            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath(dir)));
+            _indexSearcher = new IndexSearcher(DirectoryReader.Open(indexDirectory));
+            _queryParser = new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
+                fields,
+                new StandardAnalyzer(LuceneVersion.LUCENE_48));
+            _exceptionParser = new QueryParser(LuceneVersion.LUCENE_48,
+                "Message",
+                new StandardAnalyzer(LuceneVersion.LUCENE_48));
+            _levelParser = new QueryParser(LuceneVersion.LUCENE_48,
+                "LogLevel",
+                new StandardAnalyzer(LuceneVersion.LUCENE_48));
+            InitializeIdList();
+        }
 
         public ISet<string> MonitorIdList => _monitorIdList;
 

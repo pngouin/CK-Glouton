@@ -20,7 +20,9 @@ namespace CK.Glouton.Server
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
         private ConcurrentQueue<Action> _blockingQueue;
-        private Task _queueThread;
+        private ConcurrentQueue<Action> _processingQueue;
+        private Task _bloquingQueueThread;
+        private Task _processingQueueThread;
         private Dictionary<string, LuceneIndexer> _indexerDic;
         private bool _isDisposing;
 
@@ -44,40 +46,54 @@ namespace CK.Glouton.Server
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
             _blockingQueue = new ConcurrentQueue<Action>();
+            _processingQueue = new ConcurrentQueue<Action>();
             _indexerDic = new Dictionary<string, LuceneIndexer>();
         }
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
         {
-            var version = Convert.ToInt32( clientSession.ClientData[ "LogEntryVersion" ] );
+            _processingQueue.Enqueue(() => ProcessData(monitor, data, clientSession));
+        }
+
+        private void ProcessData(IActivityMonitor monitor, byte[] data, IServerClientSession clientSession)
+        {
+            var version = Convert.ToInt32(clientSession.ClientData["LogEntryVersion"]);
 
             _memoryStream.SetLength(0);
             _memoryStream.Write(data, 0, data.Length);
             _memoryStream.Seek(0, SeekOrigin.Begin);
 
-            var entry = LogEntry.Read( _binaryReader, version, out _ );
+            var entry = LogEntry.Read(_binaryReader, version, out _);
             string appName;
             clientSession.ClientData.TryGetValue("AppName", out appName);
+            var clientData = clientSession.ClientData;
+
 
             if (_indexerDic.ContainsKey(appName))
             {
                 LuceneIndexer indexer;
                 _indexerDic.TryGetValue(appName, out indexer);
-                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, appName));
+                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, clientData));
             }
             else
             {
                 LuceneIndexer indexer = new LuceneIndexer(appName);
                 _indexerDic.Add(appName, indexer);
-                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, appName));
+                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, clientData));
             }
         }
 
-        private void ProcessQueue()
+        private void ProcessQueue(ConcurrentQueue<Action> queue)
         {
-            while (!_blockingQueue.IsEmpty && !_isDisposing)
+            Action action;
+            while (!queue.IsEmpty || !_isDisposing)
             {
-                _blockingQueue.TryDequeue( out _);
+                queue.TryDequeue( out action);
+                if(action != null)
+                {
+                    action.Invoke();
+                    action = null;
+                }
             }
         }
 
@@ -96,7 +112,8 @@ namespace CK.Glouton.Server
         public void Open()
         {
             _controlChannelServer.Open();
-            _queueThread = Task.Factory.StartNew(() => ProcessQueue());
+            _bloquingQueueThread= Task.Factory.StartNew(() => ProcessQueue(_blockingQueue));
+            _processingQueueThread = Task.Factory.StartNew(() => ProcessQueue(_processingQueue));
         }
 
         public void Close()
@@ -118,8 +135,9 @@ namespace CK.Glouton.Server
                 _isDisposing = true;
                 Close();
                 _controlChannelServer.Dispose();
-                System.Threading.SpinWait.SpinUntil(()=> _queueThread.IsCompleted);
-                _queueThread.Dispose();
+                System.Threading.SpinWait.SpinUntil(()=> _bloquingQueueThread.IsCompleted && _processingQueueThread.IsCompleted);
+                _bloquingQueueThread.Dispose();
+                _processingQueueThread.Dispose();
                 DisposeAllIndexer();
             }
             _disposedValue = true;

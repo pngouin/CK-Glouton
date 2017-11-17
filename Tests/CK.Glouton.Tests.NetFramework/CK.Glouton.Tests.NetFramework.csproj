@@ -14,4 +14,9 @@
     <ProjectReference Include="..\..\src\CK.Glouton.Handler.Tcp\CK.Glouton.Handler.Tcp.csproj" />
     <ProjectReference Include="..\..\src\CK.Glouton.Server\CK.Glouton.Server.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\CriticalErrors\" />
+    <Folder Include="Logs\Text\" />
+  </ItemGroup>
 </Project>

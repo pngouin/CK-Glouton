@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using CK.Core;
+﻿using CK.Core;
 using FluentAssertions;
+using NUnit.Framework;
+using System;
+using System.Threading;
 
-namespace CK.Glouton.Tests.NetFramework
+namespace CK.Glouton.Tests
 {
     [TestFixture]
     public class HandlerTest
@@ -15,32 +12,33 @@ namespace CK.Glouton.Tests.NetFramework
         [SetUp]
         public void SetUp()
         {
-            GrandOuputServerHelper.SetupServer();
-            GrandOutputHandlerHelper.SetupHandler();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            //GrandOuputServerHelper.TearDown();
-            //GrandOutputHandlerHelper.TearDown();
+            TestHelper.Setup();
         }
 
         [Test]
         public void handler_can_send_some_log()
         {
-            var server = TestHelper.DefaultServer();
-            var m = new ActivityMonitor();
-            m.MinimalFilter = LogFilter.Debug;
-            server.Open();
+            using( var server = TestHelper.DefaultServer() )
+            {
+                server.Open();
 
-            var guid = Guid.NewGuid();
+                var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                GrandOutputHelper.GrandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
 
-            m.Info(guid.ToString);
-            var response = server.GetLogEntry(guid.ToString());
+                var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                GrandOutputHelper.GrandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
 
-            response.Should().Be(guid.ToString());
-            server.Dispose();
+                var guid = Guid.NewGuid();
+                clientActivityMonitor.Info( guid.ToString );
+
+                Thread.Sleep( 500 );
+
+                var response = server.GetLogEntry( guid.ToString() );
+                response.Text.Should().Be( guid.ToString() );
+
+                serverActivityMonitor.CloseGroup();
+                clientActivityMonitor.CloseGroup();
+            }
         }
     }
 }

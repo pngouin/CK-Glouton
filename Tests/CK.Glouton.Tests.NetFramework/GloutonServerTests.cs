@@ -1,12 +1,6 @@
-﻿using CK.Core;
-using CK.Glouton.Handler.Tcp;
-using CK.Monitoring;
-using CK.Monitoring.Handlers;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Reflection;
-using System.Text;
 
 namespace CK.Glouton.Tests
 {
@@ -16,13 +10,7 @@ namespace CK.Glouton.Tests
         [SetUp]
         public void SetUp()
         {
-            GrandOuputServerHelper.SetupServer();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            GrandOuputServerHelper.TearDown();
+            TestHelper.Setup();
         }
 
         [Test]
@@ -30,10 +18,12 @@ namespace CK.Glouton.Tests
         {
             Action openServer = () =>
             {
-                var server = TestHelper.DefaultServer();
-                server.Should().NotBeNull();
-                server.Open();
-                server.Dispose();
+                using( var server = TestHelper.DefaultServer() )
+                {
+                    server.Should().NotBeNull();
+                    server.Open();
+                    server.Dispose();
+                }
             };
 
             openServer.ShouldNotThrow();
