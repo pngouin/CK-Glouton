@@ -22,22 +22,27 @@ namespace CK.Glouton.Tests
             {
                 server.Open();
 
-                var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
-                GrandOutputHelper.GrandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
+                using( var grandOutputServer = GrandOutputHelper.GetGrandOutputServer() )
+                using( var grandOutputClient = GrandOutputHelper.GetGrandOutputClient() )
+                {
+                    var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                    grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
 
-                var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
-                GrandOutputHelper.GrandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
+                    var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                    grandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
 
-                var guid = Guid.NewGuid();
-                clientActivityMonitor.Info( guid.ToString );
+                    var guid = Guid.NewGuid();
+                    clientActivityMonitor.Info( guid.ToString );
 
-                Thread.Sleep( 500 );
+                    Thread.Sleep( 500 );
 
-                var response = server.GetLogEntry( guid.ToString() );
-                response.Text.Should().Be( guid.ToString() );
+                    var response = server.GetLogEntry( guid.ToString() );
+                    response.Text.Should().Be( guid.ToString() );
 
-                serverActivityMonitor.CloseGroup();
-                clientActivityMonitor.CloseGroup();
+                    serverActivityMonitor.CloseGroup();
+                    clientActivityMonitor.CloseGroup();
+
+                }
             }
         }
     }
