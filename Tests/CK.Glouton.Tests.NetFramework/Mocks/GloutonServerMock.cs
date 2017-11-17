@@ -13,14 +13,14 @@ using System.Text;
 
 namespace CK.Glouton.Tests
 {
-    public class ServerTestHelper : IGloutonServer, IDisposable
+    public class GloutonServerMock : IGloutonServer, IDisposable
     {
         private readonly ControlChannelServer _controlChannelServer;
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
         private readonly List<ILogEntry> _listLog;
 
-        public ServerTestHelper(
+        public GloutonServerMock(
             string boundIpAddress,
             int port,
             IAuthorizationHandler clientAuthorizationHandler = null,

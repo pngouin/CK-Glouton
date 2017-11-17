@@ -18,7 +18,7 @@ namespace CK.Glouton.Tests
         [Test]
         public void handler_can_send_some_log()
         {
-            using( var server = TestHelper.DefaultServer() )
+            using( var server = TestHelper.DefaultMockServer() )
             {
                 server.Open();
 

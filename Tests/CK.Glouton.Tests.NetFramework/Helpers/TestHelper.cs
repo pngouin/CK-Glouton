@@ -1,5 +1,6 @@
 ﻿using CK.ControlChannel.Abstractions;
 using CK.Core;
+using CK.Glouton.Server;
 using System.IO;
 using System.Net.Security;
 using System.Runtime.CompilerServices;
@@ -13,18 +14,15 @@ namespace CK.Glouton.Tests
         internal static ushort DefaultPort { get; } = 43712;
 
         private static IAuthorizationHandler _defaultAuthHandler;
-        internal static IAuthorizationHandler DefaultAuthHandler
-        {
-            get { return _defaultAuthHandler ?? ( _defaultAuthHandler = new TestAuthHandler( s => true ) ); }
-        }
+        internal static IAuthorizationHandler DefaultAuthHandler => _defaultAuthHandler ?? ( _defaultAuthHandler = new TestAuthHandler( s => true ) );
 
-        internal static ServerTestHelper DefaultServer
+        internal static GloutonServerMock DefaultMockServer
         (
             IAuthorizationHandler authorizationHandler = null,
             RemoteCertificateValidationCallback userCertificateValidationCallback = null
         )
         {
-            return new ServerTestHelper
+            return new GloutonServerMock
             (
                 DefaultHost,
                 DefaultPort,
@@ -33,6 +31,22 @@ namespace CK.Glouton.Tests
                 userCertificateValidationCallback
             );
         }
+
+        internal static GloutonServer DefaultGloutonServer
+        (
+            IAuthorizationHandler authorizationHandler = null,
+            RemoteCertificateValidationCallback userCertificateValidationCallback = null
+        )
+        {
+            return new GloutonServer(
+                DefaultHost,
+                DefaultPort,
+                authorizationHandler ?? DefaultAuthHandler,
+                null, // Todo: Same as above
+                userCertificateValidationCallback
+            );
+        }
+
 
         internal static void Setup()
         {

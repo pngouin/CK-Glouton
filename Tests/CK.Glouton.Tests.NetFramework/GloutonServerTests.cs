@@ -18,11 +18,10 @@ namespace CK.Glouton.Tests
         {
             Action openServer = () =>
             {
-                using( var server = TestHelper.DefaultServer() )
+                using( var server = TestHelper.DefaultMockServer() )
                 {
                     server.Should().NotBeNull();
                     server.Open();
-                    server.Dispose();
                 }
             };
 
