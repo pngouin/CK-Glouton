@@ -15,6 +15,7 @@ environment:
 init:
 - git config --global core.autocrlf true
 install:
+  - ps: Install-Product node ''
   - ps: CodeCakeBuilder\Bootstrap.ps1
   - ps: CodeCakeBuilder\AddNpmrc.ps1
 build_script:

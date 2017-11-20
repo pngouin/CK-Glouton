@@ -35,7 +35,7 @@ Param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$nugetDownloadUrl = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
+#$nugetDownloadUrl = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
 
 # Go back a level if ./CodeCakeBuilder isn't found
 $solutionDir = $PSScriptRoot
@@ -97,9 +97,11 @@ Write-Information "Using builder project: $builderProj"
 #     Invoke-WebRequest -Uri $nugetDownloadUrl -OutFile $nugetExe
 # }
 
+Write-Information "Restore packages with dotnet restore"
 $nugetConfigFile = Join-Path $solutionDir "NuGet.config"
 & dotnet restore --configfile $nugetConfigFile
 
+Write-Information "Build project with dotnet build"
 & dotnet build --configuration Release
 
 if($Run) {
