@@ -122,7 +122,7 @@ namespace CodeCake
                {
                    var settings = new NpmInstallSettings();
 
-                   settings.LogLevel = NpmLogLevel.Info;
+                   settings.LogLevel = NpmLogLevel.Warn;
                    settings.WorkingDirectory = "../src/CK.Glouton.Web/app";
                    settings.InstallLocally();
 
