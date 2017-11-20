@@ -13,14 +13,30 @@ using System.Text;
 
 namespace CK.Glouton.Tests
 {
-    public class ServerTestHelper : IGloutonServer, IDisposable
+    /// <summary>
+    /// Represents a mock glouton server.
+    /// Instead of being sent to lucene, received logs will be put in a list.
+    /// </summary>
+    public class GloutonServerMock : IGloutonServer, IDisposable
     {
         private readonly ControlChannelServer _controlChannelServer;
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
-        private readonly List<ILogEntry> _listLog;
 
-        public ServerTestHelper(
+        /// <summary>
+        /// The list of received logs.
+        /// </summary>
+        public List<ILogEntry> ListLog { get; }
+
+        /// <summary>
+        /// Initializes a new <see cref="GloutonServerMock"/>.
+        /// </summary>
+        /// <param name="boundIpAddress">Host address. You can use <see cref="TestHelper.DefaultHost"/>.</param>
+        /// <param name="port">Port. You can use <see cref="TestHelper.DefaultPort"/>.</param>
+        /// <param name="clientAuthorizationHandler">Authorization Handler. If none are set, <see cref="TestAuthHandler"/> will be used.</param>
+        /// <param name="serverCertificate">Server certificate. Can be null.</param>
+        /// <param name="userCertificateValidationCallback">User certification call back. Can be null.</param>
+        public GloutonServerMock(
             string boundIpAddress,
             int port,
             IAuthorizationHandler clientAuthorizationHandler = null,
@@ -38,7 +54,7 @@ namespace CK.Glouton.Tests
             _controlChannelServer.RegisterChannelHandler( "GrandOutputEventInfo", HandleGrandOutputEventInfo );
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
-            _listLog = new List<ILogEntry>();
+            ListLog = new List<ILogEntry>();
         }
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
@@ -50,19 +66,30 @@ namespace CK.Glouton.Tests
             _memoryStream.Seek( 0, SeekOrigin.Begin );
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
-            _listLog.Add( entry );
+            ListLog.Add( entry );
         }
 
+        /// <summary>
+        /// Returns a log entry matching <paramref name="text"/>.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public ILogEntry GetLogEntry( string text )
         {
-            return _listLog.Single( e => e.Text == text );
+            return ListLog.Single( e => e.Text == text );
         }
 
+        /// <summary>
+        /// Close the handled control channel.
+        /// </summary>
         public void Close()
         {
             _controlChannelServer.Close();
         }
 
+        /// <summary>
+        /// Open the handled control channel.
+        /// </summary>
         public void Open()
         {
             _controlChannelServer.Open();
@@ -70,6 +97,9 @@ namespace CK.Glouton.Tests
 
         #region IDisposable Support
 
+        /// <summary>
+        /// Dispose the handler control channel.
+        /// </summary>
         public void Dispose()
         {
             _controlChannelServer.Dispose();
