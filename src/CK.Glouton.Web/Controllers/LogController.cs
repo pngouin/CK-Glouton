@@ -56,8 +56,8 @@ namespace CK.Glouton.Web.Controllers
         /// <param name="keyword">Which keywords to consider. By default: <code>"*"</code>.</param>
         /// <param name="logLevel">Log levels to consider during the search. By default: <code>{ "Debug", "Trace", "Info", "Warn", "Error", "Fatal" }</code>.</param>
         /// <returns></returns>
-        [HttpGet( "search" )]
-        public List<ILogViewModel> Search
+        [HttpGet( "filter" )]
+        public List<ILogViewModel> Filter
         (
             string monitorId, string appName, DateTime from, DateTime to,
             string[] fields, string keyword, [FromQuery]string[] logLevel
