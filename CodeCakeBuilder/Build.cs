@@ -62,7 +62,7 @@ namespace CodeCake
             var projects = Cake.ParseSolution(solutionFileName)
                            .Projects
                            .Where(p => !(p is SolutionFolder)
-                                       && p.Name != "CodeCakeBuilderUpdate"); //TODO: Change to CodeCakeBuilder
+                                       && p.Name != "CodeCakeBuilder");
 
             // We do not publish .Tests projects for this solution.
             var projectsToPublish = projects
@@ -147,7 +147,7 @@ namespace CodeCake
                 .IsDependentOn("Clean")
                 .IsDependentOn("Restore-NuGet-Packages-With-Version")
                 .IsDependentOn("Restore-NPM-package")
-                .IsDependentOn("Build-angular-app")
+                .IsDependentOn("NPM-Build")
                 .Does(() =>
                 {
                     Cake.DotNetCoreBuild(solutionFileName,
