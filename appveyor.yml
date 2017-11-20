@@ -18,5 +18,5 @@ install:
   - ps: CodeCakeBuilder\Bootstrap.ps1
   - ps: CodeCakeBuilder\AddNpmrc.ps1
 build_script:
-- CodeCakeBuilder\bin\Release\CodeCakeBuilder.exe -nointeraction
+- CodeCakeBuilder\bin\Release\net461\CodeCakeBuilder.exe -nointeraction
 test: off
