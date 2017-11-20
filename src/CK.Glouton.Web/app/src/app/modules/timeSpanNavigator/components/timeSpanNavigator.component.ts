@@ -82,7 +82,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._scaleDescription = `Current scale: ${Scale[this._currentScale]}`;
         this._nextScaleDescription = '';
         this._range = [25, 75]; // Todo: Change me
-        this._rangeSnapshot = this._range.slice();
+        this._rangeSnapshot = this.copyArray<number>(this._range);
     }
 
     /**
@@ -153,7 +153,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
             this._dateRange[updatedSlider] =
                 this.setDateScaleValue(this._dateRange[updatedSlider], actualDifference, this._currentScale);
             this.onDateChange.emit(this._dateRange);
-            this._rangeSnapshot = event.values.slice();
+            this._rangeSnapshot = this.copyArray<number>(event.values);
         }
     }
 
@@ -175,6 +175,13 @@ export class TimeSpanNavigatorComponent implements OnInit {
             default: throw new Error('Invalid parameter( scale )');
         }
         return date;
+    }
+
+    private copyArray<T>(array: T[]): T[] {
+        let i = array.length;
+        let newArray = [];
+        while(i--) newArray[i] = array[i];
+        return newArray;
     }
 
     /**
