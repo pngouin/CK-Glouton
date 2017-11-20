@@ -20,6 +20,10 @@ namespace CK.Glouton.Tests
         /// </summary>
         internal static ushort DefaultPort { get; } = 43712;
 
+        /// <summary>
+        /// We want to initialize 
+        /// </summary>
+        private static bool _environmentInitialized;
         private static IAuthorizationHandler _defaultAuthHandler;
 
         /// <summary>
@@ -79,6 +83,11 @@ namespace CK.Glouton.Tests
         /// </summary>
         internal static void Setup()
         {
+            if( _environmentInitialized )
+                return;
+
+            _environmentInitialized = true;
+
             if( !System.Console.IsOutputRedirected )
                 System.Console.OutputEncoding = Encoding.UTF8;
 
