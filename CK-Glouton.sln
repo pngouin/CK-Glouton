@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Handler.Tcp", "src\CK.Glouton.Handler.Tcp\CK.Glouton.Handler.Tcp.csproj", "{131EB284-0872-4D5C-92B2-2C1567EFA357}"
 EndProject
@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C982E810
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeCakeBuilder", "CodeCakeBuilder", "{B89C21C5-1EB5-498A-9AF3-23A762712A87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCakeBuilder", "CodeCakeBuilder\CodeCakeBuilder.csproj", "{FD4817B6-3CD7-4E74-AA10-7CA95FDFCF2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCakeBuilder", "CodeCakeBuilder\CodeCakeBuilder.csproj", "{FD4817B6-3CD7-4E74-AA10-7CA95FDFCF2D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Tests.NetCore", "Tests\CK.Glouton.Tests.NetCore\CK.Glouton.Tests.NetCore.csproj", "{240735D9-B68C-48F5-B213-FF2313F948DF}"
 EndProject
@@ -32,7 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Lucene", "src\CK
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Server", "src\CK.Glouton.Server\CK.Glouton.Server.csproj", "{E46A565F-E843-4BBE-B154-D2FB9292DA7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Web", "src\CK.Glouton.Web\CK.Glouton.Web.csproj", "{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Web", "src\CK.Glouton.Web\CK.Glouton.Web.csproj", "{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
