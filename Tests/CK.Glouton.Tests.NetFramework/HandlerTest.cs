@@ -1,8 +1,8 @@
-﻿using CK.Core;
+﻿using System;
+using System.Threading;
+using CK.Core;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
-using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -35,7 +35,7 @@ namespace CK.Glouton.Tests
                     var guid = Guid.NewGuid();
                     clientActivityMonitor.Info( guid.ToString );
 
-                    Thread.Sleep( 500 );
+                    Thread.Sleep( 125 );
 
                     var response = server.GetLogEntry( guid.ToString() );
                     response.Text.Should().Be( guid.ToString() );
@@ -79,7 +79,7 @@ namespace CK.Glouton.Tests
                     clientActivityMonitor.Fatal( fatalMessage );
                     clientActivityMonitor.Info( finalMessage );
 
-                    Thread.Sleep( 500 );
+                    Thread.Sleep( 125 );
 
                     var initialEntry = server.GetLogEntry( initialMessage );
                     var debugEntry = server.GetLogEntry( debugMessage );
@@ -112,6 +112,63 @@ namespace CK.Glouton.Tests
 
                     serverActivityMonitor.CloseGroup();
                     clientActivityMonitor.CloseGroup();
+                }
+            }
+        }
+
+        [Test]
+        public void handler_handles_multiple_clients()
+        {
+            using( var server = TestHelper.DefaultMockServer() )
+            {
+                server.Open();
+
+                using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
+                using( var grandOutputClient1 = GrandOutputHelper.GetNewGrandOutputClient() )
+                {
+                    Thread.Sleep( 125 );
+                    using( var grandOutputClient2 = GrandOutputHelper.GetNewGrandOutputClient() )
+                    {
+                        Thread.Sleep( 125 );
+                        using( var grandOutputClient3 = GrandOutputHelper.GetNewGrandOutputClient() )
+                        {
+                            var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                            grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
+
+                            var clientActivityMonitor1 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                            grandOutputClient1.EnsureGrandOutputClient( clientActivityMonitor1 );
+
+                            var clientActivityMonitor2 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                            grandOutputClient2.EnsureGrandOutputClient( clientActivityMonitor2 );
+
+                            var clientActivityMonitor3 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                            grandOutputClient3.EnsureGrandOutputClient( clientActivityMonitor3 );
+
+                            var guid1 = Guid.NewGuid();
+                            var guid2 = Guid.NewGuid();
+                            var guid3 = Guid.NewGuid();
+
+                            clientActivityMonitor1.Info( guid1.ToString );
+                            clientActivityMonitor2.Info( guid2.ToString );
+                            clientActivityMonitor3.Info( guid3.ToString );
+
+                            Thread.Sleep( 125 );
+
+                            var response1 = server.GetLogEntry( guid1.ToString() );
+                            response1.Text.Should().Be( guid1.ToString() );
+
+                            var response2 = server.GetLogEntry( guid2.ToString() );
+                            response2.Text.Should().Be( guid2.ToString() );
+
+                            var response3 = server.GetLogEntry( guid3.ToString() );
+                            response3.Text.Should().Be( guid3.ToString() );
+
+                            serverActivityMonitor.CloseGroup();
+                            clientActivityMonitor1.CloseGroup();
+                            clientActivityMonitor2.CloseGroup();
+                            clientActivityMonitor3.CloseGroup();
+                        }
+                    }
                 }
             }
         }
