@@ -1,7 +1,7 @@
-﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CK.Glouton.Lucene;
+using CK.Glouton.Model;
 
 namespace CK.Glouton.Service
 {
