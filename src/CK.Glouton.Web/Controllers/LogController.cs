@@ -27,12 +27,9 @@ namespace CK.Glouton.Web.Controllers
         /// <param name="max">The number of logs to return.</param>
         /// <returns></returns>
         [HttpGet("{appName}")]
-        public List<ILogViewModel> GetAll( [FromRoute] string appName ,int max = 10 )
+        public List<ILogViewModel> GetAll( [FromRoute] string appName ,int max = 0 )
         {
-            List<ILogViewModel> logs = _luceneSearcherService.GetAll( appName, max == 0 ? max : 500);
-            if (logs == null)
-                return new List<ILogViewModel>();
-            return logs;
+            return _luceneSearcherService.GetAll(appName, max == 0 ? 10 : max) ?? new List<ILogViewModel>();
         }
 
 
