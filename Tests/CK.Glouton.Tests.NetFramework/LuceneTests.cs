@@ -16,10 +16,10 @@ namespace CK.Glouton.Tests
         [Test]
         public void log_can_be_indexed()
         {
-            using( var g = GrandOutputHelper.GetNewGrandOutputClient() )
             using( var server = TestHelper.DefaultGloutonServer() )
             {
                 server.Open();
+                var g = GrandOutputHelper.GetNewGrandOutputClient();
 
                 var m = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
                 g.EnsureGrandOutputClient( m );
@@ -27,6 +27,7 @@ namespace CK.Glouton.Tests
                 m.Info( "Hello world" );
                 m.Error( "CriticalError" );
                 Thread.Sleep(500);
+                g.Dispose();
             }
         }
     }
