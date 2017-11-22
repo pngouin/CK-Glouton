@@ -13,7 +13,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import * as components from './_components';
 import * as modules from './_modules';
-// import * as services from './_services';
+import * as services from './_services';
 // import * as guards from './_guards';
 
 import * as timeSpanNavigatorRx from './modules/timeSpanNavigator/actions';
@@ -41,7 +41,7 @@ const stateStorageKey: string = 'hln_glouton/state';
     StoreDevtoolsModule.instrumentOnlyWithExtension({maxAge: 5})
   ],
   providers: [
-    EffectDispatcher // ,
+    EffectDispatcher, // ,
     // ...Object.values(services),
     // ...Object.values(guards),
   ],
