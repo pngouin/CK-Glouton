@@ -11,7 +11,7 @@ namespace CK.Glouton.Tests
         /// <param name="this">The log entry.</param>
         /// <param name="message">The message that the log entry needs to match.</param>
         /// <returns></returns>
-        internal static bool ValidateLogEntry( this ILogEntry @this, string message )
+        internal static bool Validate( this ILogEntry @this, string message )
         {
             return @this.Text == message;
         }
@@ -23,9 +23,9 @@ namespace CK.Glouton.Tests
         /// <param name="message">The message that the log text needs to match.</param>
         /// <param name="logLevel">The log level that the log entry needs to match.</param>
         /// <returns></returns>
-        internal static bool ValidateLogEntry( this ILogEntry @this, string message, LogLevel logLevel )
+        internal static bool Validate( this ILogEntry @this, string message, LogLevel logLevel )
         {
-            return @this.ValidateLogEntry( message ) && @this.LogLevel.HasFlag( logLevel );
+            return @this.Validate( message ) && @this.LogLevel.HasFlag( logLevel );
         }
     }
 }

@@ -31,12 +31,12 @@ namespace CK.Glouton.Tests
                     var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
 
-                    var guid = Guid.NewGuid();
-                    clientActivityMonitor.Info( guid.ToString );
+                    var guid = Guid.NewGuid().ToString();
+                    clientActivityMonitor.Info( guid );
 
                     Thread.Sleep( 125 );
 
-                    server.GetLogEntry( guid.ToString() ).ValidateLogEntry( guid.ToString() ).Should().BeTrue();
+                    server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
 
                     serverActivityMonitor.CloseGroup();
                     clientActivityMonitor.CloseGroup();
@@ -78,13 +78,13 @@ namespace CK.Glouton.Tests
 
                     Thread.Sleep( 125 );
 
-                    server.GetLogEntry( initialMessage ).ValidateLogEntry( initialMessage, LogLevel.Info ).Should().BeTrue();
-                    server.GetLogEntry( debugMessage ).ValidateLogEntry( debugMessage, LogLevel.Debug ).Should().BeTrue();
-                    server.GetLogEntry( traceMessage ).ValidateLogEntry( traceMessage, LogLevel.Trace ).Should().BeTrue();
-                    server.GetLogEntry( warnMessage ).ValidateLogEntry( warnMessage, LogLevel.Warn ).Should().BeTrue();
-                    server.GetLogEntry( errorMessage ).ValidateLogEntry( errorMessage, LogLevel.Error ).Should().BeTrue();
-                    server.GetLogEntry( fatalMessage ).ValidateLogEntry( fatalMessage, LogLevel.Fatal ).Should().BeTrue();
-                    server.GetLogEntry( finalMessage ).ValidateLogEntry( finalMessage, LogLevel.Info ).Should().BeTrue();
+                    server.GetLogEntry( initialMessage ).Validate( initialMessage, LogLevel.Info ).Should().BeTrue();
+                    server.GetLogEntry( debugMessage ).Validate( debugMessage, LogLevel.Debug ).Should().BeTrue();
+                    server.GetLogEntry( traceMessage ).Validate( traceMessage, LogLevel.Trace ).Should().BeTrue();
+                    server.GetLogEntry( warnMessage ).Validate( warnMessage, LogLevel.Warn ).Should().BeTrue();
+                    server.GetLogEntry( errorMessage ).Validate( errorMessage, LogLevel.Error ).Should().BeTrue();
+                    server.GetLogEntry( fatalMessage ).Validate( fatalMessage, LogLevel.Fatal ).Should().BeTrue();
+                    server.GetLogEntry( finalMessage ).Validate( finalMessage, LogLevel.Info ).Should().BeTrue();
                 }
             }
         }
@@ -117,19 +117,19 @@ namespace CK.Glouton.Tests
                             var clientActivityMonitor3 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
                             grandOutputClient3.EnsureGrandOutputClient( clientActivityMonitor3 );
 
-                            var guid1 = Guid.NewGuid();
-                            var guid2 = Guid.NewGuid();
-                            var guid3 = Guid.NewGuid();
+                            var guid1 = Guid.NewGuid().ToString();
+                            var guid2 = Guid.NewGuid().ToString();
+                            var guid3 = Guid.NewGuid().ToString();
 
-                            clientActivityMonitor1.Info( guid1.ToString );
-                            clientActivityMonitor2.Info( guid2.ToString );
-                            clientActivityMonitor3.Info( guid3.ToString );
+                            clientActivityMonitor1.Info( guid1 );
+                            clientActivityMonitor2.Info( guid2 );
+                            clientActivityMonitor3.Info( guid3 );
 
                             Thread.Sleep( 125 );
 
-                            server.GetLogEntry( guid1.ToString() ).ValidateLogEntry( guid1.ToString() ).Should().BeTrue();
-                            server.GetLogEntry( guid2.ToString() ).ValidateLogEntry( guid2.ToString() ).Should().BeTrue();
-                            server.GetLogEntry( guid3.ToString() ).ValidateLogEntry( guid3.ToString() ).Should().BeTrue();
+                            server.GetLogEntry( guid1 ).Validate( guid1 ).Should().BeTrue();
+                            server.GetLogEntry( guid2 ).Validate( guid2 ).Should().BeTrue();
+                            server.GetLogEntry( guid3 ).Validate( guid3 ).Should().BeTrue();
 
                             serverActivityMonitor.CloseGroup();
                             clientActivityMonitor1.CloseGroup();
