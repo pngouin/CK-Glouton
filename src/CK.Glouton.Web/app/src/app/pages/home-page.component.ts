@@ -1,5 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { ITimeSpanNavigatorSettings, Scale, IScaleEdge } from '../modules/timeSpanNavigator/models';
+import { AppNameService } from 'app/_services';
 
 @Component({
   selector: 'home',
@@ -20,10 +21,9 @@ export class HomePageComponent {
 
   private _dateRange: Date[];
 
-  constructor(private changeRef: ChangeDetectorRef) {
+  constructor(private changeRef: ChangeDetectorRef, private appNameService : AppNameService) {
     this._dateRange = new Array<Date>();
   }
-
 
   timeSpanNavigatorConfiguration: ITimeSpanNavigatorSettings = {
     from: new Date('2017-11-01'),
