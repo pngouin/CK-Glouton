@@ -71,6 +71,11 @@ namespace CK.Glouton.Lucene
             InitializeIdList(indexDirectoryName);
         }
 
+        public ISet<string> AppNameList => _appNameList;
+
+        public ISet<string> MonitorIdList => _monitorIdList;
+
+
         /// <summary>
         /// Try to initialize a searcher to get the list of monitor and app IDs
         /// It can fail if the index is empty, in this case the searcher is useless
