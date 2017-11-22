@@ -9,6 +9,7 @@ using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
 using Lucene.Net.Store;
+using System.Linq;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
@@ -25,6 +26,8 @@ namespace CK.Glouton.Lucene
 
         public LuceneSearcher(string[] fields)
         {
+            var file = new DirectoryInfo(LuceneConstant.GetPath()).EnumerateFiles();
+            if (!file.Any()) return;
             Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath()));
             _indexSearcher = new IndexSearcher(DirectoryReader.Open(indexDirectory));
             _queryParser =  new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
@@ -41,6 +44,8 @@ namespace CK.Glouton.Lucene
 
         public LuceneSearcher(string dir, string[] fields)
         {
+            var file = new DirectoryInfo(LuceneConstant.GetPath(dir)).EnumerateFiles();
+            if (!file.Any()) return;
             Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath(dir)));
             _indexSearcher = new IndexSearcher(DirectoryReader.Open(indexDirectory));
             _queryParser = new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
@@ -91,27 +96,32 @@ namespace CK.Glouton.Lucene
 
         public TopDocs Search (string searchQuery)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             _query = _queryParser.Parse(searchQuery);
             return _indexSearcher.Search(_query, LuceneConstant.MaxSearch);
         }
 
         public TopDocs Search(Query searchQuery)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             return _indexSearcher.Search(searchQuery, LuceneConstant.MaxSearch);
         }
 
         public Document GetDocument(ScoreDoc scoreDoc)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             return _indexSearcher.Doc(scoreDoc.Doc);
         }
 
         public TopDocs GetAllLog(int numberDocsToReturn)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             return _indexSearcher.Search(new WildcardQuery(new Term("LogLevel", "*")), numberDocsToReturn);
         }
 
         public TopDocs GetAllExceptions(int numberDocsToReturn)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             return _indexSearcher.Search(_exceptionParser.Parse("Outer"), numberDocsToReturn);
         }
 
@@ -134,6 +144,13 @@ namespace CK.Glouton.Lucene
                     if (!_appNameList.Contains(id)) _appNameList.Add(id);
                 }
             }
+        }
+
+        private bool CheckSearcher(IndexSearcher searcher)
+        {
+            if (searcher == null)
+                return false;
+            return true;
         }
     }
 }

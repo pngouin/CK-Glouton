@@ -43,6 +43,9 @@ namespace CK.Glouton.Service
             var searcher = new LuceneSearcher( new[] { "LogLevel" } );
             var hits = searcher.GetAllLog( max );
 
+            if (hits == null)
+                return null;
+
             foreach( var scoreDoc in hits.ScoreDocs )
             {
                 var document = searcher.GetDocument( scoreDoc );

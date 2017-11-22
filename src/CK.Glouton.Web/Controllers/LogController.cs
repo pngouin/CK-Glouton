@@ -28,7 +28,10 @@ namespace CK.Glouton.Web.Controllers
         [HttpGet]
         public List<ILogViewModel> GetAll( int max = 0 )
         {
-            return _luceneSearcherService.GetAll( max == 0 ? max : 500 );
+            List<ILogViewModel> logs = _luceneSearcherService.GetAll(max == 0 ? max : 500);
+            if (logs == null)
+                return new List<ILogViewModel>();
+            return logs;
         }
 
 
