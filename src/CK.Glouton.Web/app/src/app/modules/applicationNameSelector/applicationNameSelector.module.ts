@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
+import { ApplicationNameSelectorComponent } from './components';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SliderModule } from 'primeng/components/slider/slider';
-import { TimeSpanNavigatorComponent } from './components';
+import { RadioButtonModule } from 'primeng/primeng';
 
 import * as components from './components';
 
@@ -10,14 +10,13 @@ import * as components from './components';
     imports: [
         CommonModule,
         FormsModule,
-        SliderModule
-   ],
-   declarations: [
+        RadioButtonModule
+    ],
+    declarations: [
         ...Object.values(components)
-   ],
-   exports: [
+    ],
+    exports: [
         ...Object.values(components)
-   ]
+    ]
 })
-export class TimeSpanNavigatorModule {
-}
+export class NameModule { }

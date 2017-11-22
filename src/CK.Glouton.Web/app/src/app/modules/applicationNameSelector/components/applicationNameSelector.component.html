@@ -1,0 +1,8 @@
+<div class="row" *ngIf="_applicationNames">
+    <div *ngFor="let applicationName of _applicationNames">
+        <p-radioButton
+            (onClick)="onClick()" name="applicationName" label="applicationName"
+            value="applicationName" [(ngModel)]="_selectedApplicationName">
+        </p-radioButton>
+    </div>
+</div>

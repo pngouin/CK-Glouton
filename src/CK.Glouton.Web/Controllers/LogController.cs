@@ -1,7 +1,7 @@
-﻿using CK.Glouton.Model;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CK.Glouton.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CK.Glouton.Web.Controllers
 {
@@ -26,10 +26,10 @@ namespace CK.Glouton.Web.Controllers
         /// <param name="appName">The app name on where we gonna search the logs</param>
         /// <param name="max">The number of logs to return.</param>
         /// <returns></returns>
-        [HttpGet("{appName}")]
-        public List<ILogViewModel> GetAll( [FromRoute] string appName ,int max = 0 )
+        [HttpGet( "{appName}" )]
+        public List<ILogViewModel> GetAll( [FromRoute] string appName, int max = 0 )
         {
-            return _luceneSearcherService.GetAll(appName, max == 0 ? 10 : max) ?? new List<ILogViewModel>();
+            return _luceneSearcherService.GetAll( appName, max == 0 ? 10 : max ) ?? new List<ILogViewModel>();
         }
 
 
@@ -42,7 +42,7 @@ namespace CK.Glouton.Web.Controllers
         [HttpGet( "search/{appName}" )]
         public List<ILogViewModel> Search( [FromRoute] string appName, string query = "" )
         {
-            return string.IsNullOrEmpty( query ) ? GetAll(appName) : _luceneSearcherService.Search( appName, query );
+            return string.IsNullOrEmpty( query ) ? GetAll( appName ) : _luceneSearcherService.Search( appName, query );
         }
 
         /// <summary>
@@ -68,9 +68,9 @@ namespace CK.Glouton.Web.Controllers
                 monitorId = "All";
             if( appName == null || appName == "*" )
                 appName = "All";
-            if( fields.Length == 0 || fields[ 0 ] == "*" )
+            if( fields.Length == 0 || fields[0] == "*" )
                 fields = new[] { "Tags", "FileName", "Text" };
-            if( logLevel.Length == 0 || logLevel[ 0 ] == "*" )
+            if( logLevel.Length == 0 || logLevel[0] == "*" )
                 logLevel = new[] { "Debug", "Trace", "Info", "Warn", "Error", "Fatal" };
             if( keyword == null )
                 keyword = "*";
@@ -80,7 +80,7 @@ namespace CK.Glouton.Web.Controllers
 
         /// <summary>
         /// Returns the list of all monitors id.
-        /// Match the following: <code>api/log/monitor?max=[max] -- GET</code>.
+        /// Match the following: <code>api/log/monitor -- GET</code>.
         /// </summary>
         /// <returns></returns>
         [HttpGet( "monitor" )]
@@ -91,13 +91,13 @@ namespace CK.Glouton.Web.Controllers
 
         /// <summary>
         /// Returns the list of all application name.
-        /// Match the following: <code>api/log/app?max=[max] -- GET</code>.
+        /// Match the following: <code>api/log/app -- GET</code>.
         /// </summary>
         /// <returns></returns>
         [HttpGet( "app" )]
         public ISet<string> GetAllAppName()
         {
-            return _luceneSearcherService.GetAppNameList();
+            return _luceneSearcherService.GetAppNameList() ?? new HashSet<string>();
         }
     }
 }

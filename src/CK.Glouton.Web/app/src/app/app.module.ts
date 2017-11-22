@@ -1,15 +1,17 @@
 import 'reflect-metadata';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { rootRouterConfig } from './app.routes';
 import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { restoreStore, SignatureEffectsModule, EffectDispatcher } from '@ck/rx';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { reducer } from './app.reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
 
 import * as components from './_components';
 import * as modules from './_modules';
@@ -29,6 +31,7 @@ const stateStorageKey: string = 'hln_glouton/state';
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
     ...Object.values(modules),
     StoreModule.provideStore(reducer),
     RouterModule.forRoot(rootRouterConfig),
@@ -41,9 +44,12 @@ const stateStorageKey: string = 'hln_glouton/state';
     StoreDevtoolsModule.instrumentOnlyWithExtension({maxAge: 5})
   ],
   providers: [
-    EffectDispatcher, // ,
-    // ...Object.values(services),
+    EffectDispatcher,
+    ...Object.values(services),
     // ...Object.values(guards),
+  ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
   ],
   bootstrap: [
     AppComponent
