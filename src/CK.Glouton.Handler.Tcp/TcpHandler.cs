@@ -14,16 +14,16 @@ namespace CK.Glouton.Handler.Tcp
         private MemoryStream _memoryStream;
         private CKBinaryWriter _binaryWriter;
 
-        public TcpHandler(TcpHandlerConfiguration configuration)
+        public TcpHandler( TcpHandlerConfiguration configuration )
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _configuration = configuration ?? throw new ArgumentNullException( nameof( configuration ) );
             _memoryStream = new MemoryStream();
-            _binaryWriter = new CKBinaryWriter(_memoryStream, Encoding.UTF8, true);
+            _binaryWriter = new CKBinaryWriter( _memoryStream, Encoding.UTF8, true );
         }
 
-        public bool Activate(IActivityMonitor activityMonitor)
+        public bool Activate( IActivityMonitor activityMonitor )
         {
-            if (_controlChannelClient == null)
+            if( _controlChannelClient == null )
                 _controlChannelClient = new ControlChannelClient
                 (
                     _configuration.Host,
@@ -35,19 +35,19 @@ namespace CK.Glouton.Handler.Tcp
                     _configuration.ConnectionRetryDelayMs
                 );
 
-            _controlChannelClient.OpenAsync(activityMonitor).GetAwaiter().GetResult();
+            _controlChannelClient.OpenAsync( activityMonitor ).GetAwaiter().GetResult();
 
             return true;
         }
 
-        public bool ApplyConfiguration(IActivityMonitor activityMonitor, IHandlerConfiguration configuration)
+        public bool ApplyConfiguration( IActivityMonitor activityMonitor, IHandlerConfiguration configuration )
         {
             return false;
         }
 
-        public void Deactivate(IActivityMonitor m)
+        public void Deactivate( IActivityMonitor m )
         {
-            if (_controlChannelClient == null)
+            if( _controlChannelClient == null )
                 return;
 
             _controlChannelClient.Dispose();
@@ -56,17 +56,17 @@ namespace CK.Glouton.Handler.Tcp
             _binaryWriter.Dispose();
         }
 
-        public void OnTimer(IActivityMonitor m, TimeSpan timerSpan)
+        public void OnTimer( IActivityMonitor m, TimeSpan timerSpan )
         {
         }
 
-        public void Handle(IActivityMonitor m, GrandOutputEventInfo logEvent)
+        public void Handle( IActivityMonitor m, GrandOutputEventInfo logEvent )
         {
-            _memoryStream.SetLength(0);
-            _memoryStream.Seek(0, SeekOrigin.Begin);
+            _memoryStream.SetLength( 0 );
+            _memoryStream.Seek( 0, SeekOrigin.Begin );
 
-            logEvent.Entry.WriteLogEntry(_binaryWriter);
-            _controlChannelClient.SendAsync("GrandOutputEventInfo", _memoryStream.ToArray()).GetAwaiter().GetResult();
+            logEvent.Entry.WriteLogEntry( _binaryWriter );
+            _controlChannelClient.SendAsync( "GrandOutputEventInfo", _memoryStream.ToArray() ).GetAwaiter().GetResult();
         }
     }
 }

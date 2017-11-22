@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Handler.Tcp", "src\CK.Glouton.Handler.Tcp\CK.Glouton.Handler.Tcp.csproj", "{131EB284-0872-4D5C-92B2-2C1567EFA357}"
 EndProject
@@ -32,7 +32,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Lucene", "src\CK
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Server", "src\CK.Glouton.Server\CK.Glouton.Server.csproj", "{E46A565F-E843-4BBE-B154-D2FB9292DA7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Web", "src\CK.Glouton.Web\CK.Glouton.Web.csproj", "{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Web", "src\CK.Glouton.Web\CK.Glouton.Web.csproj", "{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Model", "src\CK.Glouton.Model\CK.Glouton.Model.csproj", "{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Service", "CK.Glouton.Service\CK.Glouton.Service.csproj", "{C075357E-AED6-48C8-99D5-56B020F4890A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +80,14 @@ Global
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C075357E-AED6-48C8-99D5-56B020F4890A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C075357E-AED6-48C8-99D5-56B020F4890A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C075357E-AED6-48C8-99D5-56B020F4890A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C075357E-AED6-48C8-99D5-56B020F4890A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
