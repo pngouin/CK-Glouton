@@ -138,8 +138,8 @@ namespace CK.Glouton.Lucene
                 {
                     if (!_monitorIdList.Contains(id)) _monitorIdList.Add(id);
                 }
-                string[] appIds = document.Get("AppIdList").Split(' ');
-                foreach (string id in appIds)
+                string[] appName = document.Get("AppNameList").Split(' ');
+                foreach (string id in appName)
                 {
                     if (!_appNameList.Contains(id)) _appNameList.Add(id);
                 }
