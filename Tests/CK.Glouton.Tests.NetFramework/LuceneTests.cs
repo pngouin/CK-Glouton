@@ -1,5 +1,6 @@
 ﻿using CK.Core;
 using NUnit.Framework;
+using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -25,6 +26,7 @@ namespace CK.Glouton.Tests
 
                 m.Info( "Hello world" );
                 m.Error( "CriticalError" );
+                Thread.Sleep(500);
             }
         }
     }

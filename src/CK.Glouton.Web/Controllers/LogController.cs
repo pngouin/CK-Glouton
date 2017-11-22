@@ -23,12 +23,13 @@ namespace CK.Glouton.Web.Controllers
         /// Returns <paramref name="max"/> logs. <paramref name="max"/> is 500 by default.
         /// Match the following: <code>api/log?max=[max] -- GET</code>.
         /// </summary>
+        /// <param name="appName">The app name on where we gonna search the logs</param>
         /// <param name="max">The number of logs to return.</param>
         /// <returns></returns>
-        [HttpGet]
-        public List<ILogViewModel> GetAll( int max = 0 )
+        [HttpGet("{appName}")]
+        public List<ILogViewModel> GetAll( [FromRoute] string appName ,int max = 0 )
         {
-            return _luceneSearcherService.GetAll( max == 0 ? max : 500 );
+            return _luceneSearcherService.GetAll(appName, max == 0 ? 10 : max) ?? new List<ILogViewModel>();
         }
 
 
@@ -38,10 +39,10 @@ namespace CK.Glouton.Web.Controllers
         /// </summary>
         /// <param name="query">The query which will be processed by lucene.</param>
         /// <returns></returns>
-        [HttpGet( "search" )]
-        public List<ILogViewModel> Search( string query = "" )
+        [HttpGet( "search/{appName}" )]
+        public List<ILogViewModel> Search( [FromRoute] string appName, string query = "" )
         {
-            return string.IsNullOrEmpty( query ) ? GetAll() : _luceneSearcherService.Search( query );
+            return string.IsNullOrEmpty( query ) ? GetAll(appName) : _luceneSearcherService.Search( appName, query );
         }
 
         /// <summary>
