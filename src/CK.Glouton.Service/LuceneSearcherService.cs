@@ -7,13 +7,13 @@ namespace CK.Glouton.Service
 {
     public class LuceneSearcherService : ILuceneSearcherService
     {
-        public List<ILogViewModel> Search( string query )
+        public List<ILogViewModel> Search( string directory, string query )
         {
             if( query == "*" )
-                return GetAll( 25 );
+                return GetAll( directory, 25 );
 
             var result = new List<ILogViewModel>();
-            var luceneSearcher = new LuceneSearcher( new[] { "LogLevel", "Exception" } );
+            var luceneSearcher = new LuceneSearcher( LuceneConstant.GetPath(directory) ,new[] { "LogLevel", "Exception" } );
             var hits = luceneSearcher.Search( query );
 
             foreach( var scoreDocument in hits.ScoreDocs )
@@ -37,10 +37,10 @@ namespace CK.Glouton.Service
             return result;
         }
 
-        public List<ILogViewModel> GetAll( int max )
+        public List<ILogViewModel> GetAll( string directory, int max )
         {
             var result = new List<ILogViewModel>();
-            var searcher = new LuceneSearcher( new[] { "LogLevel" } );
+            var searcher = new LuceneSearcher( LuceneConstant.GetPath(directory) ,new[] { "LogLevel" } );
             var hits = searcher.GetAllLog( max );
 
             if (hits == null)
