@@ -140,5 +140,57 @@ namespace CK.Glouton.Tests
                 }
             }
         }
+
+        [Test]
+        public void close_and_reopen_server()
+        {
+            using( var server = TestHelper.DefaultMockServer() )
+            {
+                server.Open();
+
+                using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
+                {
+                    var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                    grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
+
+                    using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
+                    {
+                        var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                        grandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
+
+                        var guid = Guid.NewGuid().ToString();
+
+                        clientActivityMonitor.Info( guid );
+                        Thread.Sleep( 125 );
+                        server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
+
+                        serverActivityMonitor.Info( "Closing the server" );
+                        server.Close();
+
+                        server.ListLog.Clear();
+                        clientActivityMonitor.Info( guid );
+                        Thread.Sleep( 125 );
+                        Action action = () => server.GetLogEntry( guid );
+                        action.ShouldThrow<InvalidOperationException>();
+                    }
+
+                    serverActivityMonitor.Info( "Reopening server" );
+                    server.Open();
+
+                    using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
+                    {
+                        var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                        grandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
+
+                        var guid = Guid.NewGuid().ToString();
+
+                        server.ListLog.Clear();
+                        clientActivityMonitor.Info( guid );
+                        Thread.Sleep( 125 );
+                        server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
+                    }
+                }
+            }
+        }
     }
 }
