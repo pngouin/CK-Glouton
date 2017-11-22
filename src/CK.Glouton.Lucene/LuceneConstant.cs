@@ -14,7 +14,7 @@ namespace CK.Glouton.Lucene
         /// </summary>
         public static string GetPath()
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Glouton", "Logs", "Default");
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Glouton", "Logs");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             return path;

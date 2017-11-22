@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CK.Glouton.Lucene;
 using CK.Glouton.Model;
+using System.IO;
 
 namespace CK.Glouton.Service
 {
@@ -100,9 +101,19 @@ namespace CK.Glouton.Service
             return new LuceneSearcher( new string[] { } ).MonitorIdList;
         }
 
+        /// <summary>
+        /// Return of the App Name indexed by Lucene.
+        /// </summary>
+        /// <returns></returns>
         public ISet<string> GetAppNameList()
         {
-            return new LuceneSearcher( new string[] { } ).AppNameList;
+            DirectoryInfo dir = new DirectoryInfo(LuceneConstant.GetPath());
+            HashSet<string> dirs = new HashSet<string>();
+
+            foreach (DirectoryInfo d in dir.GetDirectories())
+                dirs.Add(d.Name);
+
+            return dirs;
         }
     }
 }
