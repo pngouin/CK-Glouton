@@ -1,10 +1,10 @@
-﻿using CK.ControlChannel.Abstractions;
-using CK.Core;
-using CK.Glouton.Server;
-using System.IO;
+﻿using System.IO;
 using System.Net.Security;
 using System.Runtime.CompilerServices;
 using System.Text;
+using CK.ControlChannel.Abstractions;
+using CK.Core;
+using CK.Glouton.Server;
 
 namespace CK.Glouton.Tests
 {
@@ -29,7 +29,7 @@ namespace CK.Glouton.Tests
         /// <summary>
         /// Returns a new <see cref="IAuthorizationHandler"/> which is always true.
         /// </summary>
-        internal static IAuthorizationHandler DefaultAuthHandler => _defaultAuthHandler ?? ( _defaultAuthHandler = new TestAuthHandler( s => true ) );
+        internal static IAuthorizationHandler DefaultAuthHandler => _defaultAuthHandler ?? (_defaultAuthHandler = new TestAuthHandler( s => true ));
 
         /// <summary>
         /// Returns a new mock server.
@@ -94,7 +94,6 @@ namespace CK.Glouton.Tests
             LogFile.RootLogPath = GetTestLogDirectory();
 
             ActivityMonitor.DefaultFilter = LogFilter.Debug;
-            // Todo: Change this so only one activity monitor console client is registered during a same run.
             ActivityMonitor.AutoConfiguration += monitor => monitor.Output.RegisterClient( new ActivityMonitorConsoleClient() );
         }
 

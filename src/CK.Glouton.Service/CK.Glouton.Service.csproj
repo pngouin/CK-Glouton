@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
-    <ProjectReference Include="..\src\CK.Glouton.Model\CK.Glouton.Model.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
   </ItemGroup>
 
 </Project>

@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CK.Glouton.Service\CK.Glouton.Service.csproj" />
     <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Service\CK.Glouton.Service.csproj" />
   </ItemGroup>
 
 </Project>
