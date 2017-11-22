@@ -52,10 +52,10 @@ namespace CK.Glouton.Server
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
         {
-            _processingQueue.Enqueue(() => ProcessData(monitor, data, clientSession));
+            _processingQueue.Enqueue(() => ProcessData( data, clientSession));
         }
 
-        private void ProcessData(IActivityMonitor monitor, byte[] data, IServerClientSession clientSession)
+        private void ProcessData( byte[] data, IServerClientSession clientSession)
         {
             var version = Convert.ToInt32(clientSession.ClientData["LogEntryVersion"]);
 
