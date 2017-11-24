@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using CK.Glouton.Model;
+﻿using CK.Glouton.Model;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace CK.Glouton.Web.Controllers
 {
@@ -23,24 +23,24 @@ namespace CK.Glouton.Web.Controllers
         /// Returns <paramref name="max"/> logs. <paramref name="max"/> is 500 by default.
         /// Match the following: <code>api/log?max=[max] -- GET</code>.
         /// </summary>
-        /// <param name="appName">The app name on where we gonna search the logs</param>
+        /// <param name="appName"></param>
         /// <param name="max">The number of logs to return.</param>
         /// <returns></returns>
-        [HttpGet( "{appName}" )]
-        public List<ILogViewModel> GetAll( [FromRoute] string appName, int max = 0 )
+        [HttpGet( "all/{appName}" )]
+        public List<ILogViewModel> GetAll( [FromRoute] string appName, [FromQuery] int max = 0 )
         {
             return _luceneSearcherService.GetAll( appName, max == 0 ? 10 : max ) ?? new List<ILogViewModel>();
         }
-
 
         /// <summary>
         /// Returns logs matching <paramref name="query"/>. Lucene is doing the processing.
         /// Match the following: <code>api/log/search?query=[query] -- GET</code>.
         /// </summary>
+        /// <param name="appName"></param>
         /// <param name="query">The query which will be processed by lucene.</param>
         /// <returns></returns>
         [HttpGet( "search/{appName}" )]
-        public List<ILogViewModel> Search( [FromRoute] string appName, string query = "" )
+        public List<ILogViewModel> Search( [FromRoute] string appName, [FromQuery] string query = "" )
         {
             return string.IsNullOrEmpty( query ) ? GetAll( appName ) : _luceneSearcherService.Search( appName, query );
         }
@@ -60,17 +60,19 @@ namespace CK.Glouton.Web.Controllers
         [HttpGet( "filter" )]
         public List<ILogViewModel> Filter
         (
-            string monitorId, string appName, DateTime from, DateTime to,
-            string[] fields, string keyword, [FromQuery]string[] logLevel
+            [FromQuery] string monitorId, [FromQuery] string appName,
+            [FromQuery] DateTime from, [FromQuery] DateTime to,
+            [FromQuery] string[] fields, [FromQuery] string keyword,
+            [FromQuery] string[] logLevel
         )
         {
             if( monitorId == null || monitorId == "*" )
                 monitorId = "All";
             if( appName == null || appName == "*" )
                 appName = "All";
-            if( fields.Length == 0 || fields[0] == "*" )
+            if( fields.Length == 0 || fields[ 0 ] == "*" )
                 fields = new[] { "Tags", "FileName", "Text" };
-            if( logLevel.Length == 0 || logLevel[0] == "*" )
+            if( logLevel.Length == 0 || logLevel[ 0 ] == "*" )
                 logLevel = new[] { "Debug", "Trace", "Info", "Warn", "Error", "Fatal" };
             if( keyword == null )
                 keyword = "*";
@@ -80,21 +82,21 @@ namespace CK.Glouton.Web.Controllers
 
         /// <summary>
         /// Returns the list of all monitors id.
-        /// Match the following: <code>api/log/monitor -- GET</code>.
+        /// Match the following: <code>api/log/monitorId -- GET</code>.
         /// </summary>
         /// <returns></returns>
-        [HttpGet( "monitor" )]
+        [HttpGet( "monitorId" )]
         public ISet<string> GetAllMonitorId()
         {
-            return _luceneSearcherService.GetMonitorIdList();
+            return _luceneSearcherService.GetMonitorIdList() ?? new HashSet<string>();
         }
 
         /// <summary>
         /// Returns the list of all application name.
-        /// Match the following: <code>api/log/app -- GET</code>.
+        /// Match the following: <code>api/log/appName -- GET</code>.
         /// </summary>
         /// <returns></returns>
-        [HttpGet( "app" )]
+        [HttpGet( "appName" )]
         public ISet<string> GetAllAppName()
         {
             return _luceneSearcherService.GetAppNameList() ?? new HashSet<string>();

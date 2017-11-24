@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LogService } from 'app/_services';
+import { ILogView } from 'app/common/logs/models';
 
 @Component({
     selector: 'applicationNameSelector',
@@ -9,16 +10,19 @@ import { LogService } from 'app/_services';
 export class ApplicationNameSelectorComponent implements OnInit {
 
     private _applicationNames: string[];
+    private _selectedApplicationNameIndex: number;
 
-    private _choosedAppName: string;
+    private _logs: ILogView[];
 
     constructor(
         private logService: LogService
     ) {
     }
 
-    onClick(): void {
-        // TODO: Event emitter to parent component or use service to update selected result ?
+    onSubmit(): void {
+        console.log(this._applicationNames[this._selectedApplicationNameIndex]);
+        this.logService.getAll(this._applicationNames[this._selectedApplicationNameIndex])
+            .subscribe(l => this._logs = l);
     }
 
     ngOnInit(): void {

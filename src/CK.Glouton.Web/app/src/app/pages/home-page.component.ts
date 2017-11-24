@@ -8,6 +8,7 @@ import { ITimeSpanNavigatorSettings, Scale, IScaleEdge } from '../modules/timeSp
     <div>
       This is our home page!
     </div>
+    <h4>Time Span Navigator Component</h4>
     <div>
       <timeSpanNavigator
         [configuration]="timeSpanNavigatorConfiguration"
@@ -15,6 +16,7 @@ import { ITimeSpanNavigatorSettings, Scale, IScaleEdge } from '../modules/timeSp
         (onDateChange)="onDateChange($event)">
       </timeSpanNavigator>
     </div>
+    <h4>Application Name Selector</h4>
     <div>
       <applicationNameSelector></applicationNameSelector>
     </div>
