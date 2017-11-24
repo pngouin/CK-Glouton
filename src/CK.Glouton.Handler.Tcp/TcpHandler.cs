@@ -10,12 +10,15 @@ namespace CK.Glouton.Handler.Tcp
     public class TcpHandler : IGrandOutputHandler
     {
         private readonly TcpHandlerConfiguration _configuration;
-
         private ControlChannelClient _controlChannelClient;
+        private MemoryStream _memoryStream;
+        private CKBinaryWriter _binaryWriter;
 
         public TcpHandler( TcpHandlerConfiguration configuration )
         {
             _configuration = configuration ?? throw new ArgumentNullException( nameof( configuration ) );
+            _memoryStream = new MemoryStream();
+            _binaryWriter = new CKBinaryWriter( _memoryStream, Encoding.UTF8, true );
         }
 
         public bool Activate( IActivityMonitor activityMonitor )
@@ -49,6 +52,8 @@ namespace CK.Glouton.Handler.Tcp
 
             _controlChannelClient.Dispose();
             _controlChannelClient = null;
+            _memoryStream.Dispose();
+            _binaryWriter.Dispose();
         }
 
         public void OnTimer( IActivityMonitor m, TimeSpan timerSpan )
@@ -57,12 +62,11 @@ namespace CK.Glouton.Handler.Tcp
 
         public void Handle( IActivityMonitor m, GrandOutputEventInfo logEvent )
         {
-            using( var memoryStream = new MemoryStream() )
-            using( var binaryWriter = new CKBinaryWriter( memoryStream, Encoding.UTF8, true ) )
-            {
-                logEvent.Entry.WriteLogEntry( binaryWriter );
-                _controlChannelClient.SendAsync( "GrandOutputEventInfo", memoryStream.ToArray() ).GetAwaiter().GetResult();
-            }
+            _memoryStream.SetLength( 0 );
+            _memoryStream.Seek( 0, SeekOrigin.Begin );
+
+            logEvent.Entry.WriteLogEntry( _binaryWriter );
+            _controlChannelClient.SendAsync( "GrandOutputEventInfo", _memoryStream.ToArray() ).GetAwaiter().GetResult();
         }
     }
 }

@@ -1,12 +1,6 @@
-﻿using CK.Core;
-using CK.Glouton.Handler.Tcp;
-using CK.Monitoring;
-using CK.Monitoring.Handlers;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Reflection;
-using System.Text;
 
 namespace CK.Glouton.Tests
 {
@@ -14,48 +8,9 @@ namespace CK.Glouton.Tests
     public class GloutonServerTests
     {
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
-            if( !System.Console.IsOutputRedirected )
-                System.Console.OutputEncoding = Encoding.UTF8;
-
-            LogFile.RootLogPath = TestHelper.GetTestLogDirectory();
-
-            ActivityMonitor.DefaultFilter = LogFilter.Debug;
-            ActivityMonitor.AutoConfiguration += monitor => monitor.Output.RegisterClient( new ActivityMonitorConsoleClient() );
-
-            var grandOutputConfigurationServer = new GrandOutputConfiguration();
-            grandOutputConfigurationServer.AddHandler( new TextFileConfiguration
-            {
-                MaxCountPerFile = 10000,
-                Path = "Text",
-            } );
-            GrandOutput.EnsureActiveDefault( grandOutputConfigurationServer );
-
-            var grandOutputConfigurationClient = new GrandOutputConfiguration();
-            grandOutputConfigurationClient.AddHandler( new TextFileConfiguration
-            {
-                MaxCountPerFile = 10000,
-                Path = "Text",
-            } );
-            grandOutputConfigurationClient.AddHandler( new TcpHandlerConfiguration
-            {
-                Host = TestHelper.DefaultHost,
-                Port = TestHelper.DefaultPort,
-                IsSecure = false,
-                AppName = typeof( TestHelper ).GetTypeInfo().Assembly.GetName().Name,
-                PresentEnvironmentVariables = true,
-                PresentMonitoringAssemblyInformation = true,
-                HandleSystemActivityMonitorErrors = true
-            } );
-            GrandOutput.EnsureActiveDefault( grandOutputConfigurationClient );
-        }
-
-
-        [TearDown]
-        public void TearDown()
-        {
-            GrandOutput.Default.Dispose();
+            TestHelper.Setup();
         }
 
         [Test]
@@ -63,10 +18,11 @@ namespace CK.Glouton.Tests
         {
             Action openServer = () =>
             {
-                var server = TestHelper.DefaultServer();
-                server.Should().NotBeNull();
-                server.Open();
-                server.Dispose();
+                using( var server = TestHelper.DefaultMockServer() )
+                {
+                    server.Should().NotBeNull();
+                    server.Open();
+                }
             };
 
             openServer.ShouldNotThrow();

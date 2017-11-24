@@ -34,6 +34,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Server", "src\CK
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Web", "src\CK.Glouton.Web\CK.Glouton.Web.csproj", "{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Model", "src\CK.Glouton.Model\CK.Glouton.Model.csproj", "{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Service", "src\CK.Glouton.Service\CK.Glouton.Service.csproj", "{80944FEF-F201-44E6-87D5-968547ABAE12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +80,14 @@ Global
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80944FEF-F201-44E6-87D5-968547ABAE12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80944FEF-F201-44E6-87D5-968547ABAE12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80944FEF-F201-44E6-87D5-968547ABAE12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80944FEF-F201-44E6-87D5-968547ABAE12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

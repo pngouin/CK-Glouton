@@ -9,6 +9,7 @@ using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
 using Lucene.Net.Store;
+using System.Linq;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
@@ -21,10 +22,12 @@ namespace CK.Glouton.Lucene
         QueryParser _levelParser;
         Query _query;
         private ISet<string> _monitorIdList;
-        private ISet<string> _appIdList;
+        private ISet<string> _appNameList;
 
         public LuceneSearcher(string[] fields)
         {
+            var file = new DirectoryInfo(LuceneConstant.GetPath()).EnumerateFiles();
+            if (!file.Any()) return;
             Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath()));
             _indexSearcher = new IndexSearcher(DirectoryReader.Open(indexDirectory));
             _queryParser =  new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
@@ -39,18 +42,35 @@ namespace CK.Glouton.Lucene
             InitializeIdList();
         }
 
+        public LuceneSearcher(string dir, string[] fields)
+        {
+            var file = new DirectoryInfo(LuceneConstant.GetPath(dir)).EnumerateFiles();
+            if (!file.Any()) return;
+            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath(dir)));
+            _indexSearcher = new IndexSearcher(DirectoryReader.Open(indexDirectory));
+            _queryParser = new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
+                fields,
+                new StandardAnalyzer(LuceneVersion.LUCENE_48));
+            _exceptionParser = new QueryParser(LuceneVersion.LUCENE_48,
+                "Message",
+                new StandardAnalyzer(LuceneVersion.LUCENE_48));
+            _levelParser = new QueryParser(LuceneVersion.LUCENE_48,
+                "LogLevel",
+                new StandardAnalyzer(LuceneVersion.LUCENE_48));
+            InitializeIdList();
+        }
 
         public ISet<string> MonitorIdList => _monitorIdList;
 
-        public ISet<string> AppIdList => _appIdList;
+        public ISet<string> AppNameList => _appNameList;
 
         internal MultiFieldQueryParser QueryParser => _queryParser;
 
-        public Query CreateQuery(string monitorID, string AppId, string[] fields, string[] logLevel, DateTime startingDate, DateTime endingDate, string searchQuery)
+        public Query CreateQuery(string monitorID, string AppName, string[] fields, string[] logLevel, DateTime startingDate, DateTime endingDate, string searchQuery)
         {
             BooleanQuery bQuery = new BooleanQuery();
             if (monitorID != "All") bQuery.Add(new TermQuery(new Term("MonitorId", monitorID)), Occur.MUST);
-            if (AppId != "All") bQuery.Add(new TermQuery(new Term("AppId", AppId)), Occur.MUST);
+            if (AppName != "All") bQuery.Add(new TermQuery(new Term("AppName", AppName)), Occur.MUST);
             BooleanQuery bFieldQuery = new BooleanQuery();
             foreach (string field in fields)
             {
@@ -76,34 +96,39 @@ namespace CK.Glouton.Lucene
 
         public TopDocs Search (string searchQuery)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             _query = _queryParser.Parse(searchQuery);
             return _indexSearcher.Search(_query, LuceneConstant.MaxSearch);
         }
 
         public TopDocs Search(Query searchQuery)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             return _indexSearcher.Search(searchQuery, LuceneConstant.MaxSearch);
         }
 
         public Document GetDocument(ScoreDoc scoreDoc)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             return _indexSearcher.Doc(scoreDoc.Doc);
         }
 
         public TopDocs GetAllLog(int numberDocsToReturn)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             return _indexSearcher.Search(new WildcardQuery(new Term("LogLevel", "*")), numberDocsToReturn);
         }
 
         public TopDocs GetAllExceptions(int numberDocsToReturn)
         {
+            if (!CheckSearcher(_indexSearcher)) return null;
             return _indexSearcher.Search(_exceptionParser.Parse("Outer"), numberDocsToReturn);
         }
 
         private void InitializeIdList()
         {
             _monitorIdList = new HashSet<string>();
-            _appIdList = new HashSet<string>();
+            _appNameList = new HashSet<string>();
             TopDocs hits = this.Search(new WildcardQuery(new Term("MonitorIdList", "*")));
             foreach (ScoreDoc doc in hits.ScoreDocs)
             {
@@ -113,12 +138,19 @@ namespace CK.Glouton.Lucene
                 {
                     if (!_monitorIdList.Contains(id)) _monitorIdList.Add(id);
                 }
-                string[] appIds = document.Get("AppIdList").Split(' ');
-                foreach (string id in appIds)
+                string[] appName = document.Get("AppNameList").Split(' ');
+                foreach (string id in appName)
                 {
-                    if (!_appIdList.Contains(id)) _appIdList.Add(id);
+                    if (!_appNameList.Contains(id)) _appNameList.Add(id);
                 }
             }
+        }
+
+        private bool CheckSearcher(IndexSearcher searcher)
+        {
+            if (searcher == null)
+                return false;
+            return true;
         }
     }
 }
