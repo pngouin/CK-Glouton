@@ -37,9 +37,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
     @Input()
     configuration: ITimeSpanNavigatorSettings;
 
-    @Input()
-    edges : IScaleEdge;
-
     @Output()
     onDateChange = new EventEmitter<Date[]>();
 
@@ -63,12 +60,12 @@ export class TimeSpanNavigatorComponent implements OnInit {
      */
     private getEdges(scale: Scale): IEdge {
         switch(scale) {
-            case Scale.Year: return this.edges.Years;
-            case Scale.Months: return this.edges.Months;
-            case Scale.Days: return this.edges.Days;
-            case Scale.Hours: return this.edges.Hours;
-            case Scale.Minutes: return this.edges.Minutes;
-            case Scale.Seconds: return this.edges.Seconds;
+            case Scale.Year: return this.configuration.edges.Years;
+            case Scale.Months: return this.configuration.edges.Months;
+            case Scale.Days: return this.configuration.edges.Days;
+            case Scale.Hours: return this.configuration.edges.Hours;
+            case Scale.Minutes: return this.configuration.edges.Minutes;
+            case Scale.Seconds: return this.configuration.edges.Seconds;
             default: throw new Error('Invalid parameter( scale )');
         }
     }
@@ -186,7 +183,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         if(!Initializer.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
         this._timeSpan.next({from: new Date(), to: new Date()});
         this._dateRange = [this.configuration.from, this.configuration.to];
-        this.updateScale(this.configuration.scale);
+        this.updateScale(this.configuration.initialScale);
     }
 }
 

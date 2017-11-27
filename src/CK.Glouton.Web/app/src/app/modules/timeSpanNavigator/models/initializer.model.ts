@@ -1,3 +1,12 @@
+import { Scale } from './';
+
+export interface ITimeSpanNavigatorSettings {
+    from: Date;
+    to: Date;
+    initialScale: Scale;
+    edges: IScaleEdge;
+}
+
 export interface IScaleEdge {
     Years :  IEdge;
     Months :  IEdge;
@@ -8,6 +17,7 @@ export interface IScaleEdge {
 }
 
 export interface IEdge {
-    min : number,
-    max : number
+    min : number;
+    max : number;
 }
+

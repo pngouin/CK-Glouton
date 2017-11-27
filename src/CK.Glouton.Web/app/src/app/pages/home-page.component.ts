@@ -12,7 +12,6 @@ import { ITimeSpanNavigatorSettings, Scale, IScaleEdge } from '../modules/timeSp
     <div>
       <timeSpanNavigator
         [configuration]="timeSpanNavigatorConfiguration"
-        [edges]="edgesConfiguration"
         (onDateChange)="onDateChange($event)">
       </timeSpanNavigator>
       <div *ngFor="let d of _dateRangeStr">
@@ -38,25 +37,24 @@ export class HomePageComponent {
   timeSpanNavigatorConfiguration: ITimeSpanNavigatorSettings = {
     from: new Date('2017-11-01'),
     to: new Date(),
-    scale: Scale.Hours
+    initialScale: Scale.Hours,
+    edges: {
+      Years: {min: 1, max: 2},
+      Months: {min: 2, max: 12},
+      Days: {min: 5, max: 31},
+      Hours: {min: 4, max: 24},
+      Minutes: {min: 10, max: 60},
+      Seconds: {min: 1, max: 60}
+    }
   };
 
-  edgesConfiguration : IScaleEdge = {
-    Years :  {min: 1, max: 2},
-    Months :  {min: 2, max: 12},
-    Days :  {min: 5, max: 31},
-    Hours :  {min: 4, max: 24},
-    Minutes :  {min: 10, max: 60},
-    Seconds :  {min: 1, max: 60}
-  };
-
-  onDateChange(date: Date[]): void {
+  private onDateChange(date: Date[]): void {
     this._dateRange = date;
     this.updateDateStr();
   }
 
-  private updateDateStr() : void {
-    for(let i = 0; i < this._dateRange.length; i++) 
-      this._dateRangeStr[i] = this._dateRange[i].toString();
+  private updateDateStr(): void {
+    this._dateRangeStr[0] = this._dateRange[0].toString();
+    this._dateRangeStr[1] = this._dateRange[1].toString();
   }
 }
