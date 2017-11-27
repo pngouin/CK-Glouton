@@ -36,8 +36,14 @@ namespace CK.Glouton.Handler.Tcp
                 );
 
             _controlChannelClient.OpenAsync( activityMonitor ).GetAwaiter().GetResult();
+            _controlChannelClient.RegisterChannelHandler("BackChannel", HandleBackChannel);
 
             return true;
+        }
+
+        private void HandleBackChannel(IActivityMonitor monitor, byte[] data)
+        {
+            throw new NotImplementedException();
         }
 
         public bool ApplyConfiguration( IActivityMonitor activityMonitor, IHandlerConfiguration configuration )
