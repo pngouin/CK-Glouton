@@ -14,9 +14,9 @@ namespace CK.Glouton.Lucene
         /// </summary>
         public static string GetPath()
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Glouton", "Logs");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            var path = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ), "Glouton", "Logs" );
+            if( !Directory.Exists( path ) )
+                Directory.CreateDirectory( path );
             return path;
         }
 
@@ -26,11 +26,11 @@ namespace CK.Glouton.Lucene
         /// If he doesn't find anything create the directory.
         /// <param name="dirName">The name of the directory where the data will be indexed</param>
         /// </summary>
-        public static string GetPath(string dirName)
+        public static string GetPath( string dirName )
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Glouton", "Logs", dirName);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            var path = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ), "Glouton", "Logs", dirName );
+            if( !Directory.Exists( path ) )
+                Directory.CreateDirectory( path );
             return path;
         }
     }
