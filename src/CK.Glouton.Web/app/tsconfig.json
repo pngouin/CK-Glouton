@@ -13,7 +13,6 @@
     "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
-      "models/*": [ "app/common/model/*" ]
     },
     "typeRoots": [
       "node_modules/@types"

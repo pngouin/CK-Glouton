@@ -13,7 +13,7 @@ export interface ILogView {
     groupDepth: string;
     previousEntryType: string;
     previousLogTime: string;
-    appId: string;
+    appId: string; // TODO: FIX ME FROM SERVER
     sourceFileName: string;
     lineNumber: string;
 }

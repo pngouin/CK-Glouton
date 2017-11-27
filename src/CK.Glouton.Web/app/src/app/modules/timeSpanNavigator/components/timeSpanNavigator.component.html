@@ -1,0 +1,11 @@
+<div>
+    {{ _scaleDescription }}
+    <p-slider
+        [(ngModel)]="_range" [style]="{'width':'500px'}"
+        [range]="true" [min]=-5 [max]=105
+        (onChange)="handleChange($event)"
+        (onSlideEnd)="handleSlideEnd($event)">
+    </p-slider>
+    <!-- From:  - To: {{ _dateRange[1] | date:'EEEE, MMMM d, y, h:mm:ss' }} -->
+    
+</div>
