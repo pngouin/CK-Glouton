@@ -20,6 +20,7 @@ namespace CK.Glouton.Server
         private readonly ControlChannelServer _controlChannelServer;
         private readonly GloutonIndexer _gloutonIndexer;
         private readonly GloutonBinaryLogWriter _gloutonBinaryLogWriter;
+        private readonly List<IGloutonServerHandler> _handlers;
         private bool _isDisposing;
 
         public GloutonServer(
@@ -39,32 +40,34 @@ namespace CK.Glouton.Server
                 userCertificateValidationCallback
             );
             _controlChannelServer.RegisterChannelHandler( "GrandOutputEventInfo", HandleGrandOutputEventInfo );
-            _gloutonIndexer = new GloutonIndexer();
-            _gloutonBinaryLogWriter = new GloutonBinaryLogWriter(new Monitoring.Handlers.BinaryFileConfiguration
+
+            _handlers = new List<IGloutonServerHandler>();
+            _handlers.Add(new GloutonIndexer());
+            _handlers.Add(new GloutonBinaryLogWriter(new Monitoring.Handlers.BinaryFileConfiguration
             {
                 Path = Path.Combine(Directory.GetCurrentDirectory(), "Logs"),
                 UseGzipCompression = true
-            });
+            }));
         }
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
         {
-            _gloutonIndexer.OnGrandOutputEventInfo(monitor, data, clientSession);
-            _gloutonBinaryLogWriter.OnGrandOutputEventInfo(monitor, data, clientSession);
+            foreach (var h in _handlers)
+                h.OnGrandOutputEventInfo(monitor, data, clientSession);
         }
 
         public void Open()
         {
             _controlChannelServer.Open();
-            _gloutonIndexer.Open();
-            _gloutonBinaryLogWriter.Open();
+            foreach (var h in _handlers)
+                h.Open();
         }
 
         public void Close()
         {
             _controlChannelServer.Close();
-            _gloutonIndexer.Close();
-            _gloutonBinaryLogWriter.Close();
+            foreach (var h in _handlers)
+                h.Close();
         }
 
         #region IDisposable Support
@@ -80,9 +83,9 @@ namespace CK.Glouton.Server
             {
                 _isDisposing = true;
                 Close();
-                _gloutonBinaryLogWriter.Dispose();
-                _gloutonIndexer.Dispose();
                 _controlChannelServer.Dispose();
+                foreach (var h in _handlers)
+                    h.Dispose();
             }
             _disposedValue = true;
         }

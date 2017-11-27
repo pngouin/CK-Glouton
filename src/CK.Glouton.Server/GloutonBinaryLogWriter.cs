@@ -13,7 +13,7 @@ using System.Threading;
 
 namespace CK.Glouton.Server
 {
-    public class GloutonBinaryLogWriter : IGloutonServerHandler, IDisposable
+    public class GloutonBinaryLogWriter : IGloutonServerHandler
     {
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
@@ -44,7 +44,7 @@ namespace CK.Glouton.Server
         }
 
         /// <summary>
-        /// Write log in the binary file.
+        /// Writes log in the binary file.
         /// </summary>
         /// <param name="monitor"></param>
         /// <param name="data"></param>
@@ -55,7 +55,7 @@ namespace CK.Glouton.Server
         }
 
         /// <summary>
-        /// Initialize file and start the queues.
+        /// Initializes file and start the queues.
         /// </summary>
         public void Open()
         {

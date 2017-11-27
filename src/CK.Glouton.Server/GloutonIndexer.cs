@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CK.Glouton.Server
 {
-    public class GloutonIndexer : IGloutonServerHandler, IDisposable
+    public class GloutonIndexer : IGloutonServerHandler
     {
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
@@ -34,7 +34,7 @@ namespace CK.Glouton.Server
         }
 
         /// <summary>
-        /// Send log into the queue to be indexed.
+        /// Sends log into the queue to be indexed.
         /// </summary>
         /// <param name="monitor"></param>
         /// <param name="data"></param>
@@ -45,7 +45,7 @@ namespace CK.Glouton.Server
         }
 
         /// <summary>
-        /// Start the queues.
+        /// Starts queues.
         /// </summary>
         public void Open()
         {
@@ -54,7 +54,7 @@ namespace CK.Glouton.Server
         }
 
         /// <summary>
-        /// Close wath need to be close.
+        /// Closes what need to be closed.
         /// </summary>
         public void Close()
         {
