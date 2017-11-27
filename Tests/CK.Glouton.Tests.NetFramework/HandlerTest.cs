@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading;
-using CK.Core;
+﻿using CK.Core;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Threading;
 
 namespace CK.Glouton.Tests
 {

@@ -1,16 +1,16 @@
 ﻿using CK.ControlChannel.Abstractions;
 using CK.ControlChannel.Tcp;
 using CK.Core;
+using CK.Glouton.Lucene;
 using CK.Monitoring;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using CK.Glouton.Lucene;
+using System.Threading.Tasks;
 
 namespace CK.Glouton.Server
 {
@@ -19,11 +19,13 @@ namespace CK.Glouton.Server
         private readonly ControlChannelServer _controlChannelServer;
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
-        private ConcurrentQueue<Action> _blockingQueue;
-        private ConcurrentQueue<Action> _processingQueue;
-        private Task _bloquingQueueThread;
+        private readonly ConcurrentQueue<Action> _blockingQueue;
+        private readonly ConcurrentQueue<Action> _processingQueue;
+        private readonly Dictionary<string, LuceneIndexer> _indexerDictionary;
+
+        private Task _blockingQueueThread;
         private Task _processingQueueThread;
-        private Dictionary<string, LuceneIndexer> _indexerDic;
+
         private bool _isDisposing;
 
         public GloutonServer(
@@ -47,73 +49,66 @@ namespace CK.Glouton.Server
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
             _blockingQueue = new ConcurrentQueue<Action>();
             _processingQueue = new ConcurrentQueue<Action>();
-            _indexerDic = new Dictionary<string, LuceneIndexer>();
+            _indexerDictionary = new Dictionary<string, LuceneIndexer>();
         }
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
         {
-            _processingQueue.Enqueue(() => ProcessData( data, clientSession));
+            _processingQueue.Enqueue( () => ProcessData( data, clientSession ) );
         }
 
-        private void ProcessData( byte[] data, IServerClientSession clientSession)
+        private void ProcessData( byte[] data, IServerClientSession clientSession )
         {
-            var version = Convert.ToInt32(clientSession.ClientData["LogEntryVersion"]);
+            var version = Convert.ToInt32( clientSession.ClientData[ "LogEntryVersion" ] );
 
-            _memoryStream.SetLength(0);
-            _memoryStream.Write(data, 0, data.Length);
-            _memoryStream.Seek(0, SeekOrigin.Begin);
+            _memoryStream.SetLength( 0 );
+            _memoryStream.Write( data, 0, data.Length );
+            _memoryStream.Seek( 0, SeekOrigin.Begin );
 
-            var entry = LogEntry.Read(_binaryReader, version, out _);
-            string appName;
-            clientSession.ClientData.TryGetValue("AppName", out appName);
+            var entry = LogEntry.Read( _binaryReader, version, out _ );
+            clientSession.ClientData.TryGetValue( "AppName", out var appName );
             var clientData = clientSession.ClientData;
 
 
-            if (_indexerDic.ContainsKey(appName))
+            if( _indexerDictionary.ContainsKey( appName ) )
             {
-                LuceneIndexer indexer;
-                _indexerDic.TryGetValue(appName, out indexer);
-                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, clientData));
+                _indexerDictionary.TryGetValue( appName, out var indexer );
+                _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
             }
             else
             {
-                LuceneIndexer indexer = new LuceneIndexer(appName);
-                _indexerDic.Add(appName, indexer);
-                _blockingQueue.Enqueue(() => indexer.IndexLog(entry, clientData));
+                var indexer = new LuceneIndexer( appName );
+                _indexerDictionary.Add( appName, indexer );
+                _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
             }
         }
 
-        private void ProcessQueue(ConcurrentQueue<Action> queue)
+        private void ProcessQueue( ConcurrentQueue<Action> queue )
         {
-            Action action;
-            while (!queue.IsEmpty || !_isDisposing)
+            while( !queue.IsEmpty || !_isDisposing )
             {
-                queue.TryDequeue( out action);
-                if(action != null)
-                {
-                    action.Invoke();
-                    action = null;
-                }
+                queue.TryDequeue( out var action );
+                action?.Invoke();
             }
         }
 
-        private void DisposeIndexerByName (string name)
+        private void DisposeIndexerByName( string name )
         {
-            LuceneIndexer indexer;
-            _indexerDic.TryGetValue(name, out indexer);
+            _indexerDictionary.TryGetValue( name, out var indexer );
             indexer.Dispose();
         }
-        
+
         private void DisposeAllIndexer()
         {
-            foreach (KeyValuePair<string, LuceneIndexer> entry in _indexerDic) entry.Value.Dispose();
+            foreach( var entry in _indexerDictionary )
+                entry.Value.Dispose();
         }
 
         public void Open()
         {
             _controlChannelServer.Open();
-            _bloquingQueueThread= Task.Factory.StartNew(() => ProcessQueue(_blockingQueue));
-            _processingQueueThread = Task.Factory.StartNew(() => ProcessQueue(_processingQueue));
+            _blockingQueueThread = Task.Factory.StartNew( () => ProcessQueue( _blockingQueue ) );
+            _processingQueueThread = Task.Factory.StartNew( () => ProcessQueue( _processingQueue ) );
         }
 
         public void Close()
@@ -123,7 +118,7 @@ namespace CK.Glouton.Server
 
         #region IDisposable Support
 
-        private bool _disposedValue = false;
+        private bool _disposedValue;
 
         protected virtual void Dispose( bool disposing )
         {
@@ -135,8 +130,8 @@ namespace CK.Glouton.Server
                 _isDisposing = true;
                 Close();
                 _controlChannelServer.Dispose();
-                System.Threading.SpinWait.SpinUntil(()=> _bloquingQueueThread.IsCompleted && _processingQueueThread.IsCompleted);
-                _bloquingQueueThread.Dispose();
+                System.Threading.SpinWait.SpinUntil( () => _blockingQueueThread.IsCompleted && _processingQueueThread.IsCompleted );
+                _blockingQueueThread.Dispose();
                 _processingQueueThread.Dispose();
                 DisposeAllIndexer();
             }
