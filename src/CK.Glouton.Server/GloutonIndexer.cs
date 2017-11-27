@@ -24,7 +24,6 @@ namespace CK.Glouton.Server
         private Task _processingQueueThread;
         private bool _isDisposing;
 
-
         public GloutonIndexer()
         {
             _memoryStream = new MemoryStream();

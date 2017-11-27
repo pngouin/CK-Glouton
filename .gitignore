@@ -16,3 +16,4 @@ Tests/**/Logs
 **/TestResult.xml
 
 *.user
+*.ckmon
