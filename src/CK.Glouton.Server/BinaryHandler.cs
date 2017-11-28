@@ -1,40 +1,50 @@
 ﻿using CK.ControlChannel.Abstractions;
 using CK.Core;
-using CK.Glouton.Lucene;
 using CK.Glouton.Model.Server;
 using CK.Monitoring;
+using CK.Monitoring.Handlers;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CK.Glouton.Server
 {
-    public class GloutonIndexer : IGloutonServerHandler
+    public class BinaryHandler : IGloutonServerHandler
     {
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
-        private readonly ConcurrentQueue<Action> _blockingQueue;
         private readonly ConcurrentQueue<Action> _processingQueue;
-        private readonly Dictionary<string, LuceneIndexer> _indexerDictionary;
+        private readonly ConcurrentQueue<Action> _blockingQueue;
+        private readonly MonitorBinaryFileOutput _file;
 
-        private Task _blockingQueueThread;
-        private Task _processingQueueThread;
         private bool _isDisposing;
+        private Task _processingQueueThread;
+        private Task _blockingQueueThread;
 
-        public GloutonIndexer()
+        public BinaryHandler( BinaryFileConfiguration config )
         {
+            if( config == null )
+                throw new ArgumentNullException( "config" );
+            _file = new MonitorBinaryFileOutput( config.Path, config.MaxCountPerFile, config.UseGzipCompression );
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
-            _blockingQueue = new ConcurrentQueue<Action>();
             _processingQueue = new ConcurrentQueue<Action>();
-            _indexerDictionary = new Dictionary<string, LuceneIndexer>();
+            _blockingQueue = new ConcurrentQueue<Action>();
         }
 
         /// <summary>
-        /// Sends log into the queue to be indexed.
+        /// Close the file.
+        /// </summary>
+        public void Close()
+        {
+            _file.Close();
+        }
+
+        /// <summary>
+        /// Writes log in the binary file.
         /// </summary>
         /// <param name="monitor"></param>
         /// <param name="data"></param>
@@ -45,27 +55,16 @@ namespace CK.Glouton.Server
         }
 
         /// <summary>
-        /// Starts queues.
+        /// Initializes file and start the queues.
         /// </summary>
         public void Open()
         {
-            _blockingQueueThread = Task.Factory.StartNew( () => ProcessQueue( _blockingQueue ) );
+            var monitor = new ActivityMonitor(); //TODO: add Monitoring with CK.Monitoring in the server project
+            _file.Initialize( monitor );
             _processingQueueThread = Task.Factory.StartNew( () => ProcessQueue( _processingQueue ) );
+            _blockingQueueThread = Task.Factory.StartNew( () => ProcessQueue( _blockingQueue ) );
         }
 
-        /// <summary>
-        /// Closes what need to be closed.
-        /// </summary>
-        public void Close()
-        {
-            // Nothing...
-        }
-
-        /// <summary>
-        /// Read the data and index them.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="clientSession"></param>
         private void ProcessData( byte[] data, IServerClientSession clientSession )
         {
             var version = Convert.ToInt32( clientSession.ClientData[ "LogEntryVersion" ] );
@@ -73,35 +72,9 @@ namespace CK.Glouton.Server
             _memoryStream.SetLength( 0 );
             _memoryStream.Write( data, 0, data.Length );
             _memoryStream.Seek( 0, SeekOrigin.Begin );
-
             var entry = LogEntry.Read( _binaryReader, version, out _ );
-            clientSession.ClientData.TryGetValue( "AppName", out var appName );
-            var clientData = clientSession.ClientData;
 
-
-            if( _indexerDictionary.ContainsKey( appName ) )
-            {
-                _indexerDictionary.TryGetValue( appName, out var indexer );
-                _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
-            }
-            else
-            {
-                var indexer = new LuceneIndexer( appName );
-                _indexerDictionary.Add( appName, indexer );
-                _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
-            }
-        }
-
-        private void DisposeIndexerByName( string name )
-        {
-            if( _indexerDictionary.TryGetValue( name, out var indexer ) )
-                indexer.Dispose();
-        }
-
-        private void DisposeAllIndexer()
-        {
-            foreach( var entry in _indexerDictionary )
-                entry.Value.Dispose();
+            _blockingQueue.Enqueue( () => _file.Write( entry ) );
         }
 
         private void ProcessQueue( ConcurrentQueue<Action> queue )
@@ -124,14 +97,12 @@ namespace CK.Glouton.Server
 
             _isDisposing = true;
             Close();
-            System.Threading.SpinWait.SpinUntil( () => _blockingQueueThread.IsCompleted && _processingQueueThread.IsCompleted );
+            SpinWait.SpinUntil( () => _blockingQueueThread.IsCompleted && _processingQueueThread.IsCompleted );
             _blockingQueueThread.Dispose();
             _processingQueueThread.Dispose();
-            DisposeAllIndexer();
 
             _disposedValue = true;
         }
-
         #endregion
     }
 }
