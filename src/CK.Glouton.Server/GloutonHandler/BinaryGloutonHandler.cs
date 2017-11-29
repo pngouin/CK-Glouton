@@ -9,13 +9,13 @@ using System.Text;
 
 namespace CK.Glouton.Server
 {
-    public class BinaryHandler : IGloutonServerHandler
+    public class BinaryGloutonHandler : IGloutonHandler
     {
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
         private readonly MonitorBinaryFileOutput _file;
 
-        public BinaryHandler( BinaryFileConfiguration config )
+        public BinaryGloutonHandler( BinaryFileConfiguration config )
         {
             if( config == null )
                 throw new ArgumentNullException( nameof( config ) );

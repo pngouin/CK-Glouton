@@ -17,7 +17,7 @@ namespace CK.Glouton.Server
         private readonly ControlChannelServer _controlChannelServer;
         private readonly IActivityMonitor _activityMonitor;
         private readonly ConcurrentQueue<Action> _processingQueue;
-        private readonly List<IGloutonServerHandler> _handlers;
+        private readonly List<IGloutonHandler> _gloutonHandlers;
 
         private Task _processingQueueThread;
         private bool _isDisposing;
@@ -29,30 +29,29 @@ namespace CK.Glouton.Server
             IAuthorizationHandler clientAuthorizationHandler = null,
             X509Certificate2 serverCertificate = null,
             RemoteCertificateValidationCallback userCertificateValidationCallback = null,
-            params IGloutonServerHandler[] handlers
+            params IGloutonHandler[] gloutonHandlers
         )
         {
             _controlChannelServer = new ControlChannelServer
             (
                 boundIpAddress,
                 port,
-                clientAuthorizationHandler ?? new TcpAuthHandler(),
+                clientAuthorizationHandler ?? new TcpAuthorizationHandler(),
                 serverCertificate,
                 userCertificateValidationCallback
             );
             _controlChannelServer.RegisterChannelHandler( "GrandOutputEventInfo", HandleGrandOutputEventInfo );
             _activityMonitor = activityMonitor;
             _processingQueue = new ConcurrentQueue<Action>();
-            _handlers = new List<IGloutonServerHandler>();
-            foreach( var handler in handlers )
-                _handlers.Add( handler );
+            _gloutonHandlers = new List<IGloutonHandler>();
+            foreach( var gloutonHandler in gloutonHandlers )
+                _gloutonHandlers.Add( gloutonHandler );
 
         }
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientServerSession )
         {
             _processingQueue.Enqueue( () => ProcessData( data, clientServerSession ) );
-            //ProcessData( data, clientServerSession );
         }
 
         private void ProcessData( byte[] data, IServerClientSession serverClientSession )
@@ -62,16 +61,16 @@ namespace CK.Glouton.Server
                 return;
 
             _activityMonitor.Info( $"Processing a data array with length {data.Length}" );
-            foreach( var handler in _handlers )
-                handler.OnGrandOutputEventInfo( data, serverClientSession );
+            foreach( var gloutonHandler in _gloutonHandlers )
+                gloutonHandler.OnGrandOutputEventInfo( data, serverClientSession );
         }
 
         public void Open()
         {
             _controlChannelServer.Open();
             _processingQueueThread = Task.Factory.StartNew( () => ProcessQueue( _processingQueue ) );
-            foreach( var handler in _handlers )
-                handler.Open( _activityMonitor );
+            foreach( var gloutonHandler in _gloutonHandlers )
+                gloutonHandler.Open( _activityMonitor );
         }
 
         private void ProcessQueue( ConcurrentQueue<Action> concurrentQueue )
@@ -84,8 +83,8 @@ namespace CK.Glouton.Server
         public void Close()
         {
             _controlChannelServer.Close();
-            foreach( var handler in _handlers )
-                handler.Close();
+            foreach( var gloutonHandler in _gloutonHandlers )
+                gloutonHandler.Close();
         }
 
         #region IDisposable Support
@@ -107,7 +106,7 @@ namespace CK.Glouton.Server
             _controlChannelServer.Dispose();
             _processingQueueThread.Dispose();
 
-            foreach( var handler in _handlers )
+            foreach( var handler in _gloutonHandlers )
                 handler.Dispose();
 
             _disposedValue = true;

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CK.Glouton.Server
 {
-    public class LuceneHandler : IGloutonServerHandler
+    public class LuceneGloutonHandler : IGloutonHandler
     {
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
@@ -22,7 +22,7 @@ namespace CK.Glouton.Server
         private Task _blockingQueueThread;
         private bool _isDisposing;
 
-        public LuceneHandler()
+        public LuceneGloutonHandler()
         {
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
