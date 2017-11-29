@@ -13,12 +13,11 @@ namespace CK.Glouton.Sample.Server
         private static void Main( string[] args )
         {
             SetupActivityMonitor();
-            var program = new Program();
-            program.Run();
+            Run();
             GrandOutput.Default.Dispose();
         }
 
-        private void Run()
+        private static void Run()
         {
             var activityMonitor = new ActivityMonitor();
 
@@ -29,13 +28,13 @@ namespace CK.Glouton.Sample.Server
                 new SampleClientAuthorizationHandler(),
                 null,
                 null,
-                new BinaryHandler( new BinaryFileConfiguration
+                new BinaryGloutonHandler( new BinaryFileConfiguration
                 {
                     Path = Path.Combine( Directory.GetCurrentDirectory(), "Logs" ),
                     MaxCountPerFile = 10000,
                     UseGzipCompression = true
                 } ),
-                new LuceneHandler()
+                new LuceneGloutonHandler()
             ) )
             {
                 server.Open();
