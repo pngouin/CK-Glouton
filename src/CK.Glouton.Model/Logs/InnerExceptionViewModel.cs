@@ -3,7 +3,7 @@ using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 
-namespace CK.Glouton.Model
+namespace CK.Glouton.Model.Logs
 {
     public class InnerExceptionViewModel : IInnerExceptionViewModel
     {

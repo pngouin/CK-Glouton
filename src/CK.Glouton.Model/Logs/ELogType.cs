@@ -1,4 +1,4 @@
-﻿namespace CK.Glouton.Model
+﻿namespace CK.Glouton.Model.Logs
 {
     public enum ELogType
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CK.Glouton.Model
+namespace CK.Glouton.Model.Logs
 {
     public interface ILuceneSearcherService
     {
