@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Model;
+﻿using CK.Glouton.Model.Logs;
 using CK.Glouton.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

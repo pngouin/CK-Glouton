@@ -1,11 +1,11 @@
 ﻿using CK.Core;
-using NUnit.Framework;
-using FluentAssertions;
-using System.Threading;
 using CK.Glouton.Lucene;
-using System.Reflection;
+using FluentAssertions;
+using NUnit.Framework;
 using System;
 using System.IO;
+using System.Reflection;
+using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -16,8 +16,8 @@ namespace CK.Glouton.Tests
         public void SetUp()
         {
             TestHelper.Setup();
-            var logDir = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
-            Array.ForEach(Directory.GetFiles(LuceneConstant.GetPath(logDir)), File.Delete);
+            var logDir = Assembly.GetExecutingAssembly().FullName.Split( ',' )[ 0 ];
+            Array.ForEach( Directory.GetFiles( LuceneConstant.GetPath( logDir ) ), File.Delete );
         }
 
         [Test]
@@ -33,17 +33,16 @@ namespace CK.Glouton.Tests
 
                 m.Info( "Hello world" );
                 m.Error( "CriticalError" );
-                Thread.Sleep(500);
+                Thread.Sleep( TestHelper.DefaultSleepTime );
                 g.Dispose();
             }
-            var logDir = Assembly.GetExecutingAssembly().FullName.Split(',')[0];
+            var logDirectory = Assembly.GetExecutingAssembly().FullName.Split( ',' )[ 0 ];
 
-            LuceneSearcher searcher = new LuceneSearcher(LuceneConstant.GetPath(logDir), new[] { "LogLevel", "Text" });
-            var topdoc = searcher.Search("Hello world");
-            Assert.That(topdoc != null);
-            topdoc = null;
-            topdoc = searcher.Search("CriticalError");
-            Assert.That(topdoc != null);
+            var searcher = new LuceneSearcher( LuceneConstant.GetPath( logDirectory ), new[] { "LogLevel", "Text" } );
+            var topDocument = searcher.Search( "Hello world" );
+            topDocument.Should().NotBeNull();
+            topDocument = searcher.Search( "CriticalError" );
+            topDocument.Should().NotBeNull();
         }
     }
 }

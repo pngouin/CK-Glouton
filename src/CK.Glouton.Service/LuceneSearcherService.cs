@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CK.Glouton.Lucene;
+using CK.Glouton.Model.Logs;
+using System;
 using System.Collections.Generic;
-using CK.Glouton.Lucene;
-using CK.Glouton.Model;
 using System.IO;
 
 namespace CK.Glouton.Service
@@ -14,7 +14,7 @@ namespace CK.Glouton.Service
                 return GetAll( directory, 25 );
 
             var result = new List<ILogViewModel>();
-            var luceneSearcher = new LuceneSearcher( LuceneConstant.GetPath(directory) ,new[] { "LogLevel", "Exception" } );
+            var luceneSearcher = new LuceneSearcher( LuceneConstant.GetPath( directory ), new[] { "LogLevel", "Exception" } );
             var hits = luceneSearcher.Search( query );
 
             foreach( var scoreDocument in hits.ScoreDocs )
@@ -41,10 +41,10 @@ namespace CK.Glouton.Service
         public List<ILogViewModel> GetAll( string directory, int max )
         {
             var result = new List<ILogViewModel>();
-            var searcher = new LuceneSearcher( LuceneConstant.GetPath(directory) ,new[] { "LogLevel" } );
+            var searcher = new LuceneSearcher( LuceneConstant.GetPath( directory ), new[] { "LogLevel" } );
             var hits = searcher.GetAllLog( max );
 
-            if (hits == null)
+            if( hits == null )
                 return null;
 
             foreach( var scoreDoc in hits.ScoreDocs )
@@ -107,11 +107,11 @@ namespace CK.Glouton.Service
         /// <returns></returns>
         public ISet<string> GetAppNameList()
         {
-            DirectoryInfo dir = new DirectoryInfo(LuceneConstant.GetPath());
-            HashSet<string> dirs = new HashSet<string>();
+            var directoryInfo = new DirectoryInfo( LuceneConstant.GetPath() );
+            var dirs = new HashSet<string>();
 
-            foreach (DirectoryInfo d in dir.GetDirectories())
-                dirs.Add(d.Name);
+            foreach( var info in directoryInfo.GetDirectories() )
+                dirs.Add( info.Name );
 
             return dirs;
         }

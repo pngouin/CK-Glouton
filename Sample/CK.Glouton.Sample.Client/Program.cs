@@ -18,7 +18,7 @@ namespace CK.Glouton.Sample.Client
             var doContinue = true;
             while( doContinue )
             {
-                System.Console.WriteLine( $"Press q to quit, m to send a line, s to send a CriticalError" );
+                System.Console.WriteLine( "Press q to quit, m to send a line, s to send a CriticalError" );
                 var k = System.Console.ReadKey( true );
                 switch( k.Key )
                 {

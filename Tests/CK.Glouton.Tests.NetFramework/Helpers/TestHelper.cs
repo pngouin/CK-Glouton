@@ -1,10 +1,11 @@
-﻿using System.IO;
+﻿using CK.ControlChannel.Abstractions;
+using CK.Core;
+using CK.Glouton.Server;
+using CK.Monitoring.Handlers;
+using System.IO;
 using System.Net.Security;
 using System.Runtime.CompilerServices;
 using System.Text;
-using CK.ControlChannel.Abstractions;
-using CK.Core;
-using CK.Glouton.Server;
 
 namespace CK.Glouton.Tests
 {
@@ -21,6 +22,11 @@ namespace CK.Glouton.Tests
         internal static ushort DefaultPort { get; } = 43712;
 
         /// <summary>
+        /// Represents 125 ms.
+        /// </summary>
+        internal static int DefaultSleepTime => 125;
+
+        /// <summary>
         /// We want to initialize 
         /// </summary>
         private static bool _environmentInitialized;
@@ -29,7 +35,7 @@ namespace CK.Glouton.Tests
         /// <summary>
         /// Returns a new <see cref="IAuthorizationHandler"/> which is always true.
         /// </summary>
-        internal static IAuthorizationHandler DefaultAuthHandler => _defaultAuthHandler ?? (_defaultAuthHandler = new TestAuthHandler( s => true ));
+        internal static IAuthorizationHandler DefaultAuthHandler => _defaultAuthHandler ?? ( _defaultAuthHandler = new TestAuthHandler( s => true ) );
 
         /// <summary>
         /// Returns a new mock server.
@@ -60,11 +66,13 @@ namespace CK.Glouton.Tests
         /// Host will be <see cref="DefaultHost"/> and port will be <see cref="DefaultPort"/>.
         /// Take care, this server will be linked to lucene.
         /// </summary>
+        /// <param name="activityMonitor"> The activity monitor used by server and its handler. If null, it will instantiate a new one.</param>
         /// <param name="authorizationHandler">The authorization handler. If null, <see cref="DefaultAuthHandler"/> will be used.</param>
         /// <param name="userCertificateValidationCallback">The user certification callback. Can be null.</param>
         /// <returns></returns>
         internal static GloutonServer DefaultGloutonServer
         (
+            IActivityMonitor activityMonitor = null,
             IAuthorizationHandler authorizationHandler = null,
             RemoteCertificateValidationCallback userCertificateValidationCallback = null
         )
@@ -72,9 +80,17 @@ namespace CK.Glouton.Tests
             return new GloutonServer(
                 DefaultHost,
                 DefaultPort,
+                activityMonitor ?? new ActivityMonitor(),
                 authorizationHandler ?? DefaultAuthHandler,
                 null, // Todo: Same as above
-                userCertificateValidationCallback
+                userCertificateValidationCallback,
+                new BinaryGloutonHandler( new BinaryFileConfiguration
+                {
+                    Path = Path.Combine( GetTestLogDirectory(), "gzip" ),
+                    MaxCountPerFile = 10000,
+                    UseGzipCompression = true
+                } ),
+                new LuceneGloutonHandler()
             );
         }
 

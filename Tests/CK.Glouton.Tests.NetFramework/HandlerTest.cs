@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading;
-using CK.Core;
+﻿using CK.Core;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -34,7 +34,7 @@ namespace CK.Glouton.Tests
                     var guid = Guid.NewGuid().ToString();
                     clientActivityMonitor.Info( guid );
 
-                    Thread.Sleep( 125 );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
 
                     server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
 
@@ -76,7 +76,7 @@ namespace CK.Glouton.Tests
                     clientActivityMonitor.Fatal( fatalMessage );
                     clientActivityMonitor.Info( finalMessage );
 
-                    Thread.Sleep( 125 );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
 
                     server.GetLogEntry( initialMessage ).Validate( initialMessage, LogLevel.Info ).Should().BeTrue();
                     server.GetLogEntry( debugMessage ).Validate( debugMessage, LogLevel.Debug ).Should().BeTrue();
@@ -99,10 +99,10 @@ namespace CK.Glouton.Tests
                 using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
                 using( var grandOutputClient1 = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
-                    Thread.Sleep( 125 );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
                     using( var grandOutputClient2 = GrandOutputHelper.GetNewGrandOutputClient() )
                     {
-                        Thread.Sleep( 125 );
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
                         using( var grandOutputClient3 = GrandOutputHelper.GetNewGrandOutputClient() )
                         {
                             var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
@@ -125,7 +125,7 @@ namespace CK.Glouton.Tests
                             clientActivityMonitor2.Info( guid2 );
                             clientActivityMonitor3.Info( guid3 );
 
-                            Thread.Sleep( 125 );
+                            Thread.Sleep( TestHelper.DefaultSleepTime );
 
                             server.GetLogEntry( guid1 ).Validate( guid1 ).Should().BeTrue();
                             server.GetLogEntry( guid2 ).Validate( guid2 ).Should().BeTrue();
@@ -161,7 +161,7 @@ namespace CK.Glouton.Tests
                         var guid = Guid.NewGuid().ToString();
 
                         clientActivityMonitor.Info( guid );
-                        Thread.Sleep( 125 );
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
                         server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
 
                         serverActivityMonitor.Info( "Closing the server" );
@@ -169,7 +169,7 @@ namespace CK.Glouton.Tests
 
                         server.ListLog.Clear();
                         clientActivityMonitor.Info( guid );
-                        Thread.Sleep( 125 );
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
                         Action action = () => server.GetLogEntry( guid );
                         action.ShouldThrow<InvalidOperationException>();
                     }
@@ -186,7 +186,7 @@ namespace CK.Glouton.Tests
 
                         server.ListLog.Clear();
                         clientActivityMonitor.Info( guid );
-                        Thread.Sleep( 125 );
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
                         server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
                     }
                 }
