@@ -22,6 +22,11 @@ namespace CK.Glouton.Tests
         internal static ushort DefaultPort { get; } = 43712;
 
         /// <summary>
+        /// Represents 125 ms.
+        /// </summary>
+        internal static int DefaultSleepTime => 125;
+
+        /// <summary>
         /// We want to initialize 
         /// </summary>
         private static bool _environmentInitialized;
@@ -79,13 +84,13 @@ namespace CK.Glouton.Tests
                 authorizationHandler ?? DefaultAuthHandler,
                 null, // Todo: Same as above
                 userCertificateValidationCallback,
-                new BinaryHandler( new BinaryFileConfiguration
+                new BinaryGloutonHandler( new BinaryFileConfiguration
                 {
                     Path = Path.Combine( GetTestLogDirectory(), "gzip" ),
                     MaxCountPerFile = 10000,
                     UseGzipCompression = true
                 } ),
-                new LuceneHandler()
+                new LuceneGloutonHandler()
             );
         }
 
