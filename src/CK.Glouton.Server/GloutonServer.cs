@@ -19,8 +19,8 @@ namespace CK.Glouton.Server
         private readonly ConcurrentQueue<Action> _processingQueue;
         private readonly List<IGloutonServerHandler> _handlers;
 
-
         private Task _processingQueueThread;
+        private bool _isDisposing;
 
         public GloutonServer(
             string boundIpAddress,
@@ -52,10 +52,16 @@ namespace CK.Glouton.Server
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientServerSession )
         {
             _processingQueue.Enqueue( () => ProcessData( data, clientServerSession ) );
+            //ProcessData( data, clientServerSession );
         }
 
         private void ProcessData( byte[] data, IServerClientSession serverClientSession )
         {
+            // TODO: Later we will need to keep sending logs to binaryHandler and wait for a shutdown timer.
+            if( _isDisposing )
+                return;
+
+            _activityMonitor.Info( $"Processing a data array with length {data.Length}" );
             foreach( var handler in _handlers )
                 handler.OnGrandOutputEventInfo( data, serverClientSession );
         }
@@ -68,10 +74,11 @@ namespace CK.Glouton.Server
                 handler.Open( _activityMonitor );
         }
 
-        private static void ProcessQueue( ConcurrentQueue<Action> concurrentQueue )
+        private void ProcessQueue( ConcurrentQueue<Action> concurrentQueue )
         {
-            concurrentQueue.TryDequeue( out var action );
-            action?.Invoke();
+            while( !concurrentQueue.IsEmpty || !_isDisposing )
+                if( concurrentQueue.TryDequeue( out var action ) )
+                    action?.Invoke();
         }
 
         public void Close()
@@ -92,6 +99,7 @@ namespace CK.Glouton.Server
 
             // Closing everything
             Close();
+            _isDisposing = true;
 
             SpinWait.SpinUntil( () => _processingQueueThread.IsCompleted );
 

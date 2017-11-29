@@ -26,7 +26,16 @@ namespace CK.Glouton.Sample.Server
                 "127.0.0.1",
                 33698,
                 activityMonitor,
-                new SampleHandler()
+                new SampleClientAuthorizationHandler(),
+                null,
+                null,
+                new BinaryHandler( new BinaryFileConfiguration
+                {
+                    Path = Path.Combine( Directory.GetCurrentDirectory(), "Logs" ),
+                    MaxCountPerFile = 10000,
+                    UseGzipCompression = true
+                } ),
+                new LuceneHandler()
             ) )
             {
                 server.Open();

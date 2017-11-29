@@ -47,18 +47,13 @@ namespace CK.Glouton.Server
             clientSession.ClientData.TryGetValue( "AppName", out var appName );
             var clientData = clientSession.ClientData as IReadOnlyDictionary<string, string>;
 
-
-            if( _indexerDictionary.ContainsKey( appName ) )
+            if( !_indexerDictionary.TryGetValue( appName, out var indexer ) )
             {
-                _indexerDictionary.TryGetValue( appName, out var indexer );
-                _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
-            }
-            else
-            {
-                var indexer = new LuceneIndexer( appName );
+                indexer = new LuceneIndexer( appName );
                 _indexerDictionary.Add( appName, indexer );
-                _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
             }
+
+            _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
         }
 
         private void DisposeAllIndexer()
@@ -71,8 +66,8 @@ namespace CK.Glouton.Server
         {
             while( !queue.IsEmpty || !_isDisposing )
             {
-                queue.TryDequeue( out var action );
-                action?.Invoke();
+                if( queue.TryDequeue( out var action ) )
+                    action?.Invoke();
             }
         }
 

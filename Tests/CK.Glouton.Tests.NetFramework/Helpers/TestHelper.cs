@@ -1,6 +1,7 @@
 ﻿using CK.ControlChannel.Abstractions;
 using CK.Core;
 using CK.Glouton.Server;
+using CK.Monitoring.Handlers;
 using System.IO;
 using System.Net.Security;
 using System.Runtime.CompilerServices;
@@ -78,6 +79,12 @@ namespace CK.Glouton.Tests
                 authorizationHandler ?? DefaultAuthHandler,
                 null, // Todo: Same as above
                 userCertificateValidationCallback,
+                new BinaryHandler( new BinaryFileConfiguration
+                {
+                    Path = Path.Combine( GetTestLogDirectory(), "gzip" ),
+                    MaxCountPerFile = 10000,
+                    UseGzipCompression = true
+                } ),
                 new LuceneHandler()
             );
         }
