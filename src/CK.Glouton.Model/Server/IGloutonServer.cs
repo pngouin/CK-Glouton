@@ -1,4 +1,4 @@
-﻿namespace CK.Glouton.Server
+﻿namespace CK.Glouton.Model.Server
 {
     public interface IGloutonServer
     {

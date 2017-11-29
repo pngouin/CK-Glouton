@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using CK.Glouton.Model.Server;
 
 namespace CK.Glouton.Tests
 {

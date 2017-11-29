@@ -60,11 +60,13 @@ namespace CK.Glouton.Tests
         /// Host will be <see cref="DefaultHost"/> and port will be <see cref="DefaultPort"/>.
         /// Take care, this server will be linked to lucene.
         /// </summary>
+        /// <param name="activityMonitor"> The activity monitor used by server and its handler. If null, it will instantiate a new one.</param>
         /// <param name="authorizationHandler">The authorization handler. If null, <see cref="DefaultAuthHandler"/> will be used.</param>
         /// <param name="userCertificateValidationCallback">The user certification callback. Can be null.</param>
         /// <returns></returns>
         internal static GloutonServer DefaultGloutonServer
         (
+            IActivityMonitor activityMonitor = null,
             IAuthorizationHandler authorizationHandler = null,
             RemoteCertificateValidationCallback userCertificateValidationCallback = null
         )
@@ -72,10 +74,11 @@ namespace CK.Glouton.Tests
             return new GloutonServer(
                 DefaultHost,
                 DefaultPort,
+                activityMonitor ?? new ActivityMonitor(),
                 authorizationHandler ?? DefaultAuthHandler,
                 null, // Todo: Same as above
                 userCertificateValidationCallback,
-                new GloutonIndexer()
+                new LuceneHandler()
             );
         }
 

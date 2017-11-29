@@ -5,7 +5,6 @@ using CK.Monitoring.Handlers;
 using System;
 using System.IO;
 using System.Reflection;
-using CK.Glouton.Lucene;
 
 namespace CK.Glouton.Sample.Server
 {
@@ -23,9 +22,10 @@ namespace CK.Glouton.Sample.Server
         {
             var activityMonitor = new ActivityMonitor();
 
-            using ( var server = new GloutonServer(
+            using( var server = new GloutonServer(
                 "127.0.0.1",
                 33698,
+                activityMonitor,
                 new SampleHandler()
             ) )
             {
