@@ -1,5 +1,5 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model;
+using CK.Glouton.Model.Logs;
 using System;
 using System.Collections.Generic;
 using System.IO;
