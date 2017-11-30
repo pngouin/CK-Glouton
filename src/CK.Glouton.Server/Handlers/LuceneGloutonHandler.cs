@@ -1,5 +1,4 @@
-﻿using CK.ControlChannel.Abstractions;
-using CK.Core;
+﻿using CK.Core;
 using CK.Glouton.Lucene;
 using CK.Glouton.Model.Server;
 using CK.Monitoring;
@@ -10,7 +9,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CK.Glouton.Server
+namespace CK.Glouton.Server.Handlers
 {
     public class LuceneGloutonHandler : IGloutonHandler
     {
@@ -22,7 +21,7 @@ namespace CK.Glouton.Server
         private Task _blockingQueueThread;
         private bool _isDisposing;
 
-        public LuceneGloutonHandler()
+        public LuceneGloutonHandler( LuceneGloutonHandlerConfiguration configuration )
         {
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
@@ -33,19 +32,18 @@ namespace CK.Glouton.Server
         /// <summary>
         /// Sends log into the queue to be indexed.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="clientSession"></param>
-        public void OnGrandOutputEventInfo( byte[] data, IServerClientSession clientSession )
+        /// <param name="receivedData"></param>
+        public void OnGrandOutputEventInfo( ReceivedData receivedData )
         {
-            var version = Convert.ToInt32( clientSession.ClientData[ "LogEntryVersion" ] as string );
+            var version = Convert.ToInt32( receivedData.ServerClientSession.ClientData[ "LogEntryVersion" ] );
 
             _memoryStream.SetLength( 0 );
-            _memoryStream.Write( data, 0, data.Length );
+            _memoryStream.Write( receivedData.Data.ToArray(), 0, receivedData.Data.Count );
             _memoryStream.Seek( 0, SeekOrigin.Begin );
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
-            clientSession.ClientData.TryGetValue( "AppName", out var appName );
-            var clientData = clientSession.ClientData as IReadOnlyDictionary<string, string>;
+            receivedData.ServerClientSession.ClientData.TryGetValue( "AppName", out var appName );
+            var clientData = receivedData.ServerClientSession.ClientData;
 
             if( !_indexerDictionary.TryGetValue( appName, out var indexer ) )
             {
@@ -54,6 +52,11 @@ namespace CK.Glouton.Server
             }
 
             _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
+        }
+
+        public bool ApplyConfiguration( IGloutonHandlerConfiguration configuration )
+        {
+            return false;
         }
 
         private void DisposeAllIndexer()

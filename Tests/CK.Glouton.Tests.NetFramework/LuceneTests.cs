@@ -1,11 +1,13 @@
 ﻿using CK.Core;
 using CK.Glouton.Lucene;
+using CK.Glouton.Server;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using CK.Glouton.Server.Handlers;
 
 namespace CK.Glouton.Tests
 {
@@ -25,7 +27,10 @@ namespace CK.Glouton.Tests
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
-                server.Open();
+                server.Open( new HandlersManagerConfiguration
+                {
+                    GloutonHandlers = { new LuceneGloutonHandlerConfiguration() }
+                } );
                 var g = GrandOutputHelper.GetNewGrandOutputClient();
 
                 var m = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };

@@ -1,5 +1,6 @@
 ﻿using CK.Core;
 using CK.Glouton.Server;
+using CK.Glouton.Server.Handlers;
 using CK.Monitoring;
 using CK.Monitoring.Handlers;
 using System;
@@ -25,19 +26,22 @@ namespace CK.Glouton.Sample.Server
                 "127.0.0.1",
                 33698,
                 activityMonitor,
-                new SampleClientAuthorizationHandler(),
-                null,
-                null,
-                new BinaryGloutonHandler( new BinaryFileConfiguration
-                {
-                    Path = Path.Combine( Directory.GetCurrentDirectory(), "Logs" ),
-                    MaxCountPerFile = 10000,
-                    UseGzipCompression = true
-                } ),
-                new LuceneGloutonHandler()
+                new SampleClientAuthorizationHandler()
             ) )
             {
-                server.Open();
+                server.Open( new HandlersManagerConfiguration
+                {
+                    GloutonHandlers =
+                    {
+                        new BinaryGloutonHandlerConfiguration
+                        {
+                            Path = "Logs",
+                            MaxCountPerFile = 10000,
+                            UseGzipCompression = true
+                        },
+                        new LuceneGloutonHandlerConfiguration()
+                    }
+                } );
 
                 var doContinue = true;
                 while( doContinue )

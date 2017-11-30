@@ -1,5 +1,4 @@
-﻿using CK.ControlChannel.Abstractions;
-using CK.Core;
+﻿using CK.Core;
 using System;
 
 namespace CK.Glouton.Model.Server
@@ -7,7 +6,8 @@ namespace CK.Glouton.Model.Server
     public interface IGloutonHandler : IDisposable
     {
         void Open( IActivityMonitor activityMonitor );
-        void OnGrandOutputEventInfo( byte[] data, IServerClientSession clientSession );
+        void OnGrandOutputEventInfo( ReceivedData receivedData );
+        bool ApplyConfiguration( IGloutonHandlerConfiguration configuration );
         void Close();
     }
 }

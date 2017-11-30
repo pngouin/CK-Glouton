@@ -2,7 +2,7 @@
 {
     public interface IGloutonServer
     {
-        void Open();
+        void Open( IHandlersManagerConfiguration handlersManagerConfiguration );
         void Close();
     }
 }
