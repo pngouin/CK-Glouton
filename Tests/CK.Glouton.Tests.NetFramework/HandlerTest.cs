@@ -76,7 +76,7 @@ namespace CK.Glouton.Tests
                     clientActivityMonitor.Fatal( fatalMessage );
                     clientActivityMonitor.Info( finalMessage );
 
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    Thread.Sleep( TestHelper.DefaultSleepTime * 2 );
 
                     server.GetLogEntry( initialMessage ).Validate( initialMessage, LogLevel.Info ).Should().BeTrue();
                     server.GetLogEntry( debugMessage ).Validate( debugMessage, LogLevel.Debug ).Should().BeTrue();
@@ -125,7 +125,7 @@ namespace CK.Glouton.Tests
                             clientActivityMonitor2.Info( guid2 );
                             clientActivityMonitor3.Info( guid3 );
 
-                            Thread.Sleep( TestHelper.DefaultSleepTime );
+                            Thread.Sleep( TestHelper.DefaultSleepTime * 3 );
 
                             server.GetLogEntry( guid1 ).Validate( guid1 ).Should().BeTrue();
                             server.GetLogEntry( guid2 ).Validate( guid2 ).Should().BeTrue();
