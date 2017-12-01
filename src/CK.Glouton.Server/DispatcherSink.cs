@@ -50,7 +50,7 @@ namespace CK.Glouton.Server
 
             while( !_queue.IsCompleted && !_forceClose )
             {
-                var hasEvent = _queue.TryTake( out var receivedData );
+                var hasEvent = _queue.TryTake( out var receivedData, 10 );
 
                 newConfigurations = _newConfigurations;
                 if( newConfigurations.Length > 0 )
