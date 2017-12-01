@@ -1,9 +1,8 @@
 ﻿using System;
-using CK.Glouton.Model.Server;
 
-namespace CK.Glouton.Server.Handlers
+namespace CK.Glouton.Lucene
 {
-    public class LuceneGloutonHandlerConfiguration : IGloutonHandlerConfiguration
+    public class LuceneConfiguration
     {
         public int MaxSearch { get; set; }
         public string Path { get; set; }
@@ -20,16 +19,6 @@ namespace CK.Glouton.Server.Handlers
             if( !string.IsNullOrEmpty( Directory ) )
                 path += "\\" + Directory;
             return path;
-        }
-
-        public IGloutonHandlerConfiguration Clone()
-        {
-            return new LuceneGloutonHandlerConfiguration
-            {
-                MaxSearch = MaxSearch,
-                Path = Path,
-                Directory = Directory
-            };
         }
     }
 }

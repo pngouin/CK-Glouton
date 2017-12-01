@@ -1,12 +1,12 @@
-﻿using CK.Core;
-using CK.Glouton.Model.Server;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CK.Core;
+using CK.Glouton.Model.Server;
 
 namespace CK.Glouton.Server
 {
@@ -96,27 +96,27 @@ namespace CK.Glouton.Server
         private void DoConfigure( HandlersManagerConfiguration[] newConfigurations )
         {
             Util.InterlockedSet( ref _newConfigurations, t => t.Skip( newConfigurations.Length ).ToArray() );
-            var configuration = newConfigurations[ newConfigurations.Length - 1 ];
+            var configuration = newConfigurations[newConfigurations.Length - 1];
             var toKeep = new List<IGloutonHandler>();
 
-            for( var iConfiguration = 0 ; iConfiguration < configuration.GloutonHandlers.Count ; ++iConfiguration )
+            for( var iConfiguration = 0; iConfiguration < configuration.GloutonHandlers.Count; ++iConfiguration )
             {
-                for( var iHandler = 0 ; iHandler < _gloutonHandlers.Count ; ++iHandler )
+                for( var iHandler = 0; iHandler < _gloutonHandlers.Count; ++iHandler )
                 {
                     try
                     {
-                        if( !_gloutonHandlers[ iHandler ].ApplyConfiguration( configuration.GloutonHandlers[ iConfiguration ] ) )
+                        if( !_gloutonHandlers[iHandler].ApplyConfiguration( configuration.GloutonHandlers[iConfiguration] ) )
                             continue;
 
                         configuration.GloutonHandlers.RemoveAt( iConfiguration-- );
-                        toKeep.Add( _gloutonHandlers[ iHandler ] );
+                        toKeep.Add( _gloutonHandlers[iHandler] );
                         _gloutonHandlers.RemoveAt( iHandler );
                         break;
                     }
                     catch( Exception exception )
                     {
-                        var handler = _gloutonHandlers[ iHandler ];
-                        var message = $"Existing {handler.GetType().FullName} crashed with the configuration {configuration.GloutonHandlers[ iConfiguration ].GetType().FullName}.";
+                        var handler = _gloutonHandlers[iHandler];
+                        var message = $"Existing {handler.GetType().FullName} crashed with the configuration {configuration.GloutonHandlers[iConfiguration].GetType().FullName}.";
                         ActivityMonitor.CriticalErrorCollector.Add( exception, message );
                         _activityMonitor.Fatal( message, exception );
                         _gloutonHandlers.RemoveAt( iHandler-- );

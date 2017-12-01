@@ -1,13 +1,13 @@
-﻿using CK.Core;
-using CK.Glouton.Lucene;
-using CK.Glouton.Server;
-using FluentAssertions;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using CK.Core;
+using CK.Glouton.Lucene;
+using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
+using FluentAssertions;
+using NUnit.Framework;
 
 namespace CK.Glouton.Tests
 {
@@ -18,8 +18,9 @@ namespace CK.Glouton.Tests
         public void SetUp()
         {
             TestHelper.Setup();
-            var logDir = Assembly.GetExecutingAssembly().FullName.Split( ',' )[ 0 ];
-            Array.ForEach( Directory.GetFiles( LuceneConstant.GetPath( logDir ) ), File.Delete );
+            var logDir = Assembly.GetExecutingAssembly().FullName.Split( ',' )[0];
+            var path = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ), "Glouton", "Logs", logDir );
+            Array.ForEach( Directory.GetFiles( path ), File.Delete );
         }
 
         [Test]
@@ -41,9 +42,15 @@ namespace CK.Glouton.Tests
                 Thread.Sleep( TestHelper.DefaultSleepTime );
                 g.Dispose();
             }
-            var logDirectory = Assembly.GetExecutingAssembly().FullName.Split( ',' )[ 0 ];
 
-            var searcher = new LuceneSearcher( LuceneConstant.GetPath( logDirectory ), new[] { "LogLevel", "Text" } );
+            var configuration = new LuceneConfiguration
+            {
+                MaxSearch = 10,
+                Path = TestHelper.GetTestLogDirectory(),
+                Directory = ""
+            };
+
+            var searcher = new LuceneSearcher( configuration, new[] { "LogLevel", "Text" } );
             var topDocument = searcher.Search( "Hello world" );
             topDocument.Should().NotBeNull();
             topDocument = searcher.Search( "CriticalError" );

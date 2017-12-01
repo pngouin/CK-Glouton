@@ -1,4 +1,9 @@
-﻿using CK.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using CK.Core;
 using CK.Monitoring;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
@@ -6,11 +11,6 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
@@ -18,6 +18,7 @@ namespace CK.Glouton.Lucene
     public class LuceneIndexer : IDisposable, IIndexer
     {
         private readonly IndexWriter _writer;
+        private readonly LuceneConfiguration _luceneConfiguration;
 
         private DateTimeStamp _lastDateTimeStamp;
         private DateTime _lastCommit;
@@ -25,41 +26,21 @@ namespace CK.Glouton.Lucene
         private int _exceptionDepth;
         private LuceneSearcher _searcher;
 
-        public LuceneIndexer( string directory, string indexDirectoryName )
+        public LuceneIndexer( LuceneConfiguration luceneConfiguration )
         {
-            var path = directory + "\\" + indexDirectoryName;
-            if( !System.IO.Directory.Exists( path ) )
-                System.IO.Directory.CreateDirectory( path );
+            _luceneConfiguration = luceneConfiguration;
 
-            Directory indexDirectory = FSDirectory.Open( new DirectoryInfo( path ) );
+            if( !System.IO.Directory.Exists( _luceneConfiguration.ActualPath ) )
+                System.IO.Directory.CreateDirectory( _luceneConfiguration.ActualPath );
+
+            Directory indexDirectory = FSDirectory.Open( new DirectoryInfo( _luceneConfiguration.ActualPath ) );
 
             _writer = new IndexWriter( indexDirectory, new IndexWriterConfig( LuceneVersion.LUCENE_48, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ) );
             _lastDateTimeStamp = new DateTimeStamp( DateTime.UtcNow );
             _numberOfFileToCommit = 0;
             _exceptionDepth = 0;
-            InitializeIdList( indexDirectoryName );
-        }
 
-        public LuceneIndexer()
-        {
-            Directory indexDirectory = FSDirectory.Open( new DirectoryInfo( LuceneConstant.GetPath() ) );
-
-            _writer = new IndexWriter( indexDirectory, new IndexWriterConfig( LuceneVersion.LUCENE_48, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ) );
-            _lastDateTimeStamp = new DateTimeStamp( DateTime.UtcNow );
-            _numberOfFileToCommit = 0;
-            _exceptionDepth = 0;
             InitializeIdList();
-        }
-
-        public LuceneIndexer( string indexDirectoryName )
-        {
-            Directory indexDirectory = FSDirectory.Open( new DirectoryInfo( LuceneConstant.GetPath( indexDirectoryName ) ) );
-
-            _writer = new IndexWriter( indexDirectory, new IndexWriterConfig( LuceneVersion.LUCENE_48, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ) );
-            _lastDateTimeStamp = new DateTimeStamp( DateTime.UtcNow );
-            _numberOfFileToCommit = 0;
-            _exceptionDepth = 0;
-            InitializeIdList( indexDirectoryName );
         }
 
         public ISet<string> AppNameList { get; private set; }
@@ -73,28 +54,13 @@ namespace CK.Glouton.Lucene
         /// </summary>
         private void InitializeSearcher()
         {
-            var file = new DirectoryInfo( LuceneConstant.GetPath() ).EnumerateFiles();
+            var file = new DirectoryInfo( _luceneConfiguration.ActualPath ).EnumerateFiles();
             if( !file.Any() )
                 return;
 
             try
             {
-                _searcher = new LuceneSearcher( new[] { "MonitorIdList", "AppNameList" } );
-            }
-            catch( Exception e )
-            {
-                Console.WriteLine( e );
-            }
-        }
-        private void InitializeSearcher( string indexDirectoryName )
-        {
-            var file = new DirectoryInfo( LuceneConstant.GetPath( indexDirectoryName ) ).EnumerateFiles();
-            if( !file.Any() )
-                return;
-
-            try
-            {
-                _searcher = new LuceneSearcher( indexDirectoryName, new[] { "MonitorIdList", "AppNameList" } );
+                _searcher = new LuceneSearcher( _luceneConfiguration, new[] { "MonitorIdList", "AppNameList" } );
             }
             catch( Exception e )
             {
@@ -277,34 +243,6 @@ namespace CK.Glouton.Lucene
             MonitorIdList = new HashSet<string>();
             AppNameList = new HashSet<string>();
             InitializeSearcher();
-            if( _searcher == null )
-                return;
-            var hits = _searcher.Search( new WildcardQuery( new Term( "MonitorIdList", "*" ) ) );
-            foreach( var doc in hits.ScoreDocs )
-            {
-                var document = _searcher.GetDocument( doc );
-                var monitorIds = document.Get( "MonitorIdList" ).Split( ' ' );
-                foreach( var id in monitorIds )
-                {
-                    if( !MonitorIdList.Contains( id ) && id != "" && id != " " )
-                        MonitorIdList.Add( id );
-                }
-                var appNames = document.Get( "AppNameList" ).Split( ' ' );
-                foreach( var id in appNames )
-                {
-                    if( !AppNameList.Contains( id ) && id != "" && id != " " )
-                        AppNameList.Add( id );
-                }
-            }
-            if( hits.TotalHits == 0 )
-                CreateIdListDoc();
-        }
-
-        private void InitializeIdList( string indexDirectoryName )
-        {
-            MonitorIdList = new HashSet<string>();
-            AppNameList = new HashSet<string>();
-            InitializeSearcher( indexDirectoryName );
             if( _searcher == null )
                 return;
             var hits = _searcher.Search( new WildcardQuery( new Term( "MonitorIdList", "*" ) ) );

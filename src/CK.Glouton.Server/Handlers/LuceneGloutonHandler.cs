@@ -1,13 +1,13 @@
-﻿using CK.Core;
-using CK.Glouton.Lucene;
-using CK.Glouton.Model.Server;
-using CK.Monitoring;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using CK.Core;
+using CK.Glouton.Lucene;
+using CK.Glouton.Model.Server;
+using CK.Monitoring;
 
 namespace CK.Glouton.Server.Handlers
 {
@@ -18,6 +18,8 @@ namespace CK.Glouton.Server.Handlers
         private readonly ConcurrentQueue<Action> _blockingQueue;
         private readonly Dictionary<string, LuceneIndexer> _indexerDictionary;
 
+        private LuceneGloutonHandlerConfiguration _configuration;
+
         private Task _blockingQueueThread;
         private bool _isDisposing;
 
@@ -27,6 +29,7 @@ namespace CK.Glouton.Server.Handlers
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
             _blockingQueue = new ConcurrentQueue<Action>();
             _indexerDictionary = new Dictionary<string, LuceneIndexer>();
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -35,7 +38,7 @@ namespace CK.Glouton.Server.Handlers
         /// <param name="receivedData"></param>
         public void OnGrandOutputEventInfo( ReceivedData receivedData )
         {
-            var version = Convert.ToInt32( receivedData.ServerClientSession.ClientData[ "LogEntryVersion" ] );
+            var version = Convert.ToInt32( receivedData.ServerClientSession.ClientData["LogEntryVersion"] );
 
             _memoryStream.SetLength( 0 );
             _memoryStream.Write( receivedData.Data.ToArray(), 0, receivedData.Data.Count );
@@ -47,7 +50,15 @@ namespace CK.Glouton.Server.Handlers
 
             if( !_indexerDictionary.TryGetValue( appName, out var indexer ) )
             {
-                indexer = new LuceneIndexer( appName );
+                // Todo: Check for actual path related issues
+                var luceneConfiguration = new LuceneConfiguration
+                {
+                    MaxSearch = _configuration.MaxSearch,
+                    Path = _configuration.ActualPath,
+                    Directory = appName
+                };
+
+                indexer = new LuceneIndexer( luceneConfiguration );
                 _indexerDictionary.Add( appName, indexer );
             }
 
