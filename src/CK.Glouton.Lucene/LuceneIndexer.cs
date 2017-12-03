@@ -282,21 +282,13 @@ namespace CK.Glouton.Lucene
 
         public void IndexLog( ILogEntry log, string appName )
         {
-            CheckIds( (IMulticastLogEntry)log, appName );
-            var document = GetLogDocument( (IMulticastLogEntry)log, appName );
-            _writer.AddDocument( document );
-            _numberOfFileToCommit++;
-            CommitIfNeeded();
+            IndexLog((IMulticastLogEntry)log, appName);
         }
 
-        public void IndexLog( ILogEntry entry, IReadOnlyDictionary<string, string> clientData )
+        public void IndexLog( ILogEntry log, IReadOnlyDictionary<string, string> clientData )
         {
-            clientData.TryGetValue( "AppName", out var appName );
-            CheckIds( (IMulticastLogEntry)entry, appName );
-            var document = GetLogDocument( (IMulticastLogEntry)entry, appName );
-            _writer.AddDocument( document );
-            _numberOfFileToCommit++;
-            CommitIfNeeded();
+            clientData.TryGetValue("AppName", out var appName);
+            IndexLog((IMulticastLogEntry)log, appName);
         }
 
         /*
