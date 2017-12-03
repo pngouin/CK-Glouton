@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 
 namespace CK.Glouton.Tests
@@ -26,21 +27,20 @@ namespace CK.Glouton.Tests
         }
 
         private const int LuceneMaxSearch = 10;
-        private static string LucenePath = TestHelper.GetTestLogDirectory();
-        private const string LuceneDirectory = "";
-
-        private static readonly LuceneConfiguration LuceneConfiguration = new LuceneConfiguration
-        {
-            MaxSearch = LuceneMaxSearch,
-            Path = LucenePath,
-            Directory = LuceneDirectory
-        };
+        private static readonly string LucenePath = Path.Combine( TestHelper.GetTestLogDirectory(), "Lucene" );
 
         private static readonly LuceneGloutonHandlerConfiguration LuceneGloutonHandlerConfiguration = new LuceneGloutonHandlerConfiguration
         {
             MaxSearch = LuceneMaxSearch,
             Path = LucenePath,
-            Directory = LuceneDirectory
+            Directory = ""
+        };
+
+        private static readonly LuceneConfiguration LuceneSearcherConfiguration = new LuceneConfiguration
+        {
+            MaxSearch = LuceneMaxSearch,
+            Path = LucenePath,
+            Directory = Assembly.GetExecutingAssembly().GetName().Name
         };
 
         [Test]
@@ -48,16 +48,9 @@ namespace CK.Glouton.Tests
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
-                var serverConfiguration = new LuceneGloutonHandlerConfiguration()
-                {
-                    MaxSearch = 10,
-                    Path = TestHelper.GetTestLogDirectory(),
-                    Directory = ""
-                };
-
                 server.Open( new HandlersManagerConfiguration
                 {
-                    GloutonHandlers = { serverConfiguration }
+                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
                 } );
 
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
@@ -72,8 +65,7 @@ namespace CK.Glouton.Tests
 
             Thread.Sleep( TestHelper.DefaultSleepTime );
 
-
-            var searcher = new LuceneSearcher( LuceneConfiguration, new[] { "LogLevel", "Text" } );
+            var searcher = new LuceneSearcher( LuceneSearcherConfiguration, new[] { "LogLevel", "Text" } );
             var topDocument = searcher.Search( "Hello world" );
             topDocument.Should().NotBeNull();
             topDocument = searcher.Search( "CriticalError" );
