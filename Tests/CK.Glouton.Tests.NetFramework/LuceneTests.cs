@@ -1,5 +1,6 @@
 ﻿using CK.Core;
 using CK.Glouton.Lucene;
+using CK.Glouton.Model.Logs;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using FluentAssertions;
@@ -66,10 +67,19 @@ namespace CK.Glouton.Tests
             Thread.Sleep( TestHelper.DefaultSleepTime * 4 );
 
             var searcher = new LuceneSearcher( LuceneSearcherConfiguration, new[] { "LogLevel", "Text" } );
-            var topDocument = searcher.Search( "Hello world" );
+            var topDocument = searcher.Search("Hello world");
             topDocument.Should().NotBeNull();
-            topDocument = searcher.Search( "CriticalError" );
-            topDocument.Should().NotBeNull();
+
+            LineViewModel log = null;
+            foreach (var doc in topDocument.ScoreDocs)
+            {
+                var document = searcher.GetDocument(topDocument.ScoreDocs[0]);
+                log = LineViewModel.Get(searcher, document);
+                if (log.Text == "Hello world")
+                    break;
+            }
+            log.Text.Should().Be("Hello world");
+            log.LogLevel.Should().Be("Error");
         }
     }
 }
