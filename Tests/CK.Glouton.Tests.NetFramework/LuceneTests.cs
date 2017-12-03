@@ -63,7 +63,7 @@ namespace CK.Glouton.Tests
                 }
             }
 
-            Thread.Sleep( TestHelper.DefaultSleepTime );
+            Thread.Sleep( TestHelper.DefaultSleepTime * 4 );
 
             var searcher = new LuceneSearcher( LuceneSearcherConfiguration, new[] { "LogLevel", "Text" } );
             var topDocument = searcher.Search( "Hello world" );
