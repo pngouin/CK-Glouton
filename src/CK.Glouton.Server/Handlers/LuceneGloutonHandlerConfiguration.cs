@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Server;
+using System;
 
 namespace CK.Glouton.Server.Handlers
 {
-    public class LuceneGloutonHandlerConfiguration : IGloutonHandlerConfiguration
+    public class LuceneGloutonHandlerConfiguration : IGloutonHandlerConfiguration, ILuceneConfiguration
     {
         public int MaxSearch { get; set; }
         public string Path { get; set; }

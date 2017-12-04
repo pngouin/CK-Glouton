@@ -2,7 +2,7 @@
 
 namespace CK.Glouton.Lucene
 {
-    public class LuceneConfiguration
+    public class LuceneConfiguration : ILuceneConfiguration
     {
         public int MaxSearch { get; set; }
         public string Path { get; set; }

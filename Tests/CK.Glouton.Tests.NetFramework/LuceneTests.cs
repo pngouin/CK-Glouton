@@ -61,25 +61,29 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     activityMonitor.Error( "CriticalError" );
+                    using( activityMonitor.OpenFatal( new Exception( "Fatal" ) ) )
+                    {
+                        activityMonitor.Info( new Exception() );
+                    }
                 }
             }
 
             Thread.Sleep( TestHelper.DefaultSleepTime * 4 );
 
             var searcher = new LuceneSearcher( LuceneSearcherConfiguration, new[] { "LogLevel", "Text" } );
-            var topDocument = searcher.Search("Hello world");
+            var topDocument = searcher.Search( "Hello world" );
             topDocument.Should().NotBeNull();
 
             LineViewModel log = null;
-            foreach (var doc in topDocument.ScoreDocs)
+            foreach( var doc in topDocument.ScoreDocs )
             {
-                var document = searcher.GetDocument(topDocument.ScoreDocs[0]);
-                log = LineViewModel.Get(searcher, document);
-                if (log.Text == "Hello world")
+                var document = searcher.GetDocument( topDocument.ScoreDocs[ 0 ] );
+                log = LineViewModel.Get( searcher, document );
+                if( log.Text == "Hello world" )
                     break;
             }
-            log.Text.Should().Be("Hello world");
-            log.LogLevel.Should().Be("Error");
+            log.Text.Should().Be( "Hello world" );
+            log.LogLevel.Should().Be( "Error" );
         }
     }
 }

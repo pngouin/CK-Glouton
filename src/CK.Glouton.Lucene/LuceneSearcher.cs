@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Lucene.Net.Analysis.Standard;
+﻿using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
@@ -84,30 +84,27 @@ namespace CK.Glouton.Lucene
 
         public TopDocs Search( string searchQuery )
         {
-            if( !CheckSearcher( _indexSearcher ) )
-                return null;
-            _query = QueryParser.Parse( searchQuery );
-            return _indexSearcher.Search( _query, _luceneConfiguration.MaxSearch );
+            return _indexSearcher?.Search( QueryParser.Parse( searchQuery ), _luceneConfiguration.MaxSearch );
         }
 
         public TopDocs Search( Query searchQuery )
         {
-            return !CheckSearcher( _indexSearcher ) ? null : _indexSearcher.Search( searchQuery, _luceneConfiguration.MaxSearch );
+            return _indexSearcher?.Search( searchQuery, _luceneConfiguration.MaxSearch );
         }
 
         public Document GetDocument( ScoreDoc scoreDoc )
         {
-            return !CheckSearcher( _indexSearcher ) ? null : _indexSearcher.Doc( scoreDoc.Doc );
+            return _indexSearcher?.Doc( scoreDoc.Doc );
         }
 
         public TopDocs GetAllLog( int numberDocsToReturn )
         {
-            return !CheckSearcher( _indexSearcher ) ? null : _indexSearcher.Search( new WildcardQuery( new Term( "LogLevel", "*" ) ), numberDocsToReturn );
+            return _indexSearcher?.Search( new WildcardQuery( new Term( "LogLevel", "*" ) ), numberDocsToReturn );
         }
 
         public TopDocs GetAllExceptions( int numberDocsToReturn )
         {
-            return !CheckSearcher( _indexSearcher ) ? null : _indexSearcher.Search( _exceptionParser.Parse( "Outer" ), numberDocsToReturn );
+            return _indexSearcher?.Search( _exceptionParser.Parse( "Outer" ), numberDocsToReturn );
         }
 
         private void InitializeIdList()
@@ -131,11 +128,6 @@ namespace CK.Glouton.Lucene
                         AppNameList.Add( id );
                 }
             }
-        }
-
-        private static bool CheckSearcher( IndexSearcher searcher )
-        {
-            return searcher != null;
         }
     }
 }

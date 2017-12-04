@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using CK.Core;
+﻿using CK.Core;
 using CK.Monitoring;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
@@ -11,6 +6,12 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
@@ -68,142 +69,105 @@ namespace CK.Glouton.Lucene
             }
         }
 
-        /// <summary>
-        /// Create a Lucene document based on the log given
-        /// </summary>
-        /// <param name="log">The log to index</param>
-        /// <param name="appName">The app Name given by the Open Block</param>
-        /// <returns></returns>
-        private Document GetLogDocument( IMulticastLogEntry log, string appName )
+        private Document GetDocument( IMulticastLogEntry log, string appName )
         {
             var document = new Document();
 
-            Field monitorId = new StringField( "MonitorId", log.MonitorId.ToString(), Field.Store.YES );
-            Field groupDepth = new StringField( "GroupDepth", log.GroupDepth.ToString(), Field.Store.YES );
-            Field previousEntryType = new StringField( "PreviousEntryType", log.PreviousEntryType.ToString(), Field.Store.YES );
-            Field previousLogTime = new StringField( "PreviousLogTime", log.PreviousLogTime.ToString(), Field.Store.YES );
-
-            document.Add( monitorId );
-            document.Add( groupDepth );
-            document.Add( previousEntryType );
-            document.Add( previousLogTime );
-
-            switch( log.LogType )
+            foreach( var propertyInfo in log.GetType().GetProperties( BindingFlags.Public | BindingFlags.Instance ) )
             {
-                case LogEntryType.Line:
-                case LogEntryType.OpenGroup:
-                    {
-                        Field logLevel = new TextField( "LogLevel", log.LogLevel.ToString(), Field.Store.YES );
-                        Field text = new TextField( "Text", log.Text, Field.Store.YES );
-                        Field tags = new StringField( "Tags", log.Tags.ToString(), Field.Store.YES );
-                        Field logTime = new StringField( "LogTime", DateTools.DateToString( log.LogTime.TimeUtc, DateTools.Resolution.MILLISECOND ), Field.Store.YES );
-                        Field fileName = new TextField( "FileName", log.FileName, Field.Store.YES );
-                        Field lineNumber = new TextField( "LineNumber", log.LineNumber.ToString(), Field.Store.YES );
+                var logValue = log.GetType().GetProperty( propertyInfo.Name )?.GetValue( log );
+                if( logValue == null )
+                    continue;
 
-                        if( log.Exception != null )
-                        {
-                            var exDoc = GetExceptionDocuments( log.Exception );
-                            Field exception = new TextField( "Exception", exDoc.Get( "IndexTS" ), Field.Store.YES );
-                            document.Add( exception );
-                        }
-
-                        document.Add( logLevel );
-                        document.Add( text );
-                        document.Add( tags );
-                        document.Add( logTime );
-                        document.Add( fileName );
-                        document.Add( lineNumber );
+                switch( propertyInfo.PropertyType.Name )
+                {
+                    case "DateTimeStamp":
+                        document.Add( new TextField
+                            (
+                                propertyInfo.Name,
+                                DateTools.DateToString( ( logValue as DateTimeStamp? ?? new DateTimeStamp( new DateTime( 1, 1, 1 ) ) ).TimeUtc, DateTools.Resolution.MILLISECOND ),
+                                Field.Store.YES
+                            ) );
                         break;
-                    }
-                case LogEntryType.CloseGroup:
-                    {
-                        var builder = new StringBuilder();
+
+                    case "List`1": // Matches: IReadOnlyList<ActivityLogGroupConclusion>
+                        var stringBuilder = new StringBuilder();
                         foreach( var conclusion in log.Conclusions )
-                            builder.Append( conclusion.Text + "\n" );
-
-                        Field logLevel = new TextField( "LogLevel", log.LogLevel.ToString(), Field.Store.YES );
-                        Field conclusions = new TextField( "Conclusions", builder.ToString(), Field.Store.YES );
-                        Field logTime = new TextField( "LogTime", DateTools.DateToString( log.LogTime.TimeUtc, DateTools.Resolution.MILLISECOND ), Field.Store.YES );
-
-                        document.Add( logLevel );
-                        document.Add( logTime );
-                        document.Add( conclusions );
+                            stringBuilder.Append( conclusion.Text + "\n" );
+                        document.Add( new TextField
+                            (
+                                propertyInfo.Name,
+                                stringBuilder.ToString(),
+                                Field.Store.YES
+                            ) );
                         break;
-                    }
+
+                    case "CKExceptionData":
+                        document.Add( new TextField(
+                                "Exception",
+                                GetDocument( logValue as CKExceptionData ).Get( "IndexDTS" ),
+                                Field.Store.YES
+                            ) );
+                        break;
+
+                    case "CKTrait":
+                        document.Add( new StringField(
+                            propertyInfo.Name,
+                            logValue.ToString(),
+                            Field.Store.YES
+                            ) );
+                        break;
+
+                    default:
+                        document.Add( new TextField( propertyInfo.Name, logValue.ToString(), Field.Store.YES ) );
+                        break;
+                }
             }
 
-            Field logType = new TextField( "LogType", log.LogType.ToString(), Field.Store.YES );
-            Field indexTs = new StringField( "IndexTS", CreateIndexTs().ToString(), Field.Store.YES );
-            Field AppName = new StringField( "AppName", appName, Field.Store.YES );
-
-            document.Add( logType );
-            document.Add( indexTs );
-            document.Add( AppName );
+            document.Add( new TextField( "IndexDTS", CreateIndexDts().ToString(), Field.Store.YES ) );
+            document.Add( new TextField( "AppName", appName, Field.Store.YES ) );
 
             return document;
         }
 
-        /// <summary>
-        /// Create and index a Lucene document based on the exception collected
-        /// </summary>
-        /// <param name="exception">The exception collected</param>
-        /// <returns></returns>
-        private Document GetExceptionDocuments( CKExceptionData exception )
+        private Document GetDocument( CKExceptionData exception )
         {
             var document = new Document();
 
-            Field message = new TextField( "Message", exception.Message, Field.Store.YES );
-            if( exception.StackTrace != null )
+            foreach( var propertyInfo in exception.GetType().GetProperties( BindingFlags.Public | BindingFlags.Instance ) )
             {
-                Field stack = new TextField( "Stack", exception.StackTrace, Field.Store.YES );
-                document.Add( stack );
-            }
-            Field indexTs = new StringField( "IndexTS", CreateIndexTs().ToString(), Field.Store.YES );
+                var exceptionValue = exception.GetType().GetProperty( propertyInfo.Name )?.GetValue( exception );
+                if( exceptionValue == null )
+                    continue;
 
-            if( exception.AggregatedExceptions != null )
-            {
-                Field exceptionDepth = new Int32Field( "ExceptionDepth", _exceptionDepth, Field.Store.YES );
-                document.Add( exceptionDepth );
-                if( _exceptionDepth == 0 )
+                switch( propertyInfo.Name )
                 {
-                    var exList = new StringBuilder();
-                    foreach( var ex in exception.AggregatedExceptions )
-                    {
-                        exList.Append( GetExceptionDocuments( ex ).Get( "IndexTS" ) );
-                        exList.AppendLine();
-                        _exceptionDepth++;
-                    }
-                    Field aggregatedException = new TextField( "AggregatedException", exList.ToString(), Field.Store.YES );
-                    document.Add( aggregatedException );
-                    _exceptionDepth = 0;
+                    case "AggregatedExceptions":
+                        if( _exceptionDepth == 0 )
+                        {
+                            var exList = new StringBuilder();
+                            foreach( var ex in exception.AggregatedExceptions )
+                            {
+                                exList.Append( GetDocument( ex ).Get( "IndexDTS" ) );
+                                exList.AppendLine();
+                                _exceptionDepth++;
+                            }
+                            document.Add( new Int32Field( "ExceptionDepth", _exceptionDepth, Field.Store.YES ) );
+                            document.Add( new TextField( "AggregatedException", exList.ToString(), Field.Store.YES ) );
+                            _exceptionDepth = 0;
+                        }
+
+                        break;
+                    case "InnerException":
+                        document.Add( new StringField( "InnerException", GetDocument( exceptionValue as CKExceptionData ).Get( "IndexDTS" ), Field.Store.YES ) );
+                        break;
+                    default:
+                        document.Add( new TextField( propertyInfo.Name, exceptionValue.ToString(), Field.Store.YES ) );
+                        break;
                 }
             }
 
-            if( exception.InnerException != null && exception.AggregatedExceptions == null )
-            {
-                var exDoc = GetExceptionDocuments( exception.InnerException );
-                Field innerException = new StringField( "InnerException", exDoc.Get( "IndexTS" ), Field.Store.YES );
-                document.Add( innerException );
-            }
-
-            if( exception.DetailedInfo != null )
-            {
-                Field details = new TextField( "Details", exception.DetailedInfo, Field.Store.YES );
-                document.Add( details );
-            }
-
-            if( exception.FileName != null )
-            {
-                Field filename = new StringField( "Filename", exception.FileName, Field.Store.YES );
-                document.Add( filename );
-            }
-
-            document.Add( message );
-            document.Add( indexTs );
-
-            _numberOfFileToCommit++;
-            _writer.AddDocument( document );
-            CommitIfNeeded();
+            document.Add( new StringField( "IndexDTS", CreateIndexDts().ToString(), Field.Store.YES ) );
 
             return document;
         }
@@ -212,7 +176,7 @@ namespace CK.Glouton.Lucene
         /// Create a unique DateTimeStamp to identify each log
         /// </summary>
         /// <returns></returns>
-        private DateTimeStamp CreateIndexTs()
+        private DateTimeStamp CreateIndexDts()
         {
             var indexTs = new DateTimeStamp( _lastDateTimeStamp, DateTime.UtcNow );
             _lastDateTimeStamp = indexTs;
@@ -274,7 +238,7 @@ namespace CK.Glouton.Lucene
         public void IndexLog( IMulticastLogEntry log, string appName )
         {
             CheckIds( log, appName );
-            var document = GetLogDocument( log, appName );
+            var document = GetDocument( log, appName );
             _writer.AddDocument( document );
             _numberOfFileToCommit++;
             CommitIfNeeded();
@@ -282,29 +246,14 @@ namespace CK.Glouton.Lucene
 
         public void IndexLog( ILogEntry log, string appName )
         {
-            IndexLog((IMulticastLogEntry)log, appName);
+            IndexLog( (IMulticastLogEntry)log, appName );
         }
 
         public void IndexLog( ILogEntry log, IReadOnlyDictionary<string, string> clientData )
         {
-            clientData.TryGetValue("AppName", out var appName);
-            IndexLog((IMulticastLogEntry)log, appName);
+            clientData.TryGetValue( "AppName", out var appName );
+            IndexLog( (IMulticastLogEntry)log, appName );
         }
-
-        /*
-        /// <summary>
-        /// Index the open block of this indexer
-        /// </summary>
-        /// <param name="openBlock">The open block of this indexer</param>
-        /// 
-        //public void IndexOpenBlock(IOpen openBlock)
-        //{
-        //    Document document = GetOpenBlockDocument(openBlock);
-        //    _writer.AddDocument(document);
-        //    _numberOfFileToCommit++;
-        //    CommitIfNeeded();
-        //}
-        */
 
         /// <summary>
         /// Get the string containing the monitor ID list, might be big
