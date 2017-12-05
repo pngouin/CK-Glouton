@@ -16,9 +16,7 @@ namespace CK.Glouton.Model.Logs
             if( doc.GetField( "InnerException" ) == null )
                 return null;
 
-            var query = new TermQuery( new Term( "IndexTS", doc.Get( "InnerException" ) ) );
-            var exceptionDoc = searcher.Search( query );
-            var exception = searcher.GetDocument( exceptionDoc.ScoreDocs[ 0 ] );
+            var exception = searcher.GetDocument(new TermQuery(new Term("IndexTS", doc.Get("InnerException"))));
 
             return new InnerExceptionViewModel
             {

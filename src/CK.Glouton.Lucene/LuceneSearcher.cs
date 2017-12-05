@@ -1,4 +1,5 @@
-﻿using CK.Glouton.Model.Lucene;
+﻿using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Lucene;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -83,14 +84,14 @@ namespace CK.Glouton.Lucene
             return bQuery;
         }
 
-        public TopDocs Search( string searchQuery )
+        public List<ILogViewModel> Search( string searchQuery )
         {
-            return _indexSearcher?.Search( QueryParser.Parse( searchQuery ), _luceneConfiguration.MaxSearch );
+            return CreateLogsResult(_indexSearcher?.Search( QueryParser.Parse( searchQuery ), _luceneConfiguration.MaxSearch ) );
         }
 
-        public TopDocs Search( Query searchQuery )
+        public List<ILogViewModel> Search( Query searchQuery )
         {
-            return _indexSearcher?.Search( searchQuery, _luceneConfiguration.MaxSearch );
+            return CreateLogsResult(_indexSearcher?.Search( searchQuery, _luceneConfiguration.MaxSearch ) );
         }
 
         public Document GetDocument( ScoreDoc scoreDoc )
@@ -98,21 +99,57 @@ namespace CK.Glouton.Lucene
             return _indexSearcher?.Doc( scoreDoc.Doc );
         }
 
-        public TopDocs GetAllLog( int numberDocsToReturn )
+        public Document GetDocument(Query query)
         {
-            return _indexSearcher?.Search( new WildcardQuery( new Term( "LogLevel", "*" ) ), numberDocsToReturn );
+            return GetDocument(_indexSearcher?.Search(query, _luceneConfiguration.MaxSearch).ScoreDocs.First());
         }
 
-        public TopDocs GetAllExceptions( int numberDocsToReturn )
+        public List<ILogViewModel> GetAllLog( int numberDocsToReturn )
         {
-            return _indexSearcher?.Search( _exceptionParser.Parse( "Outer" ), numberDocsToReturn );
+            return CreateLogsResult(_indexSearcher?.Search( new WildcardQuery( new Term( "LogLevel", "*" ) ), numberDocsToReturn ) );
+        }
+
+        public List<ILogViewModel> GetAllExceptions( int numberDocsToReturn )
+        {
+            return CreateLogsResult( _indexSearcher?.Search( _exceptionParser.Parse( "Outer" ), numberDocsToReturn ) );
+        }
+
+        public TopDocs QuerySearch ( Query query ) // TODO: Get a good name
+        {
+            return _indexSearcher?.Search(query, _luceneConfiguration.MaxSearch);
+        }
+
+        private List<ILogViewModel> CreateLogsResult ( TopDocs topDocs )
+        {
+            var result = new List<ILogViewModel>();
+            foreach (var scoreDoc in topDocs.ScoreDocs)
+            {
+                var document = GetDocument(scoreDoc);
+                switch (document.Get("LogType"))
+                {
+                    case "Line":
+                        result.Add( LineViewModel.Get(this, document) );
+                        break;
+                    case "CloseGroup":
+                        result.Add( CloseGroupViewModel.Get(this, document) );
+                        break;
+                    case "OpenGroup":
+                        result.Add( OpenGroupViewModel.Get(this, document) );
+                        break;
+                    default:
+                        throw new InvalidOperationException("LogType not reconize is the document.");
+                }
+            }
+
+            return result;
         }
 
         private void InitializeIdList()
         {
             MonitorIdList = new HashSet<string>();
             AppNameList = new HashSet<string>();
-            var hits = Search( new WildcardQuery( new Term( "MonitorIdList", "*" ) ) );
+            var hits = QuerySearch( new WildcardQuery( new Term( "MonitorIdList", "*" ) ) );
+
             foreach( var doc in hits.ScoreDocs )
             {
                 var document = GetDocument( doc );

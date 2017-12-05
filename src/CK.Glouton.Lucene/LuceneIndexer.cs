@@ -209,7 +209,7 @@ namespace CK.Glouton.Lucene
             InitializeSearcher();
             if( _searcher == null )
                 return;
-            var hits = _searcher.Search( new WildcardQuery( new Term( "MonitorIdList", "*" ) ) );
+            var hits = _searcher.QuerySearch( new WildcardQuery( new Term( "MonitorIdList", "*" ) ) );
             foreach( var doc in hits.ScoreDocs )
             {
                 var document = _searcher.GetDocument( doc );

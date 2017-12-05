@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Lucene.Net.Search;
 using Lucene.Net.Documents;
+using CK.Glouton.Model.Logs;
 
 namespace CK.Glouton.Model.Lucene
 {
@@ -9,11 +10,12 @@ namespace CK.Glouton.Model.Lucene
         ISet<string> AppNameList { get; }
         ISet<string> MonitorIdList { get; }
 
-        TopDocs GetAllExceptions(int numberDocsToReturn);
-        TopDocs GetAllLog(int numberDocsToReturn);
-        TopDocs Search(Query searchQuery);
-        TopDocs Search(string searchQuery);
+        List<ILogViewModel> GetAllExceptions(int numberDocsToReturn);
+        List<ILogViewModel> GetAllLog(int numberDocsToReturn);
+        List<ILogViewModel> Search(Query searchQuery);
+        List<ILogViewModel> Search(string searchQuery);
 
-        Document GetDocument(ScoreDoc scoreDoc); 
+        Document GetDocument(ScoreDoc scoreDoc);
+        Document GetDocument(Query query);
     }
 }

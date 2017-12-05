@@ -70,24 +70,22 @@ namespace CK.Glouton.Tests
             }
 
             var searcher = new LuceneSearcher( LuceneSearcherConfiguration, new[] { "LogLevel", "Text" } );
-            var topDocument = searcher.Search( "Text:Hello world" );
-            topDocument.Should().NotBeNull();
+            var result = searcher.Search( "Text:Hello world" );
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
+            result[0].LogType.Should().Be(ELogType.Line);
 
-            LineViewModel log = null;
-            foreach( var doc in topDocument.ScoreDocs )
-            {
-                var document = searcher.GetDocument( topDocument.ScoreDocs[ 0 ] );
-                log = LineViewModel.Get( searcher, document );
-            }
-            log.Text.Should().Be( "Hello world" );
+            var log = result[0] as LineViewModel;
+            log.Text.Should().Be("Hello world");
             log.LogLevel.Should().Contain("Info");
 
-            topDocument = searcher.Search("Text:CriticalError");
-            foreach (var doc in topDocument.ScoreDocs)
-            {
-                var document = searcher.GetDocument(topDocument.ScoreDocs[0]);
-                log = LineViewModel.Get(searcher, document);
-            }
+
+            result = searcher.Search("Text:CriticalError");
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
+            result[0].LogType.Should().Be(ELogType.Line);
+
+            log = result[0] as LineViewModel;
             log.Text.Should().Be("CriticalError");
             log.LogLevel.Should().Contain("Error");
         }

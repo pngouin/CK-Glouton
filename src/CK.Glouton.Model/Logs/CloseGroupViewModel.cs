@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Lucene;
+﻿using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
 
 namespace CK.Glouton.Model.Logs
@@ -11,7 +11,7 @@ namespace CK.Glouton.Model.Logs
         public IExceptionViewModel Exception { get; set; }
         public string LogTime { get; set; }
 
-        public static CloseGroupViewModel Get( LuceneSearcher searcher, Document doc )
+        public static CloseGroupViewModel Get( ILuceneSearcher searcher, Document doc )
         {
             CloseGroupViewModel obj = new CloseGroupViewModel
             {
