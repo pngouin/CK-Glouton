@@ -137,7 +137,7 @@ namespace CK.Glouton.Lucene
                         result.Add( OpenGroupViewModel.Get(this, document) );
                         break;
                     default:
-                        throw new InvalidOperationException("LogType not reconize is the document.");
+                        throw new ArgumentException(nameof(document));
                 }
             }
 
