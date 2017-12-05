@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Lucene;
+﻿using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
 
 namespace CK.Glouton.Model.Logs
@@ -19,7 +19,7 @@ namespace CK.Glouton.Model.Logs
         public string PreviousLogTime { get; set; }
         public string AppId { get; set; }
 
-        public static LineViewModel Get( LuceneSearcher luceneSearcher, Document document )
+        public static LineViewModel Get ( ILuceneSearcher luceneSearcher, Document document )
         {
             return new LineViewModel
             {

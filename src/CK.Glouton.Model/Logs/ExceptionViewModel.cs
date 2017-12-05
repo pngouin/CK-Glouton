@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Lucene;
+﻿using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -11,7 +11,7 @@ namespace CK.Glouton.Model.Logs
         public string Message { get; set; }
         public string Stack { get; set; }
 
-        public static IExceptionViewModel Get( LuceneSearcher searcher, Document doc )
+        public static IExceptionViewModel Get( ILuceneSearcher searcher, Document doc )
         {
             if( doc.GetField( "Exception" ) == null )
                 return null;

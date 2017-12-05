@@ -1,4 +1,5 @@
-﻿using Lucene.Net.Analysis.Standard;
+﻿using CK.Glouton.Model.Lucene;
+using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
@@ -13,7 +14,7 @@ using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
 {
-    public class LuceneSearcher
+    public class LuceneSearcher : ILuceneSearcher
     {
         private readonly LuceneConfiguration _luceneConfiguration;
 

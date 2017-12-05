@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Lucene;
+﻿using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -11,7 +11,7 @@ namespace CK.Glouton.Model.Logs
         public string Details { get; set; }
         public string FileName { get; set; }
 
-        public static IInnerExceptionViewModel Get( LuceneSearcher searcher, Document doc )
+        public static IInnerExceptionViewModel Get( ILuceneSearcher searcher, Document doc )
         {
             if( doc.GetField( "InnerException" ) == null )
                 return null;
