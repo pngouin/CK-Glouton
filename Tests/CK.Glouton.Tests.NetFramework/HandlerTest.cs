@@ -21,7 +21,6 @@ namespace CK.Glouton.Tests
             using( var server = TestHelper.DefaultMockServer() )
             {
                 server.Open();
-                server.ListLog.Clear();
 
                 using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
@@ -32,13 +31,12 @@ namespace CK.Glouton.Tests
                     var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
 
-                    var guid = Guid.NewGuid();
-                    clientActivityMonitor.Info( guid.ToString );
+                    var guid = Guid.NewGuid().ToString();
+                    clientActivityMonitor.Info( guid );
 
-                    Thread.Sleep( 500 );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
 
-                    var response = server.GetLogEntry( guid.ToString() );
-                    response.Text.Should().Be( guid.ToString() );
+                    server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
 
                     serverActivityMonitor.CloseGroup();
                     clientActivityMonitor.CloseGroup();
@@ -52,7 +50,6 @@ namespace CK.Glouton.Tests
             using( var server = TestHelper.DefaultMockServer() )
             {
                 server.Open();
-                server.ListLog.Clear();
 
                 using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
@@ -79,39 +76,119 @@ namespace CK.Glouton.Tests
                     clientActivityMonitor.Fatal( fatalMessage );
                     clientActivityMonitor.Info( finalMessage );
 
-                    Thread.Sleep( 500 );
+                    Thread.Sleep( TestHelper.DefaultSleepTime * 2 );
 
-                    var initialEntry = server.GetLogEntry( initialMessage );
-                    var debugEntry = server.GetLogEntry( debugMessage );
-                    var traceEntry = server.GetLogEntry( traceMessage );
-                    var warnEntry = server.GetLogEntry( warnMessage );
-                    var errorEntry = server.GetLogEntry( errorMessage );
-                    var fatalEntry = server.GetLogEntry( fatalMessage );
-                    var finalEntry = server.GetLogEntry( finalMessage );
+                    server.GetLogEntry( initialMessage ).Validate( initialMessage, LogLevel.Info ).Should().BeTrue();
+                    server.GetLogEntry( debugMessage ).Validate( debugMessage, LogLevel.Debug ).Should().BeTrue();
+                    server.GetLogEntry( traceMessage ).Validate( traceMessage, LogLevel.Trace ).Should().BeTrue();
+                    server.GetLogEntry( warnMessage ).Validate( warnMessage, LogLevel.Warn ).Should().BeTrue();
+                    server.GetLogEntry( errorMessage ).Validate( errorMessage, LogLevel.Error ).Should().BeTrue();
+                    server.GetLogEntry( fatalMessage ).Validate( fatalMessage, LogLevel.Fatal ).Should().BeTrue();
+                    server.GetLogEntry( finalMessage ).Validate( finalMessage, LogLevel.Info ).Should().BeTrue();
+                }
+            }
+        }
 
-                    initialEntry.Text.Should().Be( initialMessage );
-                    ( initialEntry.LogLevel & LogLevel.Info ).Should().Be( LogLevel.Info );
+        [Test]
+        public void handler_handles_multiple_clients()
+        {
+            using( var server = TestHelper.DefaultMockServer() )
+            {
+                server.Open();
 
-                    debugEntry.Text.Should().Be( debugMessage );
-                    ( debugEntry.LogLevel & LogLevel.Debug ).Should().Be( LogLevel.Debug );
+                using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
+                using( var grandOutputClient1 = GrandOutputHelper.GetNewGrandOutputClient() )
+                {
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    using( var grandOutputClient2 = GrandOutputHelper.GetNewGrandOutputClient() )
+                    {
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
+                        using( var grandOutputClient3 = GrandOutputHelper.GetNewGrandOutputClient() )
+                        {
+                            var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                            grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
 
-                    traceEntry.Text.Should().Be( traceMessage );
-                    ( traceEntry.LogLevel & LogLevel.Trace ).Should().Be( LogLevel.Trace );
+                            var clientActivityMonitor1 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                            grandOutputClient1.EnsureGrandOutputClient( clientActivityMonitor1 );
 
-                    warnEntry.Text.Should().Be( warnMessage );
-                    ( warnEntry.LogLevel & LogLevel.Warn ).Should().Be( LogLevel.Warn );
+                            var clientActivityMonitor2 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                            grandOutputClient2.EnsureGrandOutputClient( clientActivityMonitor2 );
 
-                    errorEntry.Text.Should().Be( errorMessage );
-                    ( errorEntry.LogLevel & LogLevel.Error ).Should().Be( LogLevel.Error );
+                            var clientActivityMonitor3 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                            grandOutputClient3.EnsureGrandOutputClient( clientActivityMonitor3 );
 
-                    fatalEntry.Text.Should().Be( fatalMessage );
-                    ( fatalEntry.LogLevel & LogLevel.Fatal ).Should().Be( LogLevel.Fatal );
+                            var guid1 = Guid.NewGuid().ToString();
+                            var guid2 = Guid.NewGuid().ToString();
+                            var guid3 = Guid.NewGuid().ToString();
 
-                    finalEntry.Text.Should().Be( finalMessage );
-                    ( finalEntry.LogLevel & LogLevel.Info ).Should().Be( LogLevel.Info );
+                            clientActivityMonitor1.Info( guid1 );
+                            clientActivityMonitor2.Info( guid2 );
+                            clientActivityMonitor3.Info( guid3 );
 
-                    serverActivityMonitor.CloseGroup();
-                    clientActivityMonitor.CloseGroup();
+                            Thread.Sleep( TestHelper.DefaultSleepTime * 3 );
+
+                            server.GetLogEntry( guid1 ).Validate( guid1 ).Should().BeTrue();
+                            server.GetLogEntry( guid2 ).Validate( guid2 ).Should().BeTrue();
+                            server.GetLogEntry( guid3 ).Validate( guid3 ).Should().BeTrue();
+
+                            serverActivityMonitor.CloseGroup();
+                            clientActivityMonitor1.CloseGroup();
+                            clientActivityMonitor2.CloseGroup();
+                            clientActivityMonitor3.CloseGroup();
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void close_and_reopen_server()
+        {
+            using( var server = TestHelper.DefaultMockServer() )
+            {
+                server.Open();
+
+                using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
+                {
+                    var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                    grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
+
+                    using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
+                    {
+                        var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                        grandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
+
+                        var guid = Guid.NewGuid().ToString();
+
+                        clientActivityMonitor.Info( guid );
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
+                        server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
+
+                        serverActivityMonitor.Info( "Closing the server" );
+                        server.Close();
+
+                        server.ListLog.Clear();
+                        clientActivityMonitor.Info( guid );
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
+                        Action action = () => server.GetLogEntry( guid );
+                        action.ShouldThrow<InvalidOperationException>();
+                    }
+
+                    serverActivityMonitor.Info( "Reopening server" );
+                    server.Open();
+
+                    using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
+                    {
+                        var clientActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+                        grandOutputClient.EnsureGrandOutputClient( clientActivityMonitor );
+
+                        var guid = Guid.NewGuid().ToString();
+
+                        server.ListLog.Clear();
+                        clientActivityMonitor.Info( guid );
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
+                        server.GetLogEntry( guid ).Validate( guid ).Should().BeTrue();
+                    }
                 }
             }
         }

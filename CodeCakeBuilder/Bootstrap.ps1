@@ -35,7 +35,7 @@ Param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$nugetDownloadUrl = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
+#$nugetDownloadUrl = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
 
 # Go back a level if ./CodeCakeBuilder isn't found
 $solutionDir = $PSScriptRoot
@@ -55,53 +55,55 @@ if (!(Test-Path $builderProj)) {
 Write-Information "Using builder project: $builderProj"
 
 # Ensure packages.config file exists.
-$builderPackageConfig = Join-Path $builderDir "packages.config"
-if (!(Test-Path $builderPackageConfig)) {
-    Throw "Could not find $builderPackageConfig"
-}
+#$builderPackageConfig = Join-Path $builderDir "packages.config"
+#if (!(Test-Path $builderPackageConfig)) {
+#    Throw "Could not find $builderPackageConfig"
+#}
 
 # Resolve MSBuild executable
 # Accept MSBuild from PATH
-$msbuildExe = "msbuild"
-if (Get-Command $msbuildExe -ErrorAction SilentlyContinue) {
-    Write-Information "Using MSBuild from PATH."
-} else {
-    Write-Information "Using MSBuild from local Visual Studio installation:"
-    # Install required PowerShell modules
-    Write-Information "Installing PackageProvider"
-    Install-PackageProvider -Name NuGet -Scope CurrentUser -Force | Out-Null
-    Write-Information "Installing module: VSSetup"
-    Install-Module -Name VSSetup -Scope CurrentUser -Force
-    Write-Information "Installing script: Resolve-MSBuild"
-    Install-Script -Name Resolve-MSBuild -Scope CurrentUser -Force
-    Write-Information "Calling: Resolve-MSBuild"
-    $s = Get-InstalledScript -Name "Resolve-MSBuild"
-    $msbuildExe = Invoke-Expression (Join-Path $s.InstalledLocation $s.Name)
-    Write-Information "Resolved MSBuild at: $msbuildExe"
-    if (!(Test-Path $msbuildExe)) {
-        Throw "MSBuild executable does not exist: $msbuildExe"
-    }
-}
+# $msbuildExe = "msbuild"
+# if (Get-Command $msbuildExe -ErrorAction SilentlyContinue) {
+#     Write-Information "Using MSBuild from PATH."
+# } else {
+#     Write-Information "Using MSBuild from local Visual Studio installation:"
+#     # Install required PowerShell modules
+#     Write-Information "Installing PackageProvider"
+#     Install-PackageProvider -Name NuGet -Scope CurrentUser -Force | Out-Null
+#     Write-Information "Installing module: VSSetup"
+#     Install-Module -Name VSSetup -Scope CurrentUser -Force
+#     Write-Information "Installing script: Resolve-MSBuild"
+#     Install-Script -Name Resolve-MSBuild -Scope CurrentUser -Force
+#     Write-Information "Calling: Resolve-MSBuild"
+#     $s = Get-InstalledScript -Name "Resolve-MSBuild"
+#     $msbuildExe = Invoke-Expression (Join-Path $s.InstalledLocation $s.Name)
+#     Write-Information "Resolved MSBuild at: $msbuildExe"
+#     if (!(Test-Path $msbuildExe)) {
+#         Throw "MSBuild executable does not exist: $msbuildExe"
+#     }
+# }
 
 # Tools directory is for nuget.exe but it may be used to 
 # contain other utilities.
-$toolsDir = Join-Path $builderDir "Tools"
-New-Item -ItemType Directory $toolsDir -Force | Out-Null
+# $toolsDir = Join-Path $builderDir "Tools"
+# New-Item -ItemType Directory $toolsDir -Force | Out-Null
 
 # Try download NuGet.exe if do not exist.
-$nugetExe = Join-Path $toolsDir "nuget.exe"
-if (Test-Path $nugetExe) {
-    Write-Information "Using existing nuget.exe: $nugetExe"
-} else {
-    Write-Information "Downloading nuget.exe from $nugetDownloadUrl"
-    Invoke-WebRequest -Uri $nugetDownloadUrl -OutFile $nugetExe
-}
+# $nugetExe = Join-Path $toolsDir "nuget.exe"
+# if (Test-Path $nugetExe) {
+#     Write-Information "Using existing nuget.exe: $nugetExe"
+# } else {
+#     Write-Information "Downloading nuget.exe from $nugetDownloadUrl"
+#     Invoke-WebRequest -Uri $nugetDownloadUrl -OutFile $nugetExe
+# }
 
+Write-Information "Restore packages with dotnet restore"
 $nugetConfigFile = Join-Path $solutionDir "NuGet.config"
-& $nugetExe restore $builderPackageConfig -SolutionDirectory $solutionDir -configfile $nugetConfigFile
+& dotnet restore --configfile $nugetConfigFile
 
-& $msbuildExe $builderProj /p:Configuration=Release
+Write-Information "Build project with dotnet build"
+& dotnet build --configuration Release
 
 if($Run) {
-    & "$builderDir/bin/Release/CodeCakeBuilder.exe"
+    & "$builderDir/bin/Release/net461/CodeCakeBuilder.exe"
 }

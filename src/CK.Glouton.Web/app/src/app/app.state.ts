@@ -1,3 +1,5 @@
-export interface IAppState {
+import { ITimeSpanNavigatorState } from './modules/timeSpanNavigator/state/timeSpanNavigator.state';
 
+export interface IAppState {
+    timeSpanNavigator: ITimeSpanNavigatorState;
 }

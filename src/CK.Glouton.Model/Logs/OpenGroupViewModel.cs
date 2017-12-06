@@ -1,7 +1,7 @@
-﻿using CK.Glouton.Lucene;
+﻿using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
 
-namespace CK.Glouton.Model
+namespace CK.Glouton.Model.Logs
 {
     public class OpenGroupViewModel : ILogViewModel
     {
@@ -12,7 +12,7 @@ namespace CK.Glouton.Model
         public string SourceFileName { get; set; }
         public IExceptionViewModel Exception { get; set; }
 
-        public static OpenGroupViewModel Get( LuceneSearcher luceneSearcher, Document document )
+        public static OpenGroupViewModel Get( ILuceneSearcher luceneSearcher, Document document )
         {
             return new OpenGroupViewModel
             {

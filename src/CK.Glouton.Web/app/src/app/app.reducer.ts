@@ -1,5 +1,7 @@
 import { ActionReducer } from '@ngrx/store';
 
+import timeSpanNavigatorReducer from './modules/timeSpanNavigator/state/timeSpanNavigator.reducer';
+
 /**
  * The compose function is one of our most handy tools. In basic terms, you give
  * it any number of functions and it returns a function. This new function
@@ -35,7 +37,7 @@ import { combineReducers } from '@ngrx/store';
  * the result from right to left.
  */
 const reducers: any = {
-    // Reducers goes here
+    timeSpanNavigator: timeSpanNavigatorReducer
 };
 
 const developmentReducer: ActionReducer<any> = compose(storeFreeze, combineReducers)(reducers);
