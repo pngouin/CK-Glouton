@@ -4,6 +4,11 @@ using CK.Glouton.Model.Logs;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using FluentAssertions;
+using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Index;
+using Lucene.Net.Search;
+using Lucene.Net.Store;
+using Lucene.Net.Util;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -19,12 +24,6 @@ namespace CK.Glouton.Tests
         public void SetUp()
         {
             TestHelper.Setup();
-            var path = TestHelper.GetTestLogDirectory();
-            Array.ForEach( Directory.GetFiles( path ), f =>
-               {
-                   if( File.Exists( f ) )
-                       File.Delete( f );
-               } );
         }
 
         private const int LuceneMaxSearch = 10;
@@ -34,10 +33,11 @@ namespace CK.Glouton.Tests
         {
             MaxSearch = LuceneMaxSearch,
             Path = LucenePath,
+            OpenMode = OpenMode.CREATE,
             Directory = ""
         };
 
-        private static readonly LuceneConfiguration LuceneSearcherConfiguration = new LuceneConfiguration
+        private  static readonly LuceneConfiguration LuceneSearcherConfiguration = new LuceneConfiguration
         {
             MaxSearch = LuceneMaxSearch,
             Path = LucenePath,
@@ -66,11 +66,10 @@ namespace CK.Glouton.Tests
                         activityMonitor.Info( new Exception() );
                     }
                 }
-            Thread.Sleep( TestHelper.DefaultSleepTime * 5 );
             }
 
             var searcher = new LuceneSearcher( LuceneSearcherConfiguration, new[] { "LogLevel", "Text" } );
-            var result = searcher.Search( "Text:Hello world" );
+            var result = searcher.Search("Text:\"Hello world\"");
             result.Should().NotBeNull();
             result.Count.Should().Be(1);
             result[0].LogType.Should().Be(ELogType.Line);
@@ -80,7 +79,7 @@ namespace CK.Glouton.Tests
             log.LogLevel.Should().Contain("Info");
 
 
-            result = searcher.Search("Text:CriticalError");
+            result = searcher.Search("Text:\"CriticalError\"");
             result.Should().NotBeNull();
             result.Count.Should().Be(1);
             result[0].LogType.Should().Be(ELogType.Line);
