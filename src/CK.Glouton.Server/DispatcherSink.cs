@@ -195,6 +195,9 @@ namespace CK.Glouton.Server
             _task.Wait();
             _queue.Dispose();
             _stopTokenSource.Dispose();
+
+            foreach (var h in _gloutonHandlers)
+                h.Dispose();
         }
 
         public bool IsRunning => _stopFlag == 0;
