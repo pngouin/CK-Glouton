@@ -55,6 +55,7 @@ namespace CK.Glouton.Server.Handlers
                 {
                     MaxSearch = _configuration.MaxSearch <= 0 ? 10 : _configuration.MaxSearch, // Todo: Improve the way which defines the default value
                     Path = _configuration.ActualPath,
+                    OpenMode = _configuration.OpenMode,
                     Directory = appName
                 };
 

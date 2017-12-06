@@ -1,6 +1,7 @@
 ﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Server;
 using System;
+using Lucene.Net.Index;
 
 namespace CK.Glouton.Server.Handlers
 {
@@ -12,6 +13,8 @@ namespace CK.Glouton.Server.Handlers
 
         private string _actualPath;
         public string ActualPath => _actualPath ?? ( _actualPath = GetActualPath() );
+
+        public OpenMode? OpenMode { get; set; }
 
         private string GetActualPath()
         {
@@ -29,7 +32,8 @@ namespace CK.Glouton.Server.Handlers
             {
                 MaxSearch = MaxSearch,
                 Path = Path,
-                Directory = Directory
+                Directory = Directory,
+                OpenMode = OpenMode
             };
         }
     }

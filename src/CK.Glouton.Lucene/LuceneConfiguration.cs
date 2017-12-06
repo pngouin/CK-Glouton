@@ -1,4 +1,5 @@
 ﻿using System;
+using Lucene.Net.Index;
 
 namespace CK.Glouton.Lucene
 {
@@ -7,6 +8,7 @@ namespace CK.Glouton.Lucene
         public int MaxSearch { get; set; }
         public string Path { get; set; }
         public string Directory { get; set; }
+        public OpenMode? OpenMode { get; set; }
 
         private string _actualPath;
         public string ActualPath => _actualPath ?? ( _actualPath = GetActualPath() );

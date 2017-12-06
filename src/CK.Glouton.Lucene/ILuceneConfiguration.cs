@@ -1,4 +1,6 @@
-﻿namespace CK.Glouton.Lucene
+﻿using Lucene.Net.Index;
+
+namespace CK.Glouton.Lucene
 {
     public interface ILuceneConfiguration
     {
@@ -6,5 +8,6 @@
         string Directory { get; set; }
         int MaxSearch { get; set; }
         string Path { get; set; }
+        OpenMode? OpenMode { get; set; }
     }
 }

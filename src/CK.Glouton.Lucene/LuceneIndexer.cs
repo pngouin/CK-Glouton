@@ -35,8 +35,12 @@ namespace CK.Glouton.Lucene
                 System.IO.Directory.CreateDirectory( _luceneConfiguration.ActualPath );
 
             Directory indexDirectory = FSDirectory.Open( new DirectoryInfo( _luceneConfiguration.ActualPath ) );
+            var config = new IndexWriterConfig(LuceneVersion.LUCENE_48, new StandardAnalyzer(LuceneVersion.LUCENE_48));
 
-            _writer = new IndexWriter( indexDirectory, new IndexWriterConfig( LuceneVersion.LUCENE_48, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ) );
+            if (luceneConfiguration.OpenMode != null)
+                config.OpenMode = (OpenMode)_luceneConfiguration.OpenMode;
+
+            _writer = new IndexWriter( indexDirectory, config);
             _lastDateTimeStamp = new DateTimeStamp( DateTime.UtcNow );
             _numberOfFileToCommit = 0;
             _exceptionDepth = 0;
