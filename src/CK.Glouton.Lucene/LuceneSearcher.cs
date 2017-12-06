@@ -25,6 +25,11 @@ namespace CK.Glouton.Lucene
 
         private Query _query;
 
+        /// <summary>
+        /// Basic Searcher in a Lucene index for CK.Monitoring log.
+        /// </summary>
+        /// <param name="luceneConfiguration"></param>
+        /// <param name="fields"></param>
         public LuceneSearcher( LuceneConfiguration luceneConfiguration, string[] fields )
         {
             _luceneConfiguration = luceneConfiguration;
@@ -47,13 +52,29 @@ namespace CK.Glouton.Lucene
             InitializeIdList();
         }
 
-
+        /// <summary>
+        /// Get all Monitor Id.
+        /// </summary>
         public ISet<string> MonitorIdList { get; private set; }
 
+        /// <summary>
+        /// Get all App Name.
+        /// </summary>
         public ISet<string> AppNameList { get; private set; }
 
         internal MultiFieldQueryParser QueryParser { get; }
 
+        /// <summary>
+        /// Create a query to search into the logs.
+        /// </summary>
+        /// <param name="monitorId"></param>
+        /// <param name="AppName"></param>
+        /// <param name="fields"></param>
+        /// <param name="logLevel"></param>
+        /// <param name="startingDate"></param>
+        /// <param name="endingDate"></param>
+        /// <param name="searchQuery"></param>
+        /// <returns></returns>
         public Query CreateQuery( string monitorId, string AppName, string[] fields, string[] logLevel, DateTime startingDate, DateTime endingDate, string searchQuery )
         {
             var bQuery = new BooleanQuery();
@@ -84,6 +105,11 @@ namespace CK.Glouton.Lucene
             return bQuery;
         }
 
+        /// <summary>
+        /// Search into Lucene index.
+        /// </summary>
+        /// <param name="searchQuery"></param>
+        /// <returns></returns>
         public List<ILogViewModel> Search( string searchQuery )
         {
             return CreateLogsResult(_indexSearcher?.Search( QueryParser.Parse( searchQuery ), _luceneConfiguration.MaxSearch ) );
@@ -104,16 +130,31 @@ namespace CK.Glouton.Lucene
             return GetDocument(_indexSearcher?.Search(query, _luceneConfiguration.MaxSearch).ScoreDocs.First());
         }
 
+        /// <summary>
+        /// Return all log in the Lucene index.
+        /// </summary>
+        /// <param name="numberDocsToReturn"></param>
+        /// <returns></returns>
         public List<ILogViewModel> GetAllLog( int numberDocsToReturn )
         {
             return CreateLogsResult(_indexSearcher?.Search( new WildcardQuery( new Term( "LogLevel", "*" ) ), numberDocsToReturn ) );
         }
 
+        /// <summary>
+        /// Get all log exception in the Lucene Index.
+        /// </summary>
+        /// <param name="numberDocsToReturn"></param>
+        /// <returns></returns>
         public List<ILogViewModel> GetAllExceptions( int numberDocsToReturn )
         {
             return CreateLogsResult( _indexSearcher?.Search( _exceptionParser.Parse( "Outer" ), numberDocsToReturn ) );
         }
 
+        /// <summary>
+        /// Get the <see cref="TopDocs"/> of a search.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
         public TopDocs QuerySearch ( Query query ) // TODO: Get a good name
         {
             return _indexSearcher?.Search(query, _luceneConfiguration.MaxSearch);
@@ -140,7 +181,6 @@ namespace CK.Glouton.Lucene
                         throw new ArgumentException(nameof(document));
                 }
             }
-
             return result;
         }
 
