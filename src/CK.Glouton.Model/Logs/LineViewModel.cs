@@ -23,18 +23,18 @@ namespace CK.Glouton.Model.Logs
         {
             return new LineViewModel
             {
-                MonitorId = document.Get( "MonitorId" ),
-                GroupDepth = document.Get( "GroupDepth" ),
-                PreviousEntryType = document.Get( "PreviousEntryType" ),
-                PreviousLogTime = document.Get( "PreviousLogTime" ),
-                LogLevel = document.Get( "LogLevel" ),
-                Text = document.Get( "Text" ),
-                Tags = document.Get( "Tags" ),
-                SourceFileName = document.Get( "FileName" ),
-                LineNumber = document.Get( "LineNumber" ),
-                LogTime = DateTools.StringToDate( document.Get( "LogTime" ) ).ToString( "dd/MM/yyyy HH:mm:ss.fff" ),
+                MonitorId = document.Get( LogField.MONITOR_ID ),
+                GroupDepth = document.Get( LogField.GROUP_DEPTH ),
+                PreviousEntryType = document.Get( LogField.PREVIOUS_ENTRY_TYPE ),
+                PreviousLogTime = document.Get( LogField.PREVIOUS_LOG_TIME ),
+                LogLevel = document.Get( LogField.LOG_LEVEL ),
+                Text = document.Get( LogField.TEXT ),
+                Tags = document.Get( LogField.TAGS ),
+                SourceFileName = document.Get( LogField.SOURCE_FILE_NAME ),
+                LineNumber = document.Get( LogField.LINE_NUMBER ),
+                LogTime = DateTools.StringToDate( document.Get( LogField.LOG_TIME ) ).ToString( "dd/MM/yyyy HH:mm:ss.fff" ),
                 Exception = ExceptionViewModel.Get( luceneSearcher, document ),
-                AppId = document.Get( "AppName" )
+                AppId = document.Get( LogField.APP_NAME )
             };
         }
     }

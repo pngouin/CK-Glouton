@@ -47,7 +47,7 @@ namespace CK.Glouton.Lucene
                 "Message",
                 new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
             _levelParser = new QueryParser( LuceneVersion.LUCENE_48,
-                "LogLevel",
+                LogField.LOG_LEVEL,
                 new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
             InitializeIdList();
         }
@@ -79,13 +79,13 @@ namespace CK.Glouton.Lucene
         {
             var bQuery = new BooleanQuery();
             if( monitorId != "All" )
-                bQuery.Add( new TermQuery( new Term( "MonitorId", monitorId ) ), Occur.MUST );
+                bQuery.Add( new TermQuery( new Term( LogField.MONITOR_ID, monitorId ) ), Occur.MUST );
             if( AppName != "All" )
-                bQuery.Add( new TermQuery( new Term( "AppName", AppName ) ), Occur.MUST );
+                bQuery.Add( new TermQuery( new Term( LogField.APP_NAME, AppName ) ), Occur.MUST );
             var bFieldQuery = new BooleanQuery();
             foreach( var field in fields )
             {
-                if( field == "Text" && searchQuery != "*" )
+                if( field == LogField.TEXT && searchQuery != "*" )
                     bFieldQuery.Add( new QueryParser( LuceneVersion.LUCENE_48, field, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ).Parse( searchQuery ), Occur.SHOULD );
                 else
                     bFieldQuery.Add( new WildcardQuery( new Term( field, searchQuery ) ), Occur.SHOULD );
@@ -97,7 +97,7 @@ namespace CK.Glouton.Lucene
                 bLevelQuery.Add( _levelParser.Parse( level ), Occur.SHOULD );
             }
             bQuery.Add( bLevelQuery, Occur.MUST );
-            bQuery.Add( new TermRangeQuery( "LogTime",
+            bQuery.Add( new TermRangeQuery( LogField.LOG_TIME,
                 new BytesRef( DateTools.DateToString( startingDate, DateTools.Resolution.MILLISECOND ) ),
                 new BytesRef( DateTools.DateToString( endingDate, DateTools.Resolution.MILLISECOND ) ),
                 includeLower: true,
@@ -137,7 +137,7 @@ namespace CK.Glouton.Lucene
         /// <returns></returns>
         public List<ILogViewModel> GetAllLog( int numberDocsToReturn )
         {
-            return CreateLogsResult(_indexSearcher?.Search( new WildcardQuery( new Term( "LogLevel", "*" ) ), numberDocsToReturn ) );
+            return CreateLogsResult(_indexSearcher?.Search( new WildcardQuery( new Term( LogField.LOG_LEVEL, "*" ) ), numberDocsToReturn ) );
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace CK.Glouton.Lucene
             foreach (var scoreDoc in topDocs.ScoreDocs)
             {
                 var document = GetDocument(scoreDoc);
-                switch (document.Get("LogType"))
+                switch (document.Get(LogField.LOG_TYPE))
                 {
                     case "Line":
                         result.Add( LineViewModel.Get(this, document) );
@@ -188,18 +188,18 @@ namespace CK.Glouton.Lucene
         {
             MonitorIdList = new HashSet<string>();
             AppNameList = new HashSet<string>();
-            var hits = QuerySearch( new WildcardQuery( new Term( "MonitorIdList", "*" ) ) );
+            var hits = QuerySearch( new WildcardQuery( new Term( LogField.MONITOR_ID_LIST, "*" ) ) );
 
             foreach( var doc in hits.ScoreDocs )
             {
                 var document = GetDocument( doc );
-                var monitorIds = document.Get( "MonitorIdList" ).Split( ' ' );
+                var monitorIds = document.Get( LogField.MONITOR_ID_LIST ).Split( ' ' );
                 foreach( var id in monitorIds )
                 {
                     if( !MonitorIdList.Contains( id ) )
                         MonitorIdList.Add( id );
                 }
-                var appName = document.Get( "AppNameList" ).Split( ' ' );
+                var appName = document.Get( LogField.APP_NAME_LIST ).Split( ' ' );
                 foreach( var id in appName )
                 {
                     if( !AppNameList.Contains( id ) )

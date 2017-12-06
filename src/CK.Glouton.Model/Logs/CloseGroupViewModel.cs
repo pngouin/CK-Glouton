@@ -15,9 +15,9 @@ namespace CK.Glouton.Model.Logs
         {
             CloseGroupViewModel obj = new CloseGroupViewModel
             {
-                LogLevel = doc.Get( "LogLevel" ),
-                LogTime = doc.Get( "LogTime" ),
-                Conclusion = doc.Get( "Conclusion" ),
+                LogLevel = doc.Get( LogField.LOG_LEVEL ),
+                LogTime = doc.Get( LogField.LOG_TIME ),
+                Conclusion = doc.Get( LogField.CONCLUSION ),
                 Exception = ExceptionViewModel.Get( searcher, doc )
             };
 

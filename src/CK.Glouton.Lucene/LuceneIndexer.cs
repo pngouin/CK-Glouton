@@ -1,4 +1,5 @@
 ﻿using CK.Core;
+using CK.Glouton.Model.Logs;
 using CK.Monitoring;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
@@ -65,7 +66,7 @@ namespace CK.Glouton.Lucene
 
             try
             {
-                _searcher = new LuceneSearcher( _luceneConfiguration, new[] { "MonitorIdList", "AppNameList" } );
+                _searcher = new LuceneSearcher( _luceneConfiguration, new[] { LogField.MONITOR_ID_LIST, LogField.APP_NAME } );
             }
             catch( Exception e )
             {
@@ -85,7 +86,7 @@ namespace CK.Glouton.Lucene
 
                 switch( propertyInfo.PropertyType.Name )
                 {
-                    case "DateTimeStamp":
+                    case LogField.DATE_TIME_STAMP:
                         document.Add( new TextField
                             (
                                 propertyInfo.Name,
@@ -106,7 +107,7 @@ namespace CK.Glouton.Lucene
                             ) );
                         break;
 
-                    case "CKExceptionData":
+                    case LogField.CK_EXCEPTION_DATA:
                         document.Add( new TextField(
                                 "Exception",
                                 GetDocument( logValue as CKExceptionData ).Get( "IndexDTS" ),
@@ -114,7 +115,7 @@ namespace CK.Glouton.Lucene
                             ) );
                         break;
 
-                    case "CKTrait":
+                    case LogField.CK_TRAIT:
                         document.Add( new StringField(
                             propertyInfo.Name,
                             logValue.ToString(),
@@ -128,8 +129,8 @@ namespace CK.Glouton.Lucene
                 }
             }
 
-            document.Add( new TextField( "IndexDTS", CreateIndexDts().ToString(), Field.Store.YES ) );
-            document.Add( new TextField( "AppName", appName, Field.Store.YES ) );
+            document.Add( new TextField( LogField.INDEX_DTS, CreateIndexDts().ToString(), Field.Store.YES ) );
+            document.Add( new TextField( LogField.APP_NAME, appName, Field.Store.YES ) );
 
             return document;
         }
@@ -146,24 +147,24 @@ namespace CK.Glouton.Lucene
 
                 switch( propertyInfo.Name )
                 {
-                    case "AggregatedExceptions":
+                    case LogField.AGGREGATED_EXCEPTIONS:
                         if( _exceptionDepth == 0 )
                         {
                             var exList = new StringBuilder();
                             foreach( var ex in exception.AggregatedExceptions )
                             {
-                                exList.Append( GetDocument( ex ).Get( "IndexDTS" ) );
+                                exList.Append( GetDocument( ex ).Get( LogField.INDEX_DTS ) );
                                 exList.AppendLine();
                                 _exceptionDepth++;
                             }
-                            document.Add( new Int32Field( "ExceptionDepth", _exceptionDepth, Field.Store.YES ) );
-                            document.Add( new TextField( "AggregatedException", exList.ToString(), Field.Store.YES ) );
+                            document.Add( new Int32Field( LogField.EXCEPTION_DEPTH, _exceptionDepth, Field.Store.YES ) );
+                            document.Add( new TextField( LogField.AGGREGATED_EXCEPTIONS, exList.ToString(), Field.Store.YES ) );
                             _exceptionDepth = 0;
                         }
 
                         break;
-                    case "InnerException":
-                        document.Add( new StringField( "InnerException", GetDocument( exceptionValue as CKExceptionData ).Get( "IndexDTS" ), Field.Store.YES ) );
+                    case LogField.INNER_EXCEPTION:
+                        document.Add( new StringField( LogField.INNER_EXCEPTION, GetDocument( exceptionValue as CKExceptionData ).Get( "IndexDTS" ), Field.Store.YES ) );
                         break;
                     default:
                         document.Add( new TextField( propertyInfo.Name, exceptionValue.ToString(), Field.Store.YES ) );
@@ -171,7 +172,7 @@ namespace CK.Glouton.Lucene
                 }
             }
 
-            document.Add( new StringField( "IndexDTS", CreateIndexDts().ToString(), Field.Store.YES ) );
+            document.Add( new StringField( LogField.INDEX_DTS, CreateIndexDts().ToString(), Field.Store.YES ) );
 
             return document;
         }
@@ -213,17 +214,17 @@ namespace CK.Glouton.Lucene
             InitializeSearcher();
             if( _searcher == null )
                 return;
-            var hits = _searcher.QuerySearch( new WildcardQuery( new Term( "MonitorIdList", "*" ) ) );
+            var hits = _searcher.QuerySearch( new WildcardQuery( new Term( LogField.MONITOR_ID_LIST, "*" ) ) );
             foreach( var doc in hits.ScoreDocs )
             {
                 var document = _searcher.GetDocument( doc );
-                var monitorIds = document.Get( "MonitorIdList" ).Split( ' ' );
+                var monitorIds = document.Get( LogField.MONITOR_ID_LIST ).Split( ' ' );
                 foreach( var id in monitorIds )
                 {
                     if( !MonitorIdList.Contains( id ) && id != "" && id != " " )
                         MonitorIdList.Add( id );
                 }
-                var appNames = document.Get( "AppNameList" ).Split( ' ' );
+                var appNames = document.Get( LogField.APP_NAME_LIST ).Split( ' ' );
                 foreach( var id in appNames )
                 {
                     if( !AppNameList.Contains( id ) && id != "" && id != " " )
@@ -255,7 +256,7 @@ namespace CK.Glouton.Lucene
 
         public void IndexLog( ILogEntry log, IReadOnlyDictionary<string, string> clientData )
         {
-            clientData.TryGetValue( "AppName", out var appName );
+            clientData.TryGetValue( LogField.APP_NAME, out var appName );
             IndexLog( (IMulticastLogEntry)log, appName );
         }
 
@@ -296,8 +297,8 @@ namespace CK.Glouton.Lucene
         {
             var doc = new Document();
 
-            Field monitorIdList = new TextField( "MonitorIdList", GetMonitorIdList(), Field.Store.YES );
-            Field appNameList = new TextField( "AppNameList", GetAppNameList(), Field.Store.YES );
+            Field monitorIdList = new TextField( LogField.MONITOR_ID_LIST, GetMonitorIdList(), Field.Store.YES );
+            Field appNameList = new TextField( LogField.APP_NAME_LIST, GetAppNameList(), Field.Store.YES );
 
             doc.Add( monitorIdList );
             doc.Add( appNameList );
@@ -312,13 +313,13 @@ namespace CK.Glouton.Lucene
         {
             var doc = new Document();
 
-            Field monitorIdList = new TextField( "MonitorIdList", GetMonitorIdList(), Field.Store.YES );
-            Field appNameList = new TextField( "AppNameList", GetAppNameList(), Field.Store.YES );
+            Field monitorIdList = new TextField( LogField.MONITOR_ID_LIST, GetMonitorIdList(), Field.Store.YES );
+            Field appNameList = new TextField( LogField.APP_NAME_LIST, GetAppNameList(), Field.Store.YES );
 
             doc.Add( monitorIdList );
             doc.Add( appNameList );
 
-            var term = new Term( "MonitorIdList", "*" );
+            var term = new Term( LogField.MONITOR_ID_LIST, "*" );
             var query = new WildcardQuery( term );
             _writer.DeleteDocuments( query );
             _writer.AddDocument( doc );

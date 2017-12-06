@@ -13,15 +13,15 @@ namespace CK.Glouton.Model.Logs
 
         public static IExceptionViewModel Get( ILuceneSearcher searcher, Document doc )
         {
-            if( doc.GetField( "Exception" ) == null )
+            if( doc.GetField( LogField.EXCEPTION ) == null )
                 return null;
 
-            var exception = searcher.GetDocument(new TermQuery(new Term("IndexTS", doc.Get("Exception"))));
+            var exception = searcher.GetDocument(new TermQuery(new Term(LogField.INDEX_DTS, doc.Get(LogField.EXCEPTION))));
 
             return new ExceptionViewModel
             {
-                Message = exception.Get( "Exception" ),
-                Stack = exception.Get( "Stack" ),
+                Message = exception.Get( LogField.EXCEPTION ),
+                Stack = exception.Get( LogField.STACK ),
                 InnerException = InnerExceptionViewModel.Get( searcher, exception )
             };
         }
