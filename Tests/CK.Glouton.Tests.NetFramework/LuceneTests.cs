@@ -68,8 +68,18 @@ namespace CK.Glouton.Tests
                 }
             }
 
-            var searcher = new LuceneSearcher( LuceneSearcherConfiguration, new[] { "LogLevel", "Text" } );
-            var result = searcher.Search("Text:\"Hello world\"");
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
+            var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.ActualPath);
+
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            {
+                Fields = new[] { "LogLevel", "Text" },
+                SearchMethod = SearchMethod.FullText,
+                MaxResult = 10,
+                Query = "Text:\"Hello world\""
+            };
+
+            var result = searcher.Search(configuration);
             result.Should().NotBeNull();
             result.Count.Should().Be(1);
             result[0].LogType.Should().Be(ELogType.Line);
@@ -78,8 +88,9 @@ namespace CK.Glouton.Tests
             log.Text.Should().Be("Hello world");
             log.LogLevel.Should().Contain("Info");
 
+            configuration.Query = "Text:\"CriticalError\"";
 
-            result = searcher.Search("Text:\"CriticalError\"");
+            result = searcher.Search(configuration);
             result.Should().NotBeNull();
             result.Count.Should().Be(1);
             result[0].LogType.Should().Be(ELogType.Line);
