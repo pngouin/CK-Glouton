@@ -76,15 +76,48 @@ namespace CK.Glouton.Lucene
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public Query CreateQuery(ILuceneSearcherConfiguration configuration)
+        private Query CreateQuery(ILuceneSearcherConfiguration configuration)
+        {
+            var bQuery = new BooleanQuery();
+
+            if (configuration.MonitorId != null) bQuery.Add(CreateMonitorIdQuery(configuration), Occur.MUST);
+            if (configuration.Fields != null) bQuery.Add(CreateFieldQuery(configuration), Occur.MUST);
+            if (configuration.DateEnd != null && configuration.DateStart != null) bQuery.Add(CreateTimeQuery(configuration), Occur.MUST);
+            if (configuration.LogLevel != null) bQuery.Add(CreateLogLevelQuery(configuration), Occur.MUST);
+
+            return bQuery;
+        }
+
+        private Query CreateTimeQuery ( ILuceneSearcherConfiguration configuration)
+        {
+            return new TermRangeQuery(LogField.LOG_TIME,
+                new BytesRef(DateTools.DateToString(configuration.DateStart, DateTools.Resolution.MILLISECOND)),
+                new BytesRef(DateTools.DateToString(configuration.DateEnd, DateTools.Resolution.MILLISECOND)),
+                includeLower: true,
+                includeUpper: true);
+        }
+
+        private Query CreateLogLevelQuery (ILuceneSearcherConfiguration configuration)
         {
             var levelParser = new QueryParser(LuceneVersion.LUCENE_48,
-                LogField.LOG_LEVEL,
-                new StandardAnalyzer(LuceneVersion.LUCENE_48));
+               LogField.LOG_LEVEL,
+               new StandardAnalyzer(LuceneVersion.LUCENE_48));
 
-            var bQuery = new BooleanQuery();
-            if (configuration.MonitorId != null)
-                bQuery.Add(new TermQuery(new Term(LogField.MONITOR_ID, configuration.MonitorId)), Occur.MUST);
+            var bLevelQuery = new BooleanQuery();
+            foreach (var level in configuration.LogLevel)
+            {
+                bLevelQuery.Add(levelParser.Parse(level), Occur.SHOULD);
+            }
+            return bLevelQuery;
+        }
+
+        private Query CreateMonitorIdQuery (ILuceneSearcherConfiguration configuration)
+        {
+            return new TermQuery(new Term(LogField.MONITOR_ID, configuration.MonitorId));
+        }
+
+        private Query CreateFieldQuery (ILuceneSearcherConfiguration configuration)
+        {
             var bFieldQuery = new BooleanQuery();
             foreach (var field in configuration.Fields)
             {
@@ -93,19 +126,7 @@ namespace CK.Glouton.Lucene
                 else
                     bFieldQuery.Add(new WildcardQuery(new Term(field, configuration.Query)), Occur.SHOULD);
             }
-            bQuery.Add(bFieldQuery, Occur.MUST);
-            var bLevelQuery = new BooleanQuery();
-            foreach (var level in configuration.LogLevel)
-            {
-                bLevelQuery.Add(levelParser.Parse(level), Occur.SHOULD);
-            }
-            bQuery.Add(bLevelQuery, Occur.MUST);
-            bQuery.Add(new TermRangeQuery(LogField.LOG_TIME,
-                new BytesRef(DateTools.DateToString(configuration.DateStart, DateTools.Resolution.MILLISECOND)),
-                new BytesRef(DateTools.DateToString(configuration.DateEnd, DateTools.Resolution.MILLISECOND)),
-                includeLower: true,
-                includeUpper: true), Occur.MUST);
-            return bQuery;
+            return bFieldQuery;
         }
 
         private List<ILogViewModel> Search( LuceneSearcherConfiguration configuration,  Query searchQuery )
@@ -127,21 +148,11 @@ namespace CK.Glouton.Lucene
             return GetDocument(_indexSearcher?.Search(query, maxResult).ScoreDocs.First());
         }
 
-        private bool CheckSearchConfiguration(LuceneSearcherConfiguration configuration)
+        private bool CheckSearchConfiguration(LuceneSearcherConfiguration configuration) // TODO: Check if the check is good.
         {
             if (configuration.AppName == null ||
                 configuration.Fields == null ||
                 configuration.MaxResult == 0)
-                return false;
-            if (configuration.WantAll || configuration.SearchMethod == SearchMethod.FullText)
-                return true;
-            if (!configuration.WantAll && (
-                configuration.AppName == null ||
-                configuration.DateEnd == null ||
-                configuration.DateStart == null ||
-                configuration.LogLevel == null ||
-                configuration.MonitorId == null ||
-                configuration.Query == null ))
                 return false;
             return true;
         }
