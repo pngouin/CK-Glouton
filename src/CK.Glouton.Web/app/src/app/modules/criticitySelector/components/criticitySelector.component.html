@@ -1,0 +1,8 @@
+<div class="row">
+    <div>Debug<input type="checkbox" [(ngModel)]="_filter.debug" (ngModelChange)="OnChange()" name="Debug"></div>
+    <div>Trace<input type="checkbox" [(ngModel)]="_filter.trace" (ngModelChange)="OnChange()" name="Trace"></div>
+    <div>Info<input type="checkbox" [(ngModel)]="_filter.info" (ngModelChange)="OnChange()" name="Info"></div>
+    <div>Warn<input type="checkbox" [(ngModel)]="_filter.warn" (ngModelChange)="OnChange()" name="Warn"></div>
+    <div>Error<input type="checkbox" [(ngModel)]="_filter.error" (ngModelChange)="OnChange()" name="Error"></div>
+    <div>Fatal<input type="checkbox" [(ngModel)]="_filter.fatal" (ngModelChange)="OnChange()"  name="Fatal"></div>
+</div>

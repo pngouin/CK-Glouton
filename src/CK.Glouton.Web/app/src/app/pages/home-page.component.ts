@@ -11,6 +11,9 @@ import { ITimeSpanNavigatorSettings, Scale, IScaleEdge } from '../modules/timeSp
     <div>
       <querySearchbar></querySearchbar>
     </div>
+    <div>
+      <criticitySelector></criticitySelector>
+    </div>
     <h4>Time Span Navigator Component</h4>
     <div>
       <timeSpanNavigator
