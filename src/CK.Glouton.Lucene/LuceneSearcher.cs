@@ -37,7 +37,7 @@ namespace CK.Glouton.Lucene
         /// <returns></returns>
         public List<ILogViewModel> Search(LuceneSearcherConfiguration searchConfiguration)
         {
-            if (CheckSearchConfiguration(searchConfiguration))
+            if (!CheckSearchConfiguration(searchConfiguration))
                 return null;
 
             if (searchConfiguration.SearchMethod == SearchMethod.FullText)
@@ -133,7 +133,7 @@ namespace CK.Glouton.Lucene
                 configuration.Fields == null ||
                 configuration.MaxResult == 0)
                 return false;
-            if (configuration.WantAll)
+            if (configuration.WantAll || configuration.SearchMethod == SearchMethod.FullText)
                 return true;
             if (!configuration.WantAll && (
                 configuration.AppName == null ||

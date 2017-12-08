@@ -69,7 +69,7 @@ namespace CK.Glouton.Lucene
 
                 //_searcher = new LuceneSearcher( _luceneConfiguration, new[] { LogField.MONITOR_ID_LIST, LogField.APP_NAME } );
                 LuceneSearcherManager searcherManager = new LuceneSearcherManager(_luceneConfiguration);
-                _searcher = searcherManager.GetSearcher(_luceneConfiguration.ActualPath);
+                _searcher = searcherManager.GetSearcher(_luceneConfiguration.Directory);
                 return searcherManager.AppName;
             }
             catch( Exception e )

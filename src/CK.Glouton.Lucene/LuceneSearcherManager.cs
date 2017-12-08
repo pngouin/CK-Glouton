@@ -48,7 +48,8 @@ namespace CK.Glouton.Lucene
             List<IndexReader> readers = new List<IndexReader>();
             foreach (string appName in appNames)
             {
-                if (!System.IO.Directory.Exists(_configuration.Path + appName))
+                bool coucou = System.IO.Directory.Exists(_configuration.Path + "\\" + appName);
+                if (!System.IO.Directory.Exists(_configuration.Path + "\\" + appName))
                     continue;
                 readers.Add(GetReader(appName));
             }
@@ -81,7 +82,7 @@ namespace CK.Glouton.Lucene
 
         private Directory GetDirectory (string appName)
         {
-            return FSDirectory.Open(_configuration.Path + appName);
+            return FSDirectory.Open(_configuration.Path + "\\" + appName);
         }
     }
 }

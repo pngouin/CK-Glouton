@@ -69,13 +69,14 @@ namespace CK.Glouton.Tests
             }
 
             LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
-            var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.ActualPath);
+            var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
 
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 Fields = new[] { "LogLevel", "Text" },
                 SearchMethod = SearchMethod.FullText,
                 MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory },
                 Query = "Text:\"Hello world\""
             };
 
