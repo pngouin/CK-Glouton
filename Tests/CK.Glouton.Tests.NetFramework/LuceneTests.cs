@@ -45,7 +45,7 @@ namespace CK.Glouton.Tests
         };
 
         [Test]
-        public void log_can_be_indexed_and_searched()
+        public void log_can_be_indexed_and_searched_with_full_text_search()
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
@@ -90,6 +90,63 @@ namespace CK.Glouton.Tests
             log.LogLevel.Should().Contain("Info");
 
             configuration.Query = "Text:\"CriticalError\"";
+
+            result = searcher.Search(configuration);
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
+            result[0].LogType.Should().Be(ELogType.Line);
+
+            log = result[0] as LineViewModel;
+            log.Text.Should().Be("CriticalError");
+            log.LogLevel.Should().Contain("Error");
+        }
+
+        [Test]
+        public void log_can_be_indexed_and_searched_with_object_search()
+        {
+            using (var server = TestHelper.DefaultGloutonServer())
+            {
+                server.Open(new HandlersManagerConfiguration
+                {
+                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
+                });
+
+                using (var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient())
+                {
+                    var activityMonitor = new ActivityMonitor(false) { MinimalFilter = LogFilter.Debug };
+                    grandOutputClient.EnsureGrandOutputClient(activityMonitor);
+
+                    activityMonitor.Info("Hello world");
+                    activityMonitor.Error("CriticalError");
+                    using (activityMonitor.OpenFatal(new Exception("Fatal")))
+                    {
+                        activityMonitor.Info(new Exception());
+                    }
+                }
+            }
+
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
+            var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
+
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            {
+                Fields = new[] { "Text" },
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory },
+                Query = "\"Hello world\""
+            };
+
+            var result = searcher.Search(configuration);
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
+            result[0].LogType.Should().Be(ELogType.Line);
+
+            var log = result[0] as LineViewModel;
+            log.Text.Should().Be("Hello world");
+            log.LogLevel.Should().Contain("Info");
+
+            configuration.Query = "CriticalError";
 
             result = searcher.Search(configuration);
             result.Should().NotBeNull();
