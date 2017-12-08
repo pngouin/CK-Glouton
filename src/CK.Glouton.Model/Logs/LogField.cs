@@ -32,5 +32,6 @@ namespace CK.Glouton.Model.Logs
         public const string CK_TRAIT = "CKTrait";
         public const string AGGREGATED_EXCEPTIONS = "AggregatedExceptions";
         public const string EXCEPTION_DEPTH = "ExceptionDepth";
+        public const string MESSAGE = "Message";
     }
 }
