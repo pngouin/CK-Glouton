@@ -16,7 +16,7 @@ namespace CK.Glouton.Model.Logs
             if( doc.GetField( LogField.EXCEPTION ) == null )
                 return null;
 
-            var exception = searcher.GetDocument(new TermQuery(new Term(LogField.INDEX_DTS, doc.Get(LogField.EXCEPTION))));
+            var exception = searcher.GetDocument(new TermQuery(new Term(LogField.INDEX_DTS, doc.Get(LogField.EXCEPTION))), 999);
 
             return new ExceptionViewModel
             {

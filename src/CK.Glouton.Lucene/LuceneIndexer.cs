@@ -58,19 +58,23 @@ namespace CK.Glouton.Lucene
         /// Try to initialize a searcher to get the list of monitor and app IDs
         /// It can fail if the index is empty, in this case the searcher is useless
         /// </summary>
-        private void InitializeSearcher()
+        private ISet<string> InitializeSearcher()
         {
             var file = new DirectoryInfo( _luceneConfiguration.ActualPath ).EnumerateFiles();
             if( !file.Any() )
-                return;
+                return null;
 
             try
             {
-                _searcher = new LuceneSearcher( _luceneConfiguration, new[] { LogField.MONITOR_ID_LIST, LogField.APP_NAME } );
+
+                //_searcher = new LuceneSearcher( _luceneConfiguration, new[] { LogField.MONITOR_ID_LIST, LogField.APP_NAME } );
+                LuceneSearcherManager searcherManager = new LuceneSearcherManager(_luceneConfiguration);
+                _searcher = searcherManager.GetSearcher(_luceneConfiguration.ActualPath);
+                return searcherManager.AppName;
             }
             catch( Exception e )
             {
-                Console.WriteLine( e );
+                return null;
             }
         }
 
@@ -209,30 +213,8 @@ namespace CK.Glouton.Lucene
         /// </summary>
         private void InitializeIdList()
         {
-            MonitorIdList = new HashSet<string>();
-            AppNameList = new HashSet<string>();
-            InitializeSearcher();
-            if( _searcher == null )
-                return;
-            var hits = _searcher.QuerySearch( new WildcardQuery( new Term( LogField.MONITOR_ID_LIST, "*" ) ) );
-            foreach( var doc in hits.ScoreDocs )
-            {
-                var document = _searcher.GetDocument( doc );
-                var monitorIds = document.Get( LogField.MONITOR_ID_LIST ).Split( ' ' );
-                foreach( var id in monitorIds )
-                {
-                    if( !MonitorIdList.Contains( id ) && id != "" && id != " " )
-                        MonitorIdList.Add( id );
-                }
-                var appNames = document.Get( LogField.APP_NAME_LIST ).Split( ' ' );
-                foreach( var id in appNames )
-                {
-                    if( !AppNameList.Contains( id ) && id != "" && id != " " )
-                        AppNameList.Add( id );
-                }
-            }
-            if( hits.TotalHits == 0 )
-                CreateIdListDoc();
+            AppNameList = InitializeSearcher();
+            MonitorIdList = new HashSet<string>( _searcher.GetAllMonitorID());
         }
 
         /// <summary>

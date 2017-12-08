@@ -5,119 +5,116 @@ using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
-using Lucene.Net.Store;
 using Lucene.Net.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
 {
     public class LuceneSearcher : ILuceneSearcher
     {
-        private readonly LuceneConfiguration _luceneConfiguration;
-
         private readonly IndexSearcher _indexSearcher;
-        private readonly QueryParser _exceptionParser;
-        private readonly QueryParser _levelParser;
-
-        private Query _query;
 
         /// <summary>
         /// Basic Searcher in a Lucene index for CK.Monitoring log.
         /// </summary>
         /// <param name="luceneConfiguration"></param>
         /// <param name="fields"></param>
-        public LuceneSearcher( LuceneConfiguration luceneConfiguration, string[] fields )
+        public LuceneSearcher( MultiReader multiReader )
         {
-            _luceneConfiguration = luceneConfiguration;
-
-            var file = new DirectoryInfo( luceneConfiguration.ActualPath ).EnumerateFiles();
-            if( !file.Any() )
-                return;
-
-            Directory indexDirectory = FSDirectory.Open( new DirectoryInfo( luceneConfiguration.ActualPath ) );
-            _indexSearcher = new IndexSearcher( DirectoryReader.Open( indexDirectory ) );
-            QueryParser = new MultiFieldQueryParser( LuceneVersion.LUCENE_48,
-                fields,
-                new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
-            _exceptionParser = new QueryParser( LuceneVersion.LUCENE_48,
-                "Message",
-                new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
-            _levelParser = new QueryParser( LuceneVersion.LUCENE_48,
-                LogField.LOG_LEVEL,
-                new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
-            InitializeIdList();
+            _indexSearcher = new IndexSearcher( multiReader );
         }
-
-        /// <summary>
-        /// Get all Monitor Id.
-        /// </summary>
-        public ISet<string> MonitorIdList { get; private set; }
-
-        /// <summary>
-        /// Get all App Name.
-        /// </summary>
-        public ISet<string> AppNameList { get; private set; }
 
         internal MultiFieldQueryParser QueryParser { get; }
 
         /// <summary>
-        /// Create a query to search into the logs.
+        /// Search into Lucene index.
+        /// If the <see cref="LuceneSearcherConfiguration"/> is not correct return null.
         /// </summary>
-        /// <param name="monitorId"></param>
-        /// <param name="AppName"></param>
-        /// <param name="fields"></param>
-        /// <param name="logLevel"></param>
-        /// <param name="startingDate"></param>
-        /// <param name="endingDate"></param>
         /// <param name="searchQuery"></param>
         /// <returns></returns>
-        public Query CreateQuery( string monitorId, string AppName, string[] fields, string[] logLevel, DateTime startingDate, DateTime endingDate, string searchQuery )
+        public List<ILogViewModel> Search(LuceneSearcherConfiguration searchConfiguration)
         {
-            var bQuery = new BooleanQuery();
-            if( monitorId != "All" )
-                bQuery.Add( new TermQuery( new Term( LogField.MONITOR_ID, monitorId ) ), Occur.MUST );
-            if( AppName != "All" )
-                bQuery.Add( new TermQuery( new Term( LogField.APP_NAME, AppName ) ), Occur.MUST );
-            var bFieldQuery = new BooleanQuery();
-            foreach( var field in fields )
+            if (CheckSearchConfiguration(searchConfiguration))
+                return null;
+
+            if (searchConfiguration.SearchMethod == SearchMethod.FullText)
             {
-                if( field == LogField.TEXT && searchQuery != "*" )
-                    bFieldQuery.Add( new QueryParser( LuceneVersion.LUCENE_48, field, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ).Parse( searchQuery ), Occur.SHOULD );
-                else
-                    bFieldQuery.Add( new WildcardQuery( new Term( field, searchQuery ) ), Occur.SHOULD );
+                return Search(searchConfiguration, new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
+                    searchConfiguration.Fields,
+                    new StandardAnalyzer(LuceneVersion.LUCENE_48)).Parse(searchConfiguration.Query));
             }
-            bQuery.Add( bFieldQuery, Occur.MUST );
-            var bLevelQuery = new BooleanQuery();
-            foreach( var level in logLevel )
+
+            if (searchConfiguration.WantAll)
+                return Search(searchConfiguration, GetAll(searchConfiguration.All));
+
+            return CreateLogsResult(_indexSearcher?.Search(( CreateQuery(searchConfiguration)), (int)searchConfiguration.MaxResult) );
+        }
+
+        private Query GetAll (LuceneWantAll all)
+        {
+            Query query = null;
+            switch (all)
             {
-                bLevelQuery.Add( _levelParser.Parse( level ), Occur.SHOULD );
+                case LuceneWantAll.Exception:
+                    query = new QueryParser(LuceneVersion.LUCENE_48,
+                                                    LogField.LOG_LEVEL,
+                                                    new StandardAnalyzer(LuceneVersion.LUCENE_48))
+                                                        .Parse("Outer");
+                    break;
+                case LuceneWantAll.Log:
+                    query = new WildcardQuery(new Term(LogField.LOG_LEVEL, "*"));
+                    break;
             }
-            bQuery.Add( bLevelQuery, Occur.MUST );
-            bQuery.Add( new TermRangeQuery( LogField.LOG_TIME,
-                new BytesRef( DateTools.DateToString( startingDate, DateTools.Resolution.MILLISECOND ) ),
-                new BytesRef( DateTools.DateToString( endingDate, DateTools.Resolution.MILLISECOND ) ),
-                includeLower: true,
-                includeUpper: true ), Occur.MUST );
-            return bQuery;
+            return query;
         }
 
         /// <summary>
-        /// Search into Lucene index.
+        /// Create a query to search into the logs.
         /// </summary>
-        /// <param name="searchQuery"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        public List<ILogViewModel> Search( string searchQuery )
+        public Query CreateQuery(ILuceneSearcherConfiguration configuration)
         {
-            return CreateLogsResult(_indexSearcher?.Search( QueryParser.Parse( searchQuery ), _luceneConfiguration.MaxSearch ) );
+            var levelParser = new QueryParser(LuceneVersion.LUCENE_48,
+                LogField.LOG_LEVEL,
+                new StandardAnalyzer(LuceneVersion.LUCENE_48));
+
+            var bQuery = new BooleanQuery();
+            if (configuration.MonitorId != null)
+                bQuery.Add(new TermQuery(new Term(LogField.MONITOR_ID, configuration.MonitorId)), Occur.MUST);
+            var bFieldQuery = new BooleanQuery();
+            foreach (var field in configuration.Fields)
+            {
+                if (field == LogField.TEXT && configuration.Query != null)
+                    bFieldQuery.Add(new QueryParser(LuceneVersion.LUCENE_48, field, new StandardAnalyzer(LuceneVersion.LUCENE_48)).Parse(configuration.Query), Occur.SHOULD);
+                else
+                    bFieldQuery.Add(new WildcardQuery(new Term(field, configuration.Query)), Occur.SHOULD);
+            }
+            bQuery.Add(bFieldQuery, Occur.MUST);
+            var bLevelQuery = new BooleanQuery();
+            foreach (var level in configuration.LogLevel)
+            {
+                bLevelQuery.Add(levelParser.Parse(level), Occur.SHOULD);
+            }
+            bQuery.Add(bLevelQuery, Occur.MUST);
+            bQuery.Add(new TermRangeQuery(LogField.LOG_TIME,
+                new BytesRef(DateTools.DateToString(configuration.DateStart, DateTools.Resolution.MILLISECOND)),
+                new BytesRef(DateTools.DateToString(configuration.DateEnd, DateTools.Resolution.MILLISECOND)),
+                includeLower: true,
+                includeUpper: true), Occur.MUST);
+            return bQuery;
         }
 
-        public List<ILogViewModel> Search( Query searchQuery )
+        private List<ILogViewModel> Search( LuceneSearcherConfiguration configuration,  Query searchQuery )
         {
-            return CreateLogsResult(_indexSearcher?.Search( searchQuery, _luceneConfiguration.MaxSearch ) );
+            return CreateLogsResult(_indexSearcher?.Search( searchQuery, (int)configuration.MaxResult) );
+        }
+        private List<ILogViewModel> Search(Query searchQuery, int maxResult)
+        {
+            return CreateLogsResult(_indexSearcher?.Search(searchQuery, maxResult));
         }
 
         public Document GetDocument( ScoreDoc scoreDoc )
@@ -125,29 +122,47 @@ namespace CK.Glouton.Lucene
             return _indexSearcher?.Doc( scoreDoc.Doc );
         }
 
-        public Document GetDocument(Query query)
+        public Document GetDocument(Query query, int maxResult)
         {
-            return GetDocument(_indexSearcher?.Search(query, _luceneConfiguration.MaxSearch).ScoreDocs.First());
+            return GetDocument(_indexSearcher?.Search(query, maxResult).ScoreDocs.First());
+        }
+
+        private bool CheckSearchConfiguration(LuceneSearcherConfiguration configuration)
+        {
+            if (configuration.AppName == null ||
+                configuration.Fields == null ||
+                configuration.MaxResult == 0)
+                return false;
+            if (configuration.WantAll)
+                return true;
+            if (!configuration.WantAll && (
+                configuration.AppName == null ||
+                configuration.DateEnd == null ||
+                configuration.DateStart == null ||
+                configuration.LogLevel == null ||
+                configuration.MonitorId == null ||
+                configuration.Query == null ))
+                return false;
+            return true;
         }
 
         /// <summary>
-        /// Return all log in the Lucene index.
+        /// Get all monitor id in all AppName.
         /// </summary>
-        /// <param name="numberDocsToReturn"></param>
         /// <returns></returns>
-        public List<ILogViewModel> GetAllLog( int numberDocsToReturn )
+        public List<string> GetAllMonitorID ()
         {
-            return CreateLogsResult(_indexSearcher?.Search( new WildcardQuery( new Term( LogField.LOG_LEVEL, "*" ) ), numberDocsToReturn ) );
-        }
+            var hits = _indexSearcher.Search(new WildcardQuery(new Term(LogField.MONITOR_ID_LIST, "*")), 999);
+            var monitorIds = new List<string>();
+            foreach (var doc in hits.ScoreDocs)
+            {
+                var document = GetDocument(doc);
+                var monitorId = document.Get(LogField.MONITOR_ID_LIST).Split(' ');
+                foreach (var id in monitorIds)
+                        monitorIds.Add(id);
+            }
 
-        /// <summary>
-        /// Get all log exception in the Lucene Index.
-        /// </summary>
-        /// <param name="numberDocsToReturn"></param>
-        /// <returns></returns>
-        public List<ILogViewModel> GetAllExceptions( int numberDocsToReturn )
-        {
-            return CreateLogsResult( _indexSearcher?.Search( _exceptionParser.Parse( "Outer" ), numberDocsToReturn ) );
+            return monitorIds;
         }
 
         /// <summary>
@@ -155,9 +170,9 @@ namespace CK.Glouton.Lucene
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public TopDocs QuerySearch ( Query query ) // TODO: Get a good name
+        public TopDocs QuerySearch ( Query query, int maxResult ) // TODO: Get a good name
         {
-            return _indexSearcher?.Search(query, _luceneConfiguration.MaxSearch);
+            return _indexSearcher?.Search(query, maxResult);
         }
 
         private List<ILogViewModel> CreateLogsResult ( TopDocs topDocs )
@@ -182,30 +197,6 @@ namespace CK.Glouton.Lucene
                 }
             }
             return result;
-        }
-
-        private void InitializeIdList()
-        {
-            MonitorIdList = new HashSet<string>();
-            AppNameList = new HashSet<string>();
-            var hits = QuerySearch( new WildcardQuery( new Term( LogField.MONITOR_ID_LIST, "*" ) ) );
-
-            foreach( var doc in hits.ScoreDocs )
-            {
-                var document = GetDocument( doc );
-                var monitorIds = document.Get( LogField.MONITOR_ID_LIST ).Split( ' ' );
-                foreach( var id in monitorIds )
-                {
-                    if( !MonitorIdList.Contains( id ) )
-                        MonitorIdList.Add( id );
-                }
-                var appName = document.Get( LogField.APP_NAME_LIST ).Split( ' ' );
-                foreach( var id in appName )
-                {
-                    if( !AppNameList.Contains( id ) )
-                        AppNameList.Add( id );
-                }
-            }
         }
     }
 }
