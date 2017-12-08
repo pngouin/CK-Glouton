@@ -82,7 +82,7 @@ namespace CK.Glouton.Lucene
 
             if (configuration.MonitorId != null) bQuery.Add(CreateMonitorIdQuery(configuration), Occur.MUST);
             if (configuration.Fields != null) bQuery.Add(CreateFieldQuery(configuration), Occur.MUST);
-            if (configuration.DateEnd != null && configuration.DateStart != null) bQuery.Add(CreateTimeQuery(configuration), Occur.MUST);
+            if (configuration.DateEnd.Year != 1 && configuration.DateStart.Year != 1) bQuery.Add(CreateTimeQuery(configuration), Occur.MUST);
             if (configuration.LogLevel != null) bQuery.Add(CreateLogLevelQuery(configuration), Occur.MUST);
 
             return bQuery;
