@@ -26,6 +26,7 @@ namespace CK.Glouton.Lucene
         {
             All = all;
             WantAll = true;
+            Fields = new string[] { (all == LuceneWantAll.Exception) ? LogField.EXCEPTION : LogField.TEXT };
             return this;
         }
     }

@@ -62,7 +62,7 @@ namespace CK.Glouton.Lucene
                     query = new QueryParser(LuceneVersion.LUCENE_48,
                                                     LogField.LOG_LEVEL,
                                                     new StandardAnalyzer(LuceneVersion.LUCENE_48))
-                                                        .Parse("Outer");
+                                                        .Parse("Fatal");
                     break;
                 case LuceneWantAll.Log:
                     query = new WildcardQuery(new Term(LogField.LOG_LEVEL, "*"));
@@ -146,6 +146,14 @@ namespace CK.Glouton.Lucene
         public Document GetDocument(Query query, int maxResult)
         {
             return GetDocument(_indexSearcher?.Search(query, maxResult).ScoreDocs.First());
+        }
+
+        public Document GetDocument (string key, string value, int maxResult)
+        {
+            return GetDocument(_indexSearcher?.Search(new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
+                    new string[] { LogField.INDEX_DTS },
+                    new StandardAnalyzer(LuceneVersion.LUCENE_48)).Parse($"{key}:\"{value}\""), maxResult).ScoreDocs.First());
+            ;
         }
 
         private bool CheckSearchConfiguration(LuceneSearcherConfiguration configuration) // TODO: Check if the check is good.
