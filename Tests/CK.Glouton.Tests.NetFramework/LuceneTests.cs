@@ -11,6 +11,7 @@ using Lucene.Net.Store;
 using Lucene.Net.Util;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -43,6 +44,18 @@ namespace CK.Glouton.Tests
             Path = LucenePath,
             Directory = Assembly.GetExecutingAssembly().GetName().Name
         };
+
+        public static AggregateException ThrowAggregateException(int numberOfException)
+        {
+            List<Exception> exceptions = new List<Exception>();
+            for (int i = 0; i < numberOfException; i++)
+            {
+                try { throw new Exception(); }
+                catch (Exception ex) { exceptions.Add(ex); }
+            }
+
+            return new AggregateException("Aggregate exceptions list", exceptions);
+        }
 
         [Test]
         public void log_can_be_indexed_and_searched_with_full_text_search()
@@ -115,27 +128,16 @@ namespace CK.Glouton.Tests
                 {
                     var activityMonitor = new ActivityMonitor(false) { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient(activityMonitor);
-
-                    activityMonitor.Info("Hello world");
-                    activityMonitor.Error("CriticalError");
-                    using (activityMonitor.OpenFatal(new Exception("Fatal")))
-                    {
-                        activityMonitor.Info(new Exception());
-                    }
+                    activityMonitor.Fatal(ThrowAggregateException(3));
                 }
             }
 
             LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
             var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
 
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
-            {
-                Fields = new[] { "Text" },
-                SearchMethod = SearchMethod.WithConfigurationObject,
-                MaxResult = 10,
-                AppName = new string[] { LuceneSearcherConfiguration.Directory },
-                Query = "\"Hello world\""
-            };
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
+            configuration.SearchAll(LuceneWantAll.Exception);
+            configuration.AppName = new string[] { LuceneSearcherConfiguration.Directory };
 
             var result = searcher.Search(configuration);
             result.Should().NotBeNull();
