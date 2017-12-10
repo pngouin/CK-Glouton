@@ -178,6 +178,8 @@ namespace CK.Glouton.Lucene
 
             document.Add( new StringField( LogField.INDEX_DTS, CreateIndexDts().ToString(), Field.Store.YES ) );
 
+            WriteDocument(document);
+
             return document;
         }
 
@@ -225,10 +227,7 @@ namespace CK.Glouton.Lucene
         public void IndexLog( IMulticastLogEntry log, string appName )
         {
             CheckIds( log, appName );
-            var document = GetDocument( log, appName );
-            _writer.AddDocument( document );
-            _numberOfFileToCommit++;
-            CommitIfNeeded();
+            WriteDocument( GetDocument( log, appName ) );
         }
 
         public void IndexLog( ILogEntry log, string appName )
@@ -240,6 +239,13 @@ namespace CK.Glouton.Lucene
         {
             clientData.TryGetValue( LogField.APP_NAME, out var appName );
             IndexLog( (IMulticastLogEntry)log, appName );
+        }
+
+        public void WriteDocument (Document document)
+        {
+            _writer.AddDocument(document);
+            _numberOfFileToCommit++;
+            CommitIfNeeded();
         }
 
         /// <summary>
