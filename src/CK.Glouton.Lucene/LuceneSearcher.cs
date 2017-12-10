@@ -150,10 +150,7 @@ namespace CK.Glouton.Lucene
 
         public Document GetDocument (string key, string value, int maxResult)
         {
-            return GetDocument(_indexSearcher?.Search(new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
-                    new string[] { LogField.INDEX_DTS },
-                    new StandardAnalyzer(LuceneVersion.LUCENE_48)).Parse($"{key}:\"{value}\""), maxResult).ScoreDocs.First());
-            ;
+            return GetDocument(_indexSearcher?.Search(new TermQuery(new Term(key, value)), maxResult).ScoreDocs.First());
         }
 
         private bool CheckSearchConfiguration(LuceneSearcherConfiguration configuration) // TODO: Check if the check is good.

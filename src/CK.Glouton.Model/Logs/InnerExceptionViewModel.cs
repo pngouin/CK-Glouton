@@ -20,8 +20,8 @@ namespace CK.Glouton.Model.Logs
 
             return new InnerExceptionViewModel
             {
-                Stack = exception.Get( LogField.STACK ),
-                Details = exception.Get( LogField.DETAILS ),
+                Stack = exception.Get( LogField.STACKTRACE ),
+                Details = exception.Get( LogField.MESSAGE ),
                 FileName = exception.Get( LogField.SOURCE_FILE_NAME )
             };
         }
