@@ -158,7 +158,7 @@ namespace CK.Glouton.Lucene
                             foreach( var ex in exception.AggregatedExceptions )
                             {
                                 exList.Append( GetDocument( ex ).Get( LogField.INDEX_DTS ) );
-                                exList.AppendLine();
+                                exList.Append(";");
                                 _exceptionDepth++;
                             }
                             document.Add( new Int32Field( LogField.EXCEPTION_DEPTH, _exceptionDepth, Field.Store.YES ) );
