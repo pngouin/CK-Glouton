@@ -128,16 +128,27 @@ namespace CK.Glouton.Tests
                 {
                     var activityMonitor = new ActivityMonitor(false) { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient(activityMonitor);
-                    activityMonitor.Fatal(ThrowAggregateException(3));
+
+                    activityMonitor.Info("Hello world");
+                    activityMonitor.Error("CriticalError");
+                    using (activityMonitor.OpenFatal(new Exception("Fatal")))
+                    {
+                        activityMonitor.Info(new Exception());
+                    }
                 }
             }
 
             LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
             var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
 
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
-            configuration.SearchAll(LuceneWantAll.Exception);
-            configuration.AppName = new string[] { LuceneSearcherConfiguration.Directory };
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            {
+                Fields = new[] { "Text" },
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory },
+                Query = "\"Hello world\""
+            };
 
             var result = searcher.Search(configuration);
             result.Should().NotBeNull();
@@ -158,6 +169,53 @@ namespace CK.Glouton.Tests
             log = result[0] as LineViewModel;
             log.Text.Should().Be("CriticalError");
             log.LogLevel.Should().Contain("Error");
+        }
+
+        [Test]
+        public void log_with_aggragatedexception_can_be_indexed_and_searched()
+        {
+            using (var server = TestHelper.DefaultGloutonServer())
+            {
+                server.Open(new HandlersManagerConfiguration
+                {
+                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
+                });
+
+                using (var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient())
+                {
+                    var activityMonitor = new ActivityMonitor(false) { MinimalFilter = LogFilter.Debug };
+                    grandOutputClient.EnsureGrandOutputClient(activityMonitor);
+                    activityMonitor.Fatal(ThrowAggregateException(3));
+                }
+            }
+
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
+            var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
+
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            {
+                MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory }
+            };
+            configuration.SearchAll(LuceneWantAll.Exception);
+
+            var result = searcher.Search(configuration);
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
+            result[0].LogType.Should().Be(ELogType.Line);
+
+            var log = result[0] as LineViewModel;
+            log.Exception.Should().NotBeNull();
+            log.LogLevel.Should().Contain("Fatal");
+            log.Exception.Message.Should().Be("Aggregate exceptions list");
+            log.Exception.AggregatedExceptions.Should().NotBeNull();
+            log.Exception.AggregatedExceptions.Count.Should().Be(3);
+
+            foreach( var exception in log.Exception.AggregatedExceptions)
+            {
+                exception.Message.Should().NotBeNullOrEmpty();
+                exception.StackTrace.Should().NotBeNullOrEmpty();
+            }
         }
     }
 }
