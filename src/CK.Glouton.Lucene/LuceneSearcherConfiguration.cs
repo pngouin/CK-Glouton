@@ -22,11 +22,11 @@ namespace CK.Glouton.Lucene
         internal LuceneWantAll All { get; set; }
         internal bool WantAll;
 
-        public ILuceneSearcherConfiguration SearchAll(LuceneWantAll all)
+        public ILuceneSearcherConfiguration SearchAll( LuceneWantAll all )
         {
             All = all;
             WantAll = true;
-            Fields = new string[] { (all == LuceneWantAll.Exception) ? LogField.EXCEPTION : LogField.TEXT };
+            Fields = new string[] { ( all == LuceneWantAll.Exception ) ? LogField.EXCEPTION : LogField.TEXT };
             return this;
         }
     }
