@@ -176,7 +176,7 @@ namespace CK.Glouton.Tests
             var log = result[ 0 ] as LineViewModel;
             log.Exception.Should().NotBeNull();
             log.LogLevel.Should().Contain( "Fatal" );
-            log.Exception.Message.Should().Be( "Aggregate exceptions list" );
+            log.Exception.Message.Should().Contain( "Aggregate exceptions list" );
             log.Exception.AggregatedExceptions.Should().NotBeNull();
             log.Exception.AggregatedExceptions.Count.Should().Be( 3 );
 
