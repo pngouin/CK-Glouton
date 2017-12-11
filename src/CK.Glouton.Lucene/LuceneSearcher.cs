@@ -155,10 +155,13 @@ namespace CK.Glouton.Lucene
 
         private bool CheckSearchConfiguration(LuceneSearcherConfiguration configuration) // TODO: Check if the check is good.
         {
-            if (configuration.AppName == null ||
+            if( configuration == null )
+                throw new ArgumentNullException( nameof( configuration ) );
+
+            if( configuration.AppName == null ||
                 configuration.Fields == null ||
-                configuration.MaxResult == 0)
-                return false;
+                configuration.MaxResult == 0 )
+                throw new ArgumentException( nameof( configuration ) );
             return true;
         }
 
