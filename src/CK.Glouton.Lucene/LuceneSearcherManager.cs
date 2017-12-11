@@ -83,7 +83,7 @@ namespace CK.Glouton.Lucene
         /// <param name="appName"></param>
         private void UpdateReader( string appName )
         {
-            _readers[ appName ] = DirectoryReader.Open( GetDirectory( appName ) );
+            _readers[ appName ] = DirectoryReader.OpenIfChanged( _readers[ appName ] as DirectoryReader ) ?? _readers[ appName ];
         }
 
         private Directory GetDirectory( string appName )
