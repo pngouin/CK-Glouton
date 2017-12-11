@@ -1,14 +1,18 @@
 import { NgModule } from '@angular/core';
-import { criticitySelectorComponent } from './components';
+import { ApplicationNameSelectorComponent } from './components';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RadioButtonModule } from 'primeng/primeng';
+import { CheckboxModule } from 'primeng/primeng';
 
 import * as components from './components';
 
 @NgModule({
     imports: [
         CommonModule,
-        FormsModule
+        FormsModule,
+        RadioButtonModule,
+        CheckboxModule
     ],
     declarations: [
         ...Object.values(components)
@@ -17,4 +21,4 @@ import * as components from './components';
         ...Object.values(components)
     ]
 })
-export class criticitySelectorModule { }
+export class LuceneModule { }
