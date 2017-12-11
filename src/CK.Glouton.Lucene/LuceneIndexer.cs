@@ -4,13 +4,11 @@ using CK.Monitoring;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
-using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using Directory = Lucene.Net.Store.Directory;
@@ -36,46 +34,15 @@ namespace CK.Glouton.Lucene
                 System.IO.Directory.CreateDirectory( _luceneConfiguration.ActualPath );
 
             Directory indexDirectory = FSDirectory.Open( new DirectoryInfo( _luceneConfiguration.ActualPath ) );
-            var config = new IndexWriterConfig(LuceneVersion.LUCENE_48, new StandardAnalyzer(LuceneVersion.LUCENE_48));
+            var config = new IndexWriterConfig( LuceneVersion.LUCENE_48, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
 
-            if (luceneConfiguration.OpenMode != null)
+            if( luceneConfiguration.OpenMode != null )
                 config.OpenMode = (OpenMode)_luceneConfiguration.OpenMode;
 
-            _writer = new IndexWriter( indexDirectory, config);
+            _writer = new IndexWriter( indexDirectory, config );
             _lastDateTimeStamp = new DateTimeStamp( DateTime.UtcNow );
             _numberOfFileToCommit = 0;
             _exceptionDepth = 0;
-
-            InitializeIdList();
-        }
-
-        public ISet<string> AppNameList { get; private set; }
-
-        public ISet<string> MonitorIdList { get; private set; }
-
-
-        /// <summary>
-        /// Try to initialize a searcher to get the list of monitor and app IDs
-        /// It can fail if the index is empty, in this case the searcher is useless
-        /// </summary>
-        private ISet<string> InitializeSearcher()
-        {
-            var file = new DirectoryInfo( _luceneConfiguration.ActualPath ).EnumerateFiles();
-            if( !file.Any() )
-                return null;
-
-            try
-            {
-
-                //_searcher = new LuceneSearcher( _luceneConfiguration, new[] { LogField.MONITOR_ID_LIST, LogField.APP_NAME } );
-                LuceneSearcherManager searcherManager = new LuceneSearcherManager(_luceneConfiguration);
-                _searcher = searcherManager.GetSearcher(_luceneConfiguration.Directory);
-                return searcherManager.AppName;
-            }
-            catch( Exception e )
-            {
-                return null;
-            }
         }
 
         private Document GetDocument( IMulticastLogEntry log, string appName )
@@ -158,7 +125,7 @@ namespace CK.Glouton.Lucene
                             foreach( var ex in exception.AggregatedExceptions )
                             {
                                 exList.Append( GetDocument( ex ).Get( LogField.INDEX_DTS ) );
-                                exList.Append(";");
+                                exList.Append( ";" );
                                 _exceptionDepth++;
                             }
                             document.Add( new Int32Field( LogField.EXCEPTION_DEPTH, _exceptionDepth, Field.Store.YES ) );
@@ -178,7 +145,7 @@ namespace CK.Glouton.Lucene
 
             document.Add( new StringField( LogField.INDEX_DTS, CreateIndexDts().ToString(), Field.Store.YES ) );
 
-            WriteDocument(document);
+            WriteDocument( document );
 
             return document;
         }
@@ -195,38 +162,12 @@ namespace CK.Glouton.Lucene
         }
 
         /// <summary>
-        /// Check if the Monitor ID and the App ID of a log is already known
-        /// if not, it add them to the known list
-        /// </summary>
-        /// <param name="log">The log to index</param>
-        /// <param name="appName">The app ID given by the Open Block</param>
-        private void CheckIds( IMulticastLogEntry log, string appName )
-        {
-            if( !MonitorIdList.Contains( log.MonitorId.ToString() ) )
-                MonitorIdList.Add( log.MonitorId.ToString() );
-
-            if( !AppNameList.Contains( appName ) )
-                AppNameList.Add( appName );
-        }
-
-        /// <summary>
-        /// Initialize the Monitor ID list and the App ID list
-        /// If the Lucene document doesn't exist, it create it
-        /// </summary>
-        private void InitializeIdList()
-        {
-            AppNameList = InitializeSearcher();
-            MonitorIdList = new HashSet<string>( _searcher.GetAllMonitorID());
-        }
-
-        /// <summary>
         /// Index the log document after creating it
         /// </summary>
         /// <param name="log">The log to index</param>
         /// <param name="appName"></param>
         public void IndexLog( IMulticastLogEntry log, string appName )
         {
-            CheckIds( log, appName );
             WriteDocument( GetDocument( log, appName ) );
         }
 
@@ -241,76 +182,11 @@ namespace CK.Glouton.Lucene
             IndexLog( (IMulticastLogEntry)log, appName );
         }
 
-        public void WriteDocument (Document document)
+        public void WriteDocument( Document document )
         {
-            _writer.AddDocument(document);
+            _writer.AddDocument( document );
             _numberOfFileToCommit++;
             CommitIfNeeded();
-        }
-
-        /// <summary>
-        /// Get the string containing the monitor ID list, might be big
-        /// </summary>
-        /// <returns>The string containing the monitor ID list</returns>
-        private string GetMonitorIdList()
-        {
-            var builder = new StringBuilder();
-            foreach( var id in MonitorIdList )
-            {
-                builder.Append( id );
-                builder.Append( " " );
-            }
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// Get the string containing the app ID list
-        /// </summary>
-        /// <returns>the string containing the app ID list</returns>
-        private string GetAppNameList()
-        {
-            var builder = new StringBuilder();
-            foreach( var id in AppNameList )
-            {
-                builder.Append( id );
-                builder.Append( " " );
-            }
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// Create the Lucene document that contain all Monitor and App ID list
-        /// </summary>
-        private void CreateIdListDoc()
-        {
-            var doc = new Document();
-
-            Field monitorIdList = new TextField( LogField.MONITOR_ID_LIST, GetMonitorIdList(), Field.Store.YES );
-            Field appNameList = new TextField( LogField.APP_NAME_LIST, GetAppNameList(), Field.Store.YES );
-
-            doc.Add( monitorIdList );
-            doc.Add( appNameList );
-
-            _writer.AddDocument( doc );
-        }
-
-        /// <summary>
-        /// Update the Lucene document that contain all Monitor and App ID list
-        /// </summary>
-        private void UpdateIdListDoc()
-        {
-            var doc = new Document();
-
-            Field monitorIdList = new TextField( LogField.MONITOR_ID_LIST, GetMonitorIdList(), Field.Store.YES );
-            Field appNameList = new TextField( LogField.APP_NAME_LIST, GetAppNameList(), Field.Store.YES );
-
-            doc.Add( monitorIdList );
-            doc.Add( appNameList );
-
-            var term = new Term( LogField.MONITOR_ID_LIST, "*" );
-            var query = new WildcardQuery( term );
-            _writer.DeleteDocuments( query );
-            _writer.AddDocument( doc );
         }
 
         /// <summary>
@@ -342,7 +218,6 @@ namespace CK.Glouton.Lucene
         /// </summary>
         public void Dispose()
         {
-            UpdateIdListDoc();
             _writer.Dispose();
         }
     }

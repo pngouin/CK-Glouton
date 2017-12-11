@@ -1,12 +1,7 @@
-﻿using CK.Glouton.Model.Logs;
-using Lucene.Net.Index;
-using Lucene.Net.Search;
+﻿using Lucene.Net.Index;
 using Lucene.Net.Store;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CK.Glouton.Lucene
 {
@@ -15,7 +10,7 @@ namespace CK.Glouton.Lucene
         private LuceneConfiguration _configuration;
         private readonly Dictionary<string, IndexReader> _readers;
 
-        public LuceneSearcherManager(LuceneConfiguration configuration)
+        public LuceneSearcherManager( LuceneConfiguration configuration )
         {
             _configuration = configuration;
             _readers = new Dictionary<string, IndexReader>();
@@ -28,11 +23,11 @@ namespace CK.Glouton.Lucene
         {
             get
             {
-                var directoryInfo = new System.IO.DirectoryInfo(_configuration.Path);
+                var directoryInfo = new System.IO.DirectoryInfo( _configuration.Path );
                 var dirs = new HashSet<string>();
 
-                foreach (var info in directoryInfo.GetDirectories())
-                    dirs.Add(info.Name);
+                foreach( var info in directoryInfo.GetDirectories() )
+                    dirs.Add( info.Name );
 
                 return dirs;
             }
@@ -43,28 +38,40 @@ namespace CK.Glouton.Lucene
         /// </summary>
         /// <param name="appNames"></param>
         /// <returns></returns>
-        public LuceneSearcher GetSearcher (params string[] appNames)
+        public LuceneSearcher GetSearcher( params string[] appNames )
         {
-            List<IndexReader> readers = new List<IndexReader>();
-            foreach (string appName in appNames)
+            var readers = new List<IndexReader>();
+            foreach( var appName in appNames )
             {
-                if (!System.IO.Directory.Exists(_configuration.Path + "\\" + appName))
+                if( !System.IO.Directory.Exists( _configuration.Path + "\\" + appName ) )
                     continue;
-                readers.Add(GetReader(appName));
+                var reader = GetReader( appName );
+                if( reader != null )
+                    readers.Add( reader );
             }
-            return new LuceneSearcher(new MultiReader(readers.ToArray()));
+
+            return readers.Count == 0 ? null : new LuceneSearcher( new MultiReader( readers.ToArray() ) );
         }
 
-        private IndexReader GetReader (string appName)
+        private IndexReader GetReader( string appName )
         {
-            if (_readers.ContainsKey(appName))
+            if( _readers.ContainsKey( appName ) )
             {
-                UpdateReader(appName);
-                return _readers[appName];
+                UpdateReader( appName );
+                return _readers[ appName ];
             }
 
-            IndexReader reader = DirectoryReader.Open(GetDirectory(appName));
-            _readers.Add(appName,  reader);
+            IndexReader reader;
+            try
+            {
+                reader = DirectoryReader.Open( GetDirectory( appName ) );
+            }
+            catch( Exception )
+            {
+                return null;
+            }
+
+            _readers.Add( appName, reader );
             return reader;
         }
 
@@ -74,14 +81,14 @@ namespace CK.Glouton.Lucene
         /// Maybe change this method later ?
         /// </summary>
         /// <param name="appName"></param>
-        private void UpdateReader (string appName)
+        private void UpdateReader( string appName )
         {
-            _readers[appName] = DirectoryReader.Open(GetDirectory(appName));
+            _readers[ appName ] = DirectoryReader.Open( GetDirectory( appName ) );
         }
 
-        private Directory GetDirectory (string appName)
+        private Directory GetDirectory( string appName )
         {
-            return FSDirectory.Open(_configuration.Path + "\\" + appName);
+            return FSDirectory.Open( _configuration.Path + "\\" + appName );
         }
     }
 }
