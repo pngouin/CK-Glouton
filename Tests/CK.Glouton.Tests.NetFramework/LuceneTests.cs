@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -20,6 +21,33 @@ namespace CK.Glouton.Tests
         public void SetUp()
         {
             TestHelper.Setup();
+        }
+
+#if NET461
+        [TestFixtureSetUp]
+#else
+        [OneTimeSetUp]
+#endif
+        public void ConstructIndex ()
+        {
+            using (var server = TestHelper.DefaultGloutonServer())
+            {
+                server.Open(new HandlersManagerConfiguration
+                {
+                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
+                });
+
+                using (var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient())
+                {
+                    var activityMonitor = new ActivityMonitor(false) { MinimalFilter = LogFilter.Debug };
+                    grandOutputClient.EnsureGrandOutputClient(activityMonitor);
+
+                    activityMonitor.Info("Hello world");
+                    activityMonitor.Error("CriticalError");
+                    activityMonitor.Fatal(ThrowAggregateException(3));
+
+                }
+            }
         }
 
         private const int LuceneMaxSearch = 10;
@@ -56,26 +84,7 @@ namespace CK.Glouton.Tests
         [Test]
         public void log_can_be_indexed_and_searched_with_full_text_search()
         {
-            using( var server = TestHelper.DefaultGloutonServer() )
-            {
-                server.Open( new HandlersManagerConfiguration
-                {
-                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
-                } );
-
-                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
-                {
-                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
-                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
-
-                    activityMonitor.Info( "Hello world" );
-                    activityMonitor.Error( "CriticalError" );
-                    using( activityMonitor.OpenFatal( new Exception( "Fatal" ) ) )
-                    {
-                        activityMonitor.Info( new Exception() );
-                    }
-                }
-            }
+            
 
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
             var searcher = searcherManager.GetSearcher( LuceneSearcherConfiguration.Directory );
@@ -113,27 +122,6 @@ namespace CK.Glouton.Tests
         [Test]
         public void log_can_be_indexed_and_searched_with_object_search()
         {
-            using( var server = TestHelper.DefaultGloutonServer() )
-            {
-                server.Open( new HandlersManagerConfiguration
-                {
-                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
-                } );
-
-                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
-                {
-                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
-                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
-
-                    activityMonitor.Info( "Hello world" );
-                    activityMonitor.Error( "CriticalError" );
-                    using( activityMonitor.OpenFatal( new Exception( "Fatal" ) ) )
-                    {
-                        activityMonitor.Info( new Exception() );
-                    }
-                }
-            }
-
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
             var searcher = searcherManager.GetSearcher( LuceneSearcherConfiguration.Directory );
 
@@ -170,21 +158,6 @@ namespace CK.Glouton.Tests
         [Test]
         public void log_with_aggregated_exception_can_be_indexed_and_searched()
         {
-            using( var server = TestHelper.DefaultGloutonServer() )
-            {
-                server.Open( new HandlersManagerConfiguration
-                {
-                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
-                } );
-
-                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
-                {
-                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
-                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
-                    activityMonitor.Fatal( ThrowAggregateException( 3 ) );
-                }
-            }
-
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
             var searcher = searcherManager.GetSearcher( LuceneSearcherConfiguration.Directory );
 
