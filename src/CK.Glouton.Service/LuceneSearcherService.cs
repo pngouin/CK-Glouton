@@ -74,7 +74,7 @@ namespace CK.Glouton.Service
         public List<string> GetMonitorIdList()
         {
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
-            return _searcherManager.GetSearcher(GetAppNameList().ToArray()).GetAllMonitorID().ToList();
+            return _searcherManager.GetSearcher(GetAppNameList().ToArray()).GetAllMonitorId().ToList();
         }
 
         /// <summary>

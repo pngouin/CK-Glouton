@@ -6,8 +6,7 @@ namespace CK.Glouton.Model.Logs
 {
     public interface ILuceneSearcherConfiguration
     {
-        string[] AppName { get; set; }
-        uint MaxResult { get; set; }
+        int MaxResult { get; set; }
         string MonitorId { get; set; }
         DateTime DateStart { get; set; }
         DateTime DateEnd { get; set; }

@@ -27,8 +27,6 @@ namespace CK.Glouton.Lucene
             _indexSearcher = new IndexSearcher( multiReader );
         }
 
-        internal MultiFieldQueryParser QueryParser { get; }
-
         /// <summary>
         /// Search into Lucene index.
         /// If the <see cref="LuceneSearcherConfiguration"/> is not correct return null.
@@ -50,7 +48,7 @@ namespace CK.Glouton.Lucene
             if( searchConfiguration.WantAll )
                 return Search( searchConfiguration, GetAll( searchConfiguration.All ) );
 
-            return CreateLogsResult( _indexSearcher?.Search( ( CreateQuery( searchConfiguration ) ), (int)searchConfiguration.MaxResult ) );
+            return CreateLogsResult( _indexSearcher?.Search(  CreateQuery( searchConfiguration ) , searchConfiguration.MaxResult ) );
         }
 
         private Query GetAll( LuceneWantAll all )
@@ -143,11 +141,7 @@ namespace CK.Glouton.Lucene
 
         private List<ILogViewModel> Search( LuceneSearcherConfiguration configuration, Query searchQuery )
         {
-            return CreateLogsResult( _indexSearcher?.Search( searchQuery, (int)configuration.MaxResult ) );
-        }
-        private List<ILogViewModel> Search( Query searchQuery, int maxResult )
-        {
-            return CreateLogsResult( _indexSearcher?.Search( searchQuery, maxResult ) );
+            return CreateLogsResult( _indexSearcher?.Search( searchQuery, configuration.MaxResult ) );
         }
 
         public Document GetDocument( ScoreDoc scoreDoc )
@@ -170,8 +164,7 @@ namespace CK.Glouton.Lucene
             if( configuration == null )
                 throw new ArgumentNullException( nameof( configuration ) );
 
-            if( configuration.AppName == null ||
-                configuration.MaxResult == 0 )
+            if(  configuration.MaxResult == 0 )
                 throw new ArgumentException( nameof( configuration ) );
             return true;
         }
@@ -180,7 +173,7 @@ namespace CK.Glouton.Lucene
         /// Get all monitor id in all AppName.
         /// </summary>
         /// <returns></returns>
-        public ISet<string> GetAllMonitorID()
+        public ISet<string> GetAllMonitorId()
         {
             var hits = _indexSearcher.Search( new WildcardQuery( new Term( LogField.MONITOR_ID, "*" ) ), Int32.MaxValue );
             var monitorIds = new HashSet<string>();
@@ -191,16 +184,6 @@ namespace CK.Glouton.Lucene
             }
 
             return monitorIds;
-        }
-
-        /// <summary>
-        /// Get the <see cref="TopDocs"/> of a search.
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public TopDocs QuerySearch( Query query, int maxResult ) // TODO: Get a good name
-        {
-            return _indexSearcher?.Search( query, maxResult );
         }
 
         private List<ILogViewModel> CreateLogsResult( TopDocs topDocs )
