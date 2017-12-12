@@ -125,7 +125,7 @@ namespace CK.Glouton.Tests
                             clientActivityMonitor2.Info( guid2 );
                             clientActivityMonitor3.Info( guid3 );
 
-                            Thread.Sleep( TestHelper.DefaultSleepTime * 3 );
+                            Thread.Sleep( TestHelper.DefaultSleepTime * 8 );
 
                             server.GetLogEntry( guid1 ).Validate( guid1 ).Should().BeTrue();
                             server.GetLogEntry( guid2 ).Validate( guid2 ).Should().BeTrue();

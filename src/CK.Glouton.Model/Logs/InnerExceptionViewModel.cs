@@ -13,16 +13,16 @@ namespace CK.Glouton.Model.Logs
 
         public static IInnerExceptionViewModel Get( ILuceneSearcher searcher, Document doc )
         {
-            if( doc.GetField( "InnerException" ) == null )
+            if( doc.GetField( LogField.INNER_EXCEPTION ) == null )
                 return null;
 
-            var exception = searcher.GetDocument(new TermQuery(new Term("IndexTS", doc.Get("InnerException"))));
+            var exception = searcher.GetDocument(new TermQuery(new Term(LogField.INDEX_DTS, doc.Get(LogField.INNER_EXCEPTION))), 999);
 
             return new InnerExceptionViewModel
             {
-                Stack = exception.Get( "Stack" ),
-                Details = exception.Get( "Details" ),
-                FileName = exception.Get( "Filename" )
+                Stack = exception.Get( LogField.STACKTRACE ),
+                Details = exception.Get( LogField.MESSAGE ),
+                FileName = exception.Get( LogField.SOURCE_FILE_NAME )
             };
         }
     }

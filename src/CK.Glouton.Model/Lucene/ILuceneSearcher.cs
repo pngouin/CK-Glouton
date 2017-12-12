@@ -7,15 +7,10 @@ namespace CK.Glouton.Model.Lucene
 {
     public interface ILuceneSearcher
     {
-        ISet<string> AppNameList { get; }
-        ISet<string> MonitorIdList { get; }
-
-        List<ILogViewModel> GetAllExceptions(int numberDocsToReturn);
-        List<ILogViewModel> GetAllLog(int numberDocsToReturn);
-        List<ILogViewModel> Search(Query searchQuery);
-        List<ILogViewModel> Search(string searchQuery);
-
+        List<string> GetAllMonitorID();
+        Document GetDocument(Query query, int maxResult);
         Document GetDocument(ScoreDoc scoreDoc);
-        Document GetDocument(Query query);
+        Document GetDocument(string key, string value, int maxResult);
+        TopDocs QuerySearch(Query query, int maxResult);
     }
 }

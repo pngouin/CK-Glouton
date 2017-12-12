@@ -9,7 +9,7 @@ namespace CK.Glouton.Lucene
         public NullIndexer()
         {
         }
-        public void IndexLog(ILogEntry entry, IReadOnlyDictionary<string, string> clientData)
+        public void IndexLog( ILogEntry entry, IReadOnlyDictionary<string, string> clientData )
         {
         }
     }

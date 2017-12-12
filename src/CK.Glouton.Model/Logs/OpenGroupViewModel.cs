@@ -16,10 +16,10 @@ namespace CK.Glouton.Model.Logs
         {
             return new OpenGroupViewModel
             {
-                LogLevel = document.Get( "LogLevel" ),
-                LogTime = document.Get( "LogTime" ),
-                Text = document.Get( "Text" ),
-                SourceFileName = document.Get( "FileName" ),
+                LogLevel = document.Get( LogField.LOG_LEVEL ),
+                LogTime = document.Get( LogField.LOG_TIME ),
+                Text = document.Get( LogField.TEXT ),
+                SourceFileName = document.Get( LogField.SOURCE_FILE_NAME ),
                 Exception = ExceptionViewModel.Get( luceneSearcher, document )
             };
         }
