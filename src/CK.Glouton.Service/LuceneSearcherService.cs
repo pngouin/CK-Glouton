@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
 using Microsoft.Extensions.Options;
@@ -76,13 +77,7 @@ namespace CK.Glouton.Service
         /// <returns></returns>
         public List<string> GetAppNameList()
         {
-            var directoryInfo = new DirectoryInfo(_configuration.Path);
-            var dirs = new List<string>();
-
-            foreach (var info in directoryInfo.GetDirectories())
-                dirs.Add(info.Name);
-
-            return dirs;
+            return _searcherManager.AppName.ToList();
         }
     }
 }
