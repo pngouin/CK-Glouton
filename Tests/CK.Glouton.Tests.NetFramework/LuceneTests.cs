@@ -9,6 +9,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -244,7 +245,22 @@ namespace CK.Glouton.Tests
         }
 
         [Test]
-        public void bad_configuration_should_throw_exceptoin()
+        public void luceneSearcherManager_return_good_appName()
+        {
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
+            string directoryPath = LuceneSearcherConfiguration.Path + "\\" +  Guid.NewGuid().ToString();
+
+            Directory.CreateDirectory(directoryPath);
+
+            var appName = searcherManager.AppName;
+            appName.Count.Should().Be(1);
+            appName.First().Should().Be(LuceneSearcherConfiguration.Directory);
+
+            Directory.Delete(directoryPath);
+        }
+
+        [Test]
+        public void bad_configuration_should_throw_exception()
         {
             LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
             var searcher = searcherManager.GetSearcher( LuceneSearcherConfiguration.Directory) ;
@@ -252,7 +268,7 @@ namespace CK.Glouton.Tests
             Action action = () => searcher.Search( null );
             action.ShouldThrow<ArgumentNullException>();
 
-            action = () => searcher.Search(new Lucene.LuceneSearcherConfiguration());
+            action = () => searcher.Search(new LuceneSearcherConfiguration());
             action.ShouldThrow<ArgumentException>();
 
         }
