@@ -144,6 +144,17 @@ namespace CK.Glouton.Tests
             var log = result[ 0 ] as LineViewModel;
             log.Text.Should().Be( "Hello world" );
             log.LogLevel.Should().Contain( "Info" );
+            log.Tags.Should().BeOfType<string>();
+            log.SourceFileName.Should().BeOfType<string>();
+            log.LineNumber.Should().BeOfType<string>();
+            log.LogLevel.Should().BeOfType<string>();
+            log.MonitorId.Should().BeOfType<string>();
+            log.GroupDepth.Should().BeOfType<string>();
+            log.PreviousEntryType.Should().BeOfType<string>();
+            log.PreviousLogTime.Should().BeOfType<string>();
+            log.AppId.Should().BeOfType<string>();
+            log.LogTime.Should().BeOfType<string>();
+            log.Exception.Should().BeNull();
 
             //
             // Search an all document with `Text` field equal to "CriticalError"
