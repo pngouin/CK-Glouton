@@ -46,7 +46,7 @@ namespace CK.Glouton.Lucene
             var readers = new List<IndexReader>();
             foreach( var appName in appNames )
             {
-                if( IndexExists( appName ) )
+                if( !IndexExists( appName ) )
                     continue;
                 var reader = GetReader( appName );
                 if( reader != null )
