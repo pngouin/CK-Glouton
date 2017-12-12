@@ -134,6 +134,9 @@ namespace CK.Glouton.Tests
                 Query = "\"Hello world\""
             };
 
+            //
+            // Search an all document with `Text` field equal to "Hello world"
+            //
             var result = searcher.Search( configuration );
             result.Should().NotBeNull();
             result.Count.Should().Be( 1 );
@@ -143,9 +146,12 @@ namespace CK.Glouton.Tests
             log.Text.Should().Be( "Hello world" );
             log.LogLevel.Should().Contain( "Info" );
 
+            //
+            // Search an all document with `Text` field equal to "CriticalError"
+            //
             configuration.Query = "CriticalError";
-
             result = searcher.Search( configuration );
+
             result.Should().NotBeNull();
             result.Count.Should().Be( 1 );
             result[ 0 ].LogType.Should().Be( ELogType.Line );
@@ -153,6 +159,93 @@ namespace CK.Glouton.Tests
             log = result[ 0 ] as LineViewModel;
             log.Text.Should().Be( "CriticalError" );
             log.LogLevel.Should().Contain( "Error" );
+
+            //
+            // Search with null configuration 
+            //
+            Action action = () => searcher.Search( null );
+            action.ShouldThrow<ArgumentNullException>();
+
+            configuration.SearchAll( LuceneWantAll.Log );
+
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 8 ); // TODO: If add log to the index change the number or get an alternative technique.
+
+            //
+            // Search all document with LogLevel between 0002-01-01 to 9999-01-01
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                Fields = new string[0],
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory },
+                DateStart = new DateTime( 2, 01, 01 ),
+                DateEnd = new DateTime( 9999, 01, 01 )
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 8 );
+
+            //
+            // Search all document with LogLevel between 0002-01-01 to 0003-01-01
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory },
+                DateStart = new DateTime( 2, 01, 01 ),
+                DateEnd = new DateTime( 3, 01, 01 )
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 0 );
+
+
+            //
+            // Search all MonitorId in all appname contain in the searcher
+            //
+            var monitorId = searcher.GetAllMonitorID();
+            monitorId.Count.Should().Be( 2 );
+
+            //
+            // Search with false MonitorId
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory },
+                MonitorId = Guid.NewGuid().ToString()
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 0 );
+
+            //
+            // Search all fatal log
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory },
+                LogLevel = new string[] { "Fatal" }
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 1 );
+
+            //
+            // Search all document with a LogLevel and a monitorId
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                AppName = new string[] { LuceneSearcherConfiguration.Directory },
+                Fields = new string[] { LogField.MONITOR_ID }
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 8 );
+
         }
 
         [Test]
