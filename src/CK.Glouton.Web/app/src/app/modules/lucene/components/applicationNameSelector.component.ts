@@ -10,19 +10,15 @@ import { ILogView } from 'app/common/logs/models';
 export class ApplicationNameSelectorComponent implements OnInit {
 
     private _applicationNames: string[];
-    private _selectedApplicationNameIndex: number;
-
-    private _logs: ILogView[];
+    private _selected: string[];
 
     constructor(
         private logService: LogService
     ) {
     }
 
-    onSubmit(): void {
-        console.log(this._applicationNames[this._selectedApplicationNameIndex]);
-        this.logService.getAll(this._applicationNames[this._selectedApplicationNameIndex])
-            .subscribe(l => this._logs = l);
+    onChange(_: boolean): void {
+        console.log(this._selected);
     }
 
     ngOnInit(): void {

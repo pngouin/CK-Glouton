@@ -2,8 +2,7 @@ import { NgModule } from '@angular/core';
 import { ApplicationNameSelectorComponent } from './components';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RadioButtonModule } from 'primeng/primeng';
-import { CheckboxModule } from 'primeng/primeng';
+import { RadioButtonModule, CheckboxModule, InputTextModule } from 'primeng/primeng';
 
 import * as components from './components';
 
@@ -12,7 +11,8 @@ import * as components from './components';
         CommonModule,
         FormsModule,
         RadioButtonModule,
-        CheckboxModule
+        CheckboxModule,
+        InputTextModule
     ],
     declarations: [
         ...Object.values(components)
@@ -21,4 +21,4 @@ import * as components from './components';
         ...Object.values(components)
     ]
 })
-export class LuceneModule { }
+export class LucenePreferenceModule { }

@@ -1,1 +1,4 @@
-<input type="text" name="querySearchbar" id="" [(ngModel)]="_query" (keyup.enter)="OnSubmit()">
+<div class="ui-inputgroup">
+    <span class="ui-inputgroup-addon"><i class="fa fa-search"></i></span>
+    <input type="text" pInputText placeholder="Search" [(ngModel)]="_query">
+</div>

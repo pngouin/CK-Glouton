@@ -5,15 +5,15 @@ import { Component, OnInit } from '@angular/core';
     templateUrl: 'querySearchbar.component.html'
 })
 
-export class querySearchbarComponent implements OnInit {
-    
-    private _query :string;
+export class QuerySearchbarComponent implements OnInit {
 
-    OnSubmit() :void {
+    private _query: string;
+
+    onSubmit(): void {
         console.log(this._query);
     }
 
-    ngOnInit(){
-        this._query = "";
+    ngOnInit(): void {
+        this._query = '';
     }
 }
