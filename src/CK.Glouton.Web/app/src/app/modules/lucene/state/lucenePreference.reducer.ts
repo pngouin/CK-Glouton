@@ -1,8 +1,8 @@
 import * as actions from '../actions';
 import { reducerFactory } from '@ck/rx';
-import { ILuceneState } from './lucene.state';
+import { ILucenePreferenceState } from './lucenePreference.state';
 
-const initial: ILuceneState = {
+const initial: ILucenePreferenceState = {
     level: 0
 };
 

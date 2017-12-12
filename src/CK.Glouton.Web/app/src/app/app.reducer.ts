@@ -1,7 +1,7 @@
 import { ActionReducer } from '@ngrx/store';
 
 import timeSpanNavigatorReducer from './modules/timeSpanNavigator/state/timeSpanNavigator.reducer';
-import luceneParametersReducer from './modules/lucene/state/lucene.reducer';
+import luceneParametersReducer from './modules/lucene/state/lucenePreference.reducer';
 
 /**
  * The compose function is one of our most handy tools. In basic terms, you give

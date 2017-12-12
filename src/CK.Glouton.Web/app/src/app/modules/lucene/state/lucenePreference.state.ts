@@ -1,5 +1,5 @@
 import { ECriticityLevel } from 'app/modules/lucene/models';
 
-export interface ILuceneState {
+export interface ILucenePreferenceState {
     level: ECriticityLevel;
 }

@@ -1,7 +1,7 @@
 import { ITimeSpanNavigatorState } from './modules/timeSpanNavigator/state/timeSpanNavigator.state';
-import { ILuceneState } from './modules/lucene/state/lucene.state';
+import { ILucenePreferenceState } from './modules/lucene/state/lucenePreference.state';
 
 export interface IAppState {
     timeSpanNavigator: ITimeSpanNavigatorState;
-    luceneParameters: ILuceneState;
+    luceneParameters: ILucenePreferenceState;
 }

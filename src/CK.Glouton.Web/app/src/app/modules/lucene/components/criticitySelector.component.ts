@@ -43,14 +43,3 @@ export class CriticitySelectorComponent {
         this.effectDispatcher.dispatch(new SubmitCriticityEffect(this._criticityLevel));
     }
 }
-
-// getArray() :string[]{
-//     let array = new Array();
-//     if (this.debug) array.push("debug");
-//     if (this.trace) array.push("trace");
-//     if (this.info) array.push("info");
-//     if (this.warn) array.push("warn");
-//     if (this.error) array.push("error");
-//     if (this.fatal) array.push("fatal");
-//     return array;
-// }
