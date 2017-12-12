@@ -170,11 +170,6 @@ namespace CK.Glouton.Lucene
             WriteDocument( GetDocument( log, appName ) );
         }
 
-        public void IndexLog( ILogEntry log, string appName )
-        {
-            IndexLog( (IMulticastLogEntry)log, appName );
-        }
-
         public void IndexLog( ILogEntry log, IReadOnlyDictionary<string, string> clientData )
         {
             clientData.TryGetValue( LogField.APP_NAME, out var appName );
