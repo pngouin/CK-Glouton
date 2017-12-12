@@ -24,7 +24,6 @@ namespace CK.Glouton.Lucene
         private DateTime _lastCommit;
         private int _numberOfFileToCommit;
         private int _exceptionDepth;
-        private LuceneSearcher _searcher;
 
         public LuceneIndexer( LuceneConfiguration luceneConfiguration )
         {
