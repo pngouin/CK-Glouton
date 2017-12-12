@@ -16,7 +16,6 @@ export class SubmitCriticityEffectHandler implements IEffectsHandler {
     constructor(
         private store: Store<IAppState>
     ) {
-        console.log('hi');
     }
 
     public execute(action: SubmitCriticityEffect): SetCriticityMutation | void {
@@ -25,7 +24,7 @@ export class SubmitCriticityEffectHandler implements IEffectsHandler {
         if(criticityLevel === null || criticityLevel === undefined) { throw new Error('Param cannot be null!'); }
 
         let sCriticityLevel: ECriticityLevel;
-        this.store.select(s => s.luceneParameters.level).subscribe(l => criticityLevel = l);
+        this.store.select(s => s.luceneParameters.level).subscribe(l => sCriticityLevel = l);
 
         if(sCriticityLevel !== criticityLevel) { return new SetCriticityMutation(criticityLevel); }
     }

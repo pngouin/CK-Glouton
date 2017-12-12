@@ -17,8 +17,7 @@ import * as components from './_components';
 import * as modules from './_modules';
 import * as services from './_services';
 // import * as guards from './_guards';
-
-import * as timeSpanNavigatorRx from './modules/timeSpanNavigator/actions';
+import * as actionsRx from './_actions';
 
 const stateStorageKey: string = 'hln_glouton/state';
 
@@ -36,9 +35,7 @@ const stateStorageKey: string = 'hln_glouton/state';
     StoreModule.provideStore(reducer),
     RouterModule.forRoot(rootRouterConfig),
     SignatureEffectsModule.runAfterBootstrap({
-      handlers: [
-        ...Object.values(timeSpanNavigatorRx)
-      ],
+      handlers: [ ...Object.values(actionsRx) ],
       storage: {key: stateStorageKey}
     }),
     StoreDevtoolsModule.instrumentOnlyWithExtension({maxAge: 5})
