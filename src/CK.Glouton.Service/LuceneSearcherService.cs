@@ -21,10 +21,13 @@ namespace CK.Glouton.Service
 
         public List<ILogViewModel> Search(string query, params string[] appNames )
         {
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
-            configuration.MaxResult = (uint)_configuration.MaxSearch;
-            configuration.Fields = new[] { "LogLevel", "Exception" };
-            configuration.AppName = appNames;
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            {
+                MaxResult = (uint)_configuration.MaxSearch,
+                Fields = new[] { "LogLevel", "Exception" },
+                AppName = appNames
+            };
+
             if (query == "*")
             {
                 configuration.SearchAll(LuceneWantAll.Log);
@@ -37,10 +40,13 @@ namespace CK.Glouton.Service
 
         public List<ILogViewModel> GetAll(params string[] appNames)
         {
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
-            configuration.MaxResult = (uint)_configuration.MaxSearch;
-            configuration.Fields = new[] { "LogLevel" };
-            configuration.AppName = appNames;
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            {
+                MaxResult = (uint)_configuration.MaxSearch,
+                Fields = new[] { "LogLevel" },
+                AppName = appNames
+            };
+
             configuration.SearchAll(LuceneWantAll.Log);
 
             return _searcherManager.GetSearcher(appNames).Search(configuration);
