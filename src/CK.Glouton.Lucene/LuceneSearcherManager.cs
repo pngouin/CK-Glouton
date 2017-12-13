@@ -43,6 +43,9 @@ namespace CK.Glouton.Lucene
         /// <returns></returns>
         public LuceneSearcher GetSearcher( params string[] appNames )
         {
+            if (appNames == null)
+                return null;
+
             var readers = new List<IndexReader>();
             foreach( var appName in appNames )
             {
