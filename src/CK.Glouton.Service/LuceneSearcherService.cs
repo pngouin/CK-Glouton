@@ -50,6 +50,17 @@ namespace CK.Glouton.Service
             return _searcherManager.GetSearcher(appNames).Search(configuration);
         }
 
+        /// <summary>
+        /// Return the selected log.
+        /// </summary>
+        /// <param name="monitorId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="fields"></param>
+        /// <param name="logLevel"></param>
+        /// <param name="query"></param>
+        /// <param name="appNames"></param>
+        /// <returns></returns>
         public List<ILogViewModel> GetLogWithFilters( string monitorId, DateTime start, DateTime end, string[] fields, string[] logLevel, string query,  params string[] appNames)
         {
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
