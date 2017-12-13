@@ -23,9 +23,8 @@ namespace CK.Glouton.Service
         {
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
-                MaxResult = (uint)_configuration.MaxSearch,
+                MaxResult = _configuration.MaxSearch,
                 Fields = new[] { "LogLevel", "Exception" },
-                AppName = appNames
             };
 
             if (query == "*")
@@ -42,9 +41,8 @@ namespace CK.Glouton.Service
         {
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
-                MaxResult = (uint)_configuration.MaxSearch,
+                MaxResult = _configuration.MaxSearch,
                 Fields = new[] { "LogLevel" },
-                AppName = appNames
             };
 
             configuration.SearchAll(LuceneWantAll.Log);
@@ -62,8 +60,7 @@ namespace CK.Glouton.Service
                 Fields = fields,
                 LogLevel = logLevel,
                 Query = query,
-                AppName = appNames,
-                MaxResult = (uint)_configuration.MaxSearch
+                MaxResult = _configuration.MaxSearch
             };
             if (configuration.Fields == null)
                 configuration.Fields = new[] { "LogLevel" };
