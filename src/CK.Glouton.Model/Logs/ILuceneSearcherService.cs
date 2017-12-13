@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CK.Glouton.Model
+namespace CK.Glouton.Model.Logs
 {
     public interface ILuceneSearcherService
     {
-        List<ILogViewModel> Search( string directory, string query );
-        List<ILogViewModel> GetAll( string directory, int max );
-        List<ILogViewModel> GetLogWithFilters( string monitorId, string appName, DateTime start, DateTime end, string[] fields, string[] logLevel, string keyword );
-        ISet<string> GetMonitorIdList();
-        ISet<string> GetAppNameList();
+        List<ILogViewModel> GetAll(params string[] appNames);
+        List<string> GetAppNameList();
+        List<ILogViewModel> GetLogWithFilters(string monitorId, DateTime start, DateTime end, string[] fields, string[] logLevel, string query, params string[] appNames);
+        List<string> GetMonitorIdList();
+        List<ILogViewModel> Search(string query, params string[] appNames);
     }
 }

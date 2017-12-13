@@ -1,156 +1,213 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+﻿using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Lucene;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
-using Lucene.Net.Store;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Directory = Lucene.Net.Store.Directory;
 
 namespace CK.Glouton.Lucene
 {
-    public class LuceneSearcher
+    public class LuceneSearcher : ILuceneSearcher
     {
-        IndexSearcher _indexSearcher;
-        MultiFieldQueryParser _queryParser;
-        QueryParser _exceptionParser;
-        QueryParser _levelParser;
-        Query _query;
-        private ISet<string> _monitorIdList;
-        private ISet<string> _appNameList;
+        private readonly IndexSearcher _indexSearcher;
 
-        public LuceneSearcher(string[] fields)
+        /// <summary>
+        /// Basic Searcher in a Lucene index for CK.Monitoring log.
+        /// </summary>
+        /// <param name="luceneConfiguration"></param>
+        /// <param name="fields"></param>
+        public LuceneSearcher( MultiReader multiReader )
         {
-            var file = new DirectoryInfo(LuceneConstant.GetPath()).EnumerateFiles();
-            if (!file.Any()) return;
-            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath()));
-            _indexSearcher = new IndexSearcher(DirectoryReader.Open(indexDirectory));
-            _queryParser =  new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
-                fields,
-                new StandardAnalyzer(LuceneVersion.LUCENE_48));
-            _exceptionParser = new QueryParser(LuceneVersion.LUCENE_48,
-                "Message",
-                new StandardAnalyzer(LuceneVersion.LUCENE_48));
-            _levelParser = new QueryParser(LuceneVersion.LUCENE_48,
-                "LogLevel",
-                new StandardAnalyzer(LuceneVersion.LUCENE_48));
-            InitializeIdList();
+            _indexSearcher = new IndexSearcher( multiReader );
         }
 
-        public LuceneSearcher(string dir, string[] fields)
+        /// <summary>
+        /// Search into Lucene index.
+        /// If the <see cref="LuceneSearcherConfiguration"/> is not correct return null.
+        /// </summary>
+        /// <param name="searchQuery"></param>
+        /// <returns></returns>
+        public List<ILogViewModel> Search( LuceneSearcherConfiguration searchConfiguration )
         {
-            var file = new DirectoryInfo(LuceneConstant.GetPath(dir)).EnumerateFiles();
-            if (!file.Any()) return;
-            Directory indexDirectory = FSDirectory.Open(new DirectoryInfo(LuceneConstant.GetPath(dir)));
-            _indexSearcher = new IndexSearcher(DirectoryReader.Open(indexDirectory));
-            _queryParser = new MultiFieldQueryParser(LuceneVersion.LUCENE_48,
-                fields,
-                new StandardAnalyzer(LuceneVersion.LUCENE_48));
-            _exceptionParser = new QueryParser(LuceneVersion.LUCENE_48,
-                "Message",
-                new StandardAnalyzer(LuceneVersion.LUCENE_48));
-            _levelParser = new QueryParser(LuceneVersion.LUCENE_48,
-                "LogLevel",
-                new StandardAnalyzer(LuceneVersion.LUCENE_48));
-            InitializeIdList();
+            if( !CheckSearchConfiguration( searchConfiguration ) )
+                return null;
+
+            if( searchConfiguration.SearchMethod == SearchMethod.FullText )
+            {
+                return Search( searchConfiguration, new MultiFieldQueryParser( LuceneVersion.LUCENE_48,
+                    searchConfiguration.Fields,
+                    new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ).Parse( searchConfiguration.Query ) );
+            }
+
+            if( searchConfiguration.WantAll )
+                return Search( searchConfiguration, GetAll( searchConfiguration.All ) );
+
+            return CreateLogsResult( _indexSearcher?.Search(  CreateQuery( searchConfiguration ) , searchConfiguration.MaxResult ) );
         }
 
-        public ISet<string> MonitorIdList => _monitorIdList;
-
-        public ISet<string> AppNameList => _appNameList;
-
-        internal MultiFieldQueryParser QueryParser => _queryParser;
-
-        public Query CreateQuery(string monitorID, string AppName, string[] fields, string[] logLevel, DateTime startingDate, DateTime endingDate, string searchQuery)
+        private Query GetAll( LuceneWantAll all )
         {
-            BooleanQuery bQuery = new BooleanQuery();
-            if (monitorID != "All") bQuery.Add(new TermQuery(new Term("MonitorId", monitorID)), Occur.MUST);
-            if (AppName != "All") bQuery.Add(new TermQuery(new Term("AppName", AppName)), Occur.MUST);
-            BooleanQuery bFieldQuery = new BooleanQuery();
-            foreach (string field in fields)
+            Query query = null;
+            switch( all )
             {
-                if(field == "Text" && searchQuery != "*")
-                    bFieldQuery.Add(new QueryParser(LuceneVersion.LUCENE_48, field, new StandardAnalyzer(LuceneVersion.LUCENE_48)).Parse(searchQuery), Occur.SHOULD);
-                else
-                    bFieldQuery.Add(new WildcardQuery(new Term(field, searchQuery)), Occur.SHOULD);
+                case LuceneWantAll.Exception:
+                    query = new QueryParser( LuceneVersion.LUCENE_48,
+                                                    LogField.LOG_LEVEL,
+                                                    new StandardAnalyzer( LuceneVersion.LUCENE_48 ) )
+                                                        .Parse( "Fatal" );
+                    break;
+                case LuceneWantAll.Log:
+                    query = new WildcardQuery( new Term( LogField.LOG_LEVEL, "*" ) );
+                    break;
             }
-            bQuery.Add(bFieldQuery, Occur.MUST);
-            BooleanQuery bLevelQuery = new BooleanQuery();
-            foreach (string level in logLevel)
-            {
-                bLevelQuery.Add(_levelParser.Parse(level), Occur.SHOULD);
-            }
-            bQuery.Add(bLevelQuery, Occur.MUST);
-            bQuery.Add(new TermRangeQuery("LogTime",
-                new BytesRef(DateTools.DateToString(startingDate, DateTools.Resolution.MILLISECOND)),
-                new BytesRef(DateTools.DateToString(endingDate, DateTools.Resolution.MILLISECOND)),
-                includeLower: true,
-                includeUpper: true), Occur.MUST);
+            return query;
+        }
+
+        /// <summary>
+        /// Create a query to search into the logs.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        private Query CreateQuery( ILuceneSearcherConfiguration configuration )
+        {
+            var bQuery = new BooleanQuery();
+
+            if( configuration.MonitorId != null ) bQuery.Add( CreateMonitorIdQuery( configuration ), Occur.MUST );
+            if( configuration.DateEnd.Year != 1 && configuration.DateStart.Year != 1 ) bQuery.Add( CreateTimeQuery( configuration ), Occur.MUST );
+            if( configuration.LogLevel != null ) bQuery.Add( CreateLogLevelQuery( configuration ), Occur.MUST );
+
+            bQuery.Add( CreateFieldQuery( configuration ), Occur.MUST );
+
             return bQuery;
         }
 
-        public TopDocs Search (string searchQuery)
+        private Query CreateTimeQuery( ILuceneSearcherConfiguration configuration )
         {
-            if (!CheckSearcher(_indexSearcher)) return null;
-            _query = _queryParser.Parse(searchQuery);
-            return _indexSearcher.Search(_query, LuceneConstant.MaxSearch);
+            return new TermRangeQuery( LogField.LOG_TIME,
+                new BytesRef( DateTools.DateToString( configuration.DateStart, DateTools.Resolution.MILLISECOND ) ),
+                new BytesRef( DateTools.DateToString( configuration.DateEnd, DateTools.Resolution.MILLISECOND ) ),
+                includeLower: true,
+                includeUpper: true );
         }
 
-        public TopDocs Search(Query searchQuery)
+        private Query CreateLogLevelQuery( ILuceneSearcherConfiguration configuration )
         {
-            if (!CheckSearcher(_indexSearcher)) return null;
-            return _indexSearcher.Search(searchQuery, LuceneConstant.MaxSearch);
-        }
+            var levelParser = new QueryParser( LuceneVersion.LUCENE_48,
+               LogField.LOG_LEVEL,
+               new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
 
-        public Document GetDocument(ScoreDoc scoreDoc)
-        {
-            if (!CheckSearcher(_indexSearcher)) return null;
-            return _indexSearcher.Doc(scoreDoc.Doc);
-        }
-
-        public TopDocs GetAllLog(int numberDocsToReturn)
-        {
-            if (!CheckSearcher(_indexSearcher)) return null;
-            return _indexSearcher.Search(new WildcardQuery(new Term("LogLevel", "*")), numberDocsToReturn);
-        }
-
-        public TopDocs GetAllExceptions(int numberDocsToReturn)
-        {
-            if (!CheckSearcher(_indexSearcher)) return null;
-            return _indexSearcher.Search(_exceptionParser.Parse("Outer"), numberDocsToReturn);
-        }
-
-        private void InitializeIdList()
-        {
-            _monitorIdList = new HashSet<string>();
-            _appNameList = new HashSet<string>();
-            TopDocs hits = this.Search(new WildcardQuery(new Term("MonitorIdList", "*")));
-            foreach (ScoreDoc doc in hits.ScoreDocs)
+            var bLevelQuery = new BooleanQuery();
+            foreach( var level in configuration.LogLevel )
             {
-                Document document = this.GetDocument(doc);
-                string[] monitorIds = document.Get("MonitorIdList").Split(' ');
-                foreach (string id in monitorIds)
+                bLevelQuery.Add( levelParser.Parse( level ), Occur.SHOULD );
+            }
+            return bLevelQuery;
+        }
+
+        private Query CreateMonitorIdQuery( ILuceneSearcherConfiguration configuration )
+        {
+            return new TermQuery( new Term( LogField.MONITOR_ID, configuration.MonitorId ) );
+        }
+
+        private Query CreateFieldQuery( ILuceneSearcherConfiguration configuration )
+        {
+            var bFieldQuery = new BooleanQuery();
+
+            if (configuration.Fields == null || configuration.Fields.Length == 0)
+            {
+                bFieldQuery.Add( new WildcardQuery( new Term( LogField.LOG_LEVEL, "*" ) ), Occur.SHOULD );
+                return bFieldQuery;
+            }
+
+            foreach( var field in configuration.Fields )
+            {
+                if( field == LogField.TEXT && configuration.Query != null )
+                    bFieldQuery.Add( new QueryParser( LuceneVersion.LUCENE_48, field, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ).Parse( configuration.Query ), Occur.SHOULD );
+                else
                 {
-                    if (!_monitorIdList.Contains(id)) _monitorIdList.Add(id);
-                }
-                string[] appName = document.Get("AppNameList").Split(' ');
-                foreach (string id in appName)
-                {
-                    if (!_appNameList.Contains(id)) _appNameList.Add(id);
+                    if( configuration.Query == null )
+                        configuration.Query = "*";
+                    bFieldQuery.Add( new WildcardQuery( new Term( field, configuration.Query ) ), Occur.SHOULD );
                 }
             }
+            return bFieldQuery;
         }
 
-        private bool CheckSearcher(IndexSearcher searcher)
+        private List<ILogViewModel> Search( LuceneSearcherConfiguration configuration, Query searchQuery )
         {
-            if (searcher == null)
-                return false;
+            return CreateLogsResult( _indexSearcher?.Search( searchQuery, configuration.MaxResult ) );
+        }
+
+        public Document GetDocument( ScoreDoc scoreDoc )
+        {
+            return _indexSearcher?.Doc( scoreDoc.Doc );
+        }
+
+        public Document GetDocument( Query query, int maxResult )
+        {
+            return GetDocument( _indexSearcher?.Search( query, maxResult ).ScoreDocs.First() );
+        }
+
+        public Document GetDocument( string key, string value, int maxResult )
+        {
+            return GetDocument( _indexSearcher?.Search( new TermQuery( new Term( key, value ) ), maxResult ).ScoreDocs.First() );
+        }
+
+        private bool CheckSearchConfiguration( LuceneSearcherConfiguration configuration ) // TODO: Check if the check is good.
+        {
+            if( configuration == null )
+                throw new ArgumentNullException( nameof( configuration ) );
+
+            if(  configuration.MaxResult == 0 )
+                throw new ArgumentException( nameof( configuration ) );
             return true;
+        }
+
+        /// <summary>
+        /// Get all monitor id in all AppName.
+        /// </summary>
+        /// <returns></returns>
+        public ISet<string> GetAllMonitorId()
+        {
+            var hits = _indexSearcher.Search( new WildcardQuery( new Term( LogField.MONITOR_ID, "*" ) ), Int32.MaxValue );
+            var monitorIds = new HashSet<string>();
+            foreach( var doc in hits.ScoreDocs )
+            {
+                var monitorId = GetDocument( doc ).Get(LogField.MONITOR_ID);
+                monitorIds.Add( monitorId );
+            }
+
+            return monitorIds;
+        }
+
+        private List<ILogViewModel> CreateLogsResult( TopDocs topDocs )
+        {
+            var result = new List<ILogViewModel>();
+            foreach( var scoreDoc in topDocs.ScoreDocs )
+            {
+                var document = GetDocument( scoreDoc );
+                switch( document.Get( LogField.LOG_TYPE ) )
+                {
+                    case "Line":
+                        result.Add( LineViewModel.Get( this, document ) );
+                        break;
+                    case "CloseGroup":
+                        result.Add( CloseGroupViewModel.Get( this, document ) );
+                        break;
+                    case "OpenGroup":
+                        result.Add( OpenGroupViewModel.Get( this, document ) );
+                        break;
+                    default:
+                        throw new ArgumentException( nameof( document ) );
+                }
+            }
+            return result;
         }
     }
 }

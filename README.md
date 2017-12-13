@@ -1,6 +1,6 @@
 # CK-Glouton
 
-TCP-based implementations of [CK.ControlChannel server and client](https://github.com/invenietis/CK-ControlChannel-Abstractions).
+Fifth semester's student project for INTECH IT school.
 
 ## Build requirements
 

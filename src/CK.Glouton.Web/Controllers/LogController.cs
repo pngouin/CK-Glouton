@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Model;
+﻿using CK.Glouton.Model.Logs;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace CK.Glouton.Web.Controllers
         [HttpGet( "all/{appName}" )]
         public List<ILogViewModel> GetAll( [FromRoute] string appName, [FromQuery] int max = 0 )
         {
-            return _luceneSearcherService.GetAll( appName, max == 0 ? 10 : max ) ?? new List<ILogViewModel>();
+            return _luceneSearcherService.GetAll( appName ) ?? new List<ILogViewModel>();
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace CK.Glouton.Web.Controllers
             if( keyword == null )
                 keyword = "*";
 
-            return _luceneSearcherService.GetLogWithFilters( monitorId, appName, from, to, fields, logLevel, keyword );
+            return _luceneSearcherService.GetLogWithFilters( monitorId, from, to, fields, logLevel, keyword, appName);
         }
 
         /// <summary>
@@ -86,9 +86,9 @@ namespace CK.Glouton.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet( "monitorId" )]
-        public ISet<string> GetAllMonitorId()
+        public List<string> GetAllMonitorId()
         {
-            return _luceneSearcherService.GetMonitorIdList() ?? new HashSet<string>();
+            return _luceneSearcherService.GetMonitorIdList() ?? new List<string>();
         }
 
         /// <summary>
@@ -97,9 +97,9 @@ namespace CK.Glouton.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet( "appName" )]
-        public ISet<string> GetAllAppName()
+        public List<string> GetAllAppName()
         {
-            return _luceneSearcherService.GetAppNameList() ?? new HashSet<string>();
+            return _luceneSearcherService.GetAppNameList() ?? new List<string>();
         }
     }
 }

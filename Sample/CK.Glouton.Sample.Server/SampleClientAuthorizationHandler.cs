@@ -3,7 +3,7 @@ using CK.Core;
 
 namespace CK.Glouton.Sample.Server
 {
-    internal class SampleHandler : IAuthorizationHandler
+    internal class SampleClientAuthorizationHandler : IAuthorizationHandler
     {
         public bool OnAuthorizeSession( IServerClientSession serverClientSession )
         {

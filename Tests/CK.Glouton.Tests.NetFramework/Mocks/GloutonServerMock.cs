@@ -1,7 +1,7 @@
 ﻿using CK.ControlChannel.Abstractions;
 using CK.ControlChannel.Tcp;
 using CK.Core;
-using CK.Glouton.Server;
+using CK.Glouton.Model.Server;
 using CK.Monitoring;
 using System;
 using System.Collections.Generic;
@@ -90,7 +90,7 @@ namespace CK.Glouton.Tests
         /// <summary>
         /// Open the handled control channel.
         /// </summary>
-        public void Open()
+        public void Open( IHandlersManagerConfiguration handlersManagerConfiguration = null )
         {
             _controlChannelServer.Open();
         }

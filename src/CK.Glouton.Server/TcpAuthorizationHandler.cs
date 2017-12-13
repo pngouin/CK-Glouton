@@ -2,7 +2,7 @@
 
 namespace CK.Glouton.Server
 {
-    internal class TcpAuthHandler : IAuthorizationHandler
+    internal class TcpAuthorizationHandler : IAuthorizationHandler
     {
         public bool OnAuthorizeSession( IServerClientSession s )
         {

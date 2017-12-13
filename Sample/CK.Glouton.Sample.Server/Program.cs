@@ -1,11 +1,11 @@
 ﻿using CK.Core;
 using CK.Glouton.Server;
+using CK.Glouton.Server.Handlers;
 using CK.Monitoring;
 using CK.Monitoring.Handlers;
 using System;
 using System.IO;
 using System.Reflection;
-using CK.Glouton.Lucene;
 
 namespace CK.Glouton.Sample.Server
 {
@@ -14,22 +14,34 @@ namespace CK.Glouton.Sample.Server
         private static void Main( string[] args )
         {
             SetupActivityMonitor();
-            var program = new Program();
-            program.Run();
+            Run();
             GrandOutput.Default.Dispose();
         }
 
-        private void Run()
+        private static void Run()
         {
             var activityMonitor = new ActivityMonitor();
 
-            using ( var server = new GloutonServer(
+            using( var server = new GloutonServer(
                 "127.0.0.1",
                 33698,
-                new SampleHandler()
+                activityMonitor,
+                new SampleClientAuthorizationHandler()
             ) )
             {
-                server.Open();
+                server.Open( new HandlersManagerConfiguration
+                {
+                    GloutonHandlers =
+                    {
+                        new BinaryGloutonHandlerConfiguration
+                        {
+                            Path = "Logs",
+                            MaxCountPerFile = 10000,
+                            UseGzipCompression = true
+                        },
+                        new LuceneGloutonHandlerConfiguration()
+                    }
+                } );
 
                 var doContinue = true;
                 while( doContinue )
