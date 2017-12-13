@@ -14,7 +14,12 @@ import { ITimeSpanNavigatorSettings, Scale } from 'app/modules/timeSpanNavigator
         <applicationNameSelector></applicationNameSelector>
       </div>
       <div class="ui-g-8">
-        <timeSpanNavigator [configuration]="timeSpanNavigatorConfiguration"></timeSpanNavigator>
+        <div class="ui-g-12">
+          <timeSpanNavigator [configuration]="timeSpanNavigatorConfiguration"></timeSpanNavigator>
+        </div>
+        <div class="ui-g-12">
+          <logViewer></logViewer>
+        </div>
       </div>
     </div>
   `

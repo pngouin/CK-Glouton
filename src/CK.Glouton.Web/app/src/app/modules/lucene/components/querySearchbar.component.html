@@ -1,4 +1,6 @@
 <div class="ui-inputgroup">
-    <span class="ui-inputgroup-addon"><i class="fa fa-search"></i></span>
-    <input type="text" pInputText placeholder="Search" [(ngModel)]="_query">
+    <input type="text" pInputText placeholder="Query" [(ngModel)]="_query">
+    <button pButton type="button" (click)="onClick()" class="ui-button-icon-only">
+        <i class="fa fa-search"></i>
+    </button>
 </div>
