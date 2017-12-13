@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LogService } from 'app/common/API';
+import { LogService } from 'app/_services';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
@@ -7,6 +7,7 @@ import { EffectDispatcher } from '@ck/rx';
 import { IAppState } from 'app/app.state';
 import { ECriticityLevel } from '../models';
 import { ITimeSpanNavigatorState } from 'app/modules/timeSpanNavigator/state/timeSpanNavigator.state';
+import { ILogView } from 'app/common/logs/models';
 
 @Component({
     selector: 'querySearchbar',
@@ -27,6 +28,8 @@ export class QuerySearchbarComponent {
 
     private _subscriptions: Subscription[];
 
+    private _logs: ILogView[];
+
     constructor(
         private logService: LogService,
         private store: Store<IAppState>,
@@ -42,6 +45,8 @@ export class QuerySearchbarComponent {
     }
 
     onClick(): void {
-        console.log('Hi');
+        this.logService
+            .filter({appName: this._appNames})
+            .subscribe(l => this._logs = l);
     }
 }

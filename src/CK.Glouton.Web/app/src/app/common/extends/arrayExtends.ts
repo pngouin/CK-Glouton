@@ -1,4 +1,5 @@
 declare global {
+    // tslint:disable-next-line:interface-name
     interface Array<T> {
         copy<T>(): this;
     }
