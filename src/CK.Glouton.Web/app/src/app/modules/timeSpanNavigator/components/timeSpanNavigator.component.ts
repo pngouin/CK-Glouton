@@ -37,9 +37,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
     @Input()
     configuration: ITimeSpanNavigatorSettings;
 
-    @Output()
-    onDateChange = new EventEmitter<Date[]>();
-
     constructor(
         private store: Store<IAppState>,
         private effectDispatcher: EffectDispatcher
@@ -151,8 +148,8 @@ export class TimeSpanNavigatorComponent implements OnInit {
             actualDifference *= Math.pow(-1, difference < 0 ? 0 : 1);
             this._dateRange[updatedSlider] =
                 this.setDateScaleValue(this._dateRange[updatedSlider], actualDifference, this._currentScale);
-            this.onDateChange.emit(this._dateRange);
             this._rangeSnapshot = event.values.copy();
+            this.effectDispatcher.dispatch(new SubmitTimeSpanEffect({from: this._dateRange[0], to: this._dateRange[1]}));
         }
     }
 
