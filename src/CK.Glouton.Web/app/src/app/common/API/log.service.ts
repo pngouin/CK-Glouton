@@ -13,9 +13,9 @@ export class LogService {
     ) {
     }
 
-    public getAll(appName: string, max: number = 10): Observable<ILogView[]> {
+    public getAll(appName: string): Observable<ILogView[]> {
         return this.httpClient
-            .get<ILogView[]>(`${this.logEndpoint}/all/${appName}?max=${max}`);
+            .get<ILogView[]>(`${this.logEndpoint}/all/${appName}`);
     }
 
     public getAllApplicationName(): Observable<string[]> {
@@ -23,4 +23,8 @@ export class LogService {
             .get<string[]>(`${this.logEndpoint}/appName`);
     }
 
+    public getAllMonitorId(): Observable<string[]> {
+        return this.httpClient
+            .get<string[]>(`${this.logEndpoint}/monitorId`);
+    }
 }
