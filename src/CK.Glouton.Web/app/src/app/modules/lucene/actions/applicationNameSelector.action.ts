@@ -37,7 +37,7 @@ export class SetAppNamesMutation implements Action {
     ) {
     }
 }
-@EffectHandler(SetAppNamesMutation)
+@ActionHandler(SetAppNamesMutation)
 export class SetAppNamesMutationHandler implements IActionHandler {
     public apply(state: ILucenePreferenceState, action: SetAppNamesMutation): ILucenePreferenceState {
         return {
