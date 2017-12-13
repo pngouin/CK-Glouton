@@ -7,6 +7,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
   styleUrls: [
     '../../node_modules/font-awesome/css/font-awesome.min.css',
     '../../node_modules/primeng/resources/themes/omega/theme.css',
+    './common/style/theme.scss',
     '../../node_modules/primeng/resources/primeng.min.css'
   ]
 })
