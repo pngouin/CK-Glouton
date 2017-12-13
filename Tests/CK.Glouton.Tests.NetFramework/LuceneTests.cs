@@ -152,7 +152,7 @@ namespace CK.Glouton.Tests
             log.GroupDepth.Should().BeOfType<string>();
             log.PreviousEntryType.Should().BeOfType<string>();
             log.PreviousLogTime.Should().BeOfType<string>();
-            log.AppId.Should().BeOfType<string>();
+            log.AppName.Should().BeOfType<string>();
             log.LogTime.Should().BeOfType<string>();
             log.Exception.Should().BeNull();
 
