@@ -76,7 +76,7 @@ namespace CK.Glouton.Service
             if (configuration.Fields == null)
                 configuration.Fields = new[] { "LogLevel" };
 
-            return _searcherManager.GetSearcher(appNames).Search(configuration);
+            return _searcherManager.GetSearcher(appNames)?.Search(configuration) ?? new List<ILogViewModel>();
         }
 
         public List<string> GetMonitorIdList()
