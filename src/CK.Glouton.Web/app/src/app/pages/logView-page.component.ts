@@ -1,19 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ITimeSpanNavigatorSettings, Scale } from 'app/modules/timeSpanNavigator/models';
+import { LogViewerComponent } from 'app/modules/lucene/components';
 
 @Component({
   selector: 'home',
   template: `
     <div class="ui-g">
-      <div class="ui-g-4">
-        <querySearchbar></querySearchbar>
+      <div class="ui-g-2">
+        <querySearchbar (searchEmitter)="searchEvent($event)"></querySearchbar>
         <h3>Criticity Level</h3>
         <criticitySelector></criticitySelector>
 
         <h3>Current AppNames</h3>
         <applicationNameSelector></applicationNameSelector>
       </div>
-      <div class="ui-g-8">
+      <div class="ui-g-10">
         <div class="ui-g-12">
           <timeSpanNavigator [configuration]="timeSpanNavigatorConfiguration"></timeSpanNavigator>
         </div>
@@ -25,7 +26,9 @@ import { ITimeSpanNavigatorSettings, Scale } from 'app/modules/timeSpanNavigator
   `
 })
 export class LogViewPageComponent {
-  timeSpanNavigatorConfiguration: ITimeSpanNavigatorSettings = {
+  @ViewChild(LogViewerComponent) private logViewer: LogViewerComponent;
+
+  private timeSpanNavigatorConfiguration: ITimeSpanNavigatorSettings = {
     from: new Date('2017-11-01'),
     to: new Date(),
     initialScale: Scale.Hours,
@@ -38,4 +41,8 @@ export class LogViewPageComponent {
       Seconds: {min: 1, max: 60}
     }
   };
+
+  private searchEvent(event: string): void {
+    this.logViewer.getLogs(event);
+  }
 }

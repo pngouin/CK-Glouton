@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { EffectDispatcher } from '@ck/rx';
 import { IAppState } from 'app/app.state';
 import { LogService } from 'app/_services';
-import { ILogView } from 'app/common/logs/models';
+import { ILogViewModel } from 'app/common/logs/models';
 import { SubmitAppNamesEffect } from '../actions';
 
 @Component({

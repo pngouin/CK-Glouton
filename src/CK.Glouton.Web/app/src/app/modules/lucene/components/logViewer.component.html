@@ -1,7 +1,7 @@
 <p-tabView>
     <p-tabPanel header="Logs" leftIcon="fa-align-left">
         <div *ngIf="_logs"><div *ngFor="let log of _logs">
-                
+            {{log.logLevel}} {{log.logTime}} {{log.text}}
         </div></div>
     </p-tabPanel>
 </p-tabView>

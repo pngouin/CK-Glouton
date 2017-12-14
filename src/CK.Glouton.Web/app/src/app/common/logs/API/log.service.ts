@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { ILogView, ISearchParameters } from '../models';
+import { ILogViewModel, ISearchParameters } from '../models';
 
 @Injectable()
 export class LogService {
@@ -13,13 +13,13 @@ export class LogService {
     ) {
     }
 
-    public getAll(appName: string): Observable<ILogView[]> {
+    public getAll(appName: string): Observable<ILogViewModel[]> {
         if(appName === undefined || appName === null) {
             throw new Error('Param cannot be null!');
         }
 
         return this.httpClient
-            .get<ILogView[]>(`${this.logEndpoint}/all/${appName}`);
+            .get<ILogViewModel[]>(`${this.logEndpoint}/all/${appName}`);
     }
 
     public getAllApplicationName(): Observable<string[]> {
@@ -32,7 +32,7 @@ export class LogService {
             .get<string[]>(`${this.logEndpoint}/monitorId`);
     }
 
-    public filter(searchParameters: ISearchParameters): Observable<ILogView[]> {
+    public filter(searchParameters: ISearchParameters): Observable<ILogViewModel[]> {
         if(searchParameters === null || searchParameters === undefined) {
             throw new Error('Params cannot be null!');
         }
@@ -46,19 +46,17 @@ export class LogService {
         params = this.appendStringIfDefined(params, 'keyword', searchParameters.keyword);
         params = this.appendStringArrayIfDefined(params, 'logLevel', searchParameters.logLevel);
 
-        console.log(params);
-
         return this.httpClient
-            .get<ILogView[]>(`${this.logEndpoint}/filter`, {params: params});
+            .get<ILogViewModel[]>(`${this.logEndpoint}/filter`, {params: params});
     }
 
-    public search(appName: string, query: string): Observable<ILogView[]> {
+    public search(appName: string, query: string): Observable<ILogViewModel[]> {
         if(appName === undefined || appName === null) {
             throw new Error('Param cannot be null!');
         }
 
         return this.httpClient
-            .get<ILogView[]>(
+            .get<ILogViewModel[]>(
                 `${this.logEndpoint}/search/${appName}`,
                 {params: this.appendStringIfDefined( new HttpParams(), 'query', query )}
             );

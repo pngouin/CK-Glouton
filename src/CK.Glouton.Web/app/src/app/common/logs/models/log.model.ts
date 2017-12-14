@@ -1,31 +1,35 @@
 export enum LogType {
-    Opengroup,
+    OpenGroup,
     Line,
     CloseGroup
 }
 
-export interface ILogView {
+export interface ILogViewModel {
     logType: LogType;
-    exception: IExceptionViewModel;
     logTime: string;
+    text: string;
+    tags: string;
+    sourceFileName: string;
+    lineNumber: string;
+    exception: IExceptionViewModel;
     logLevel:string;
     monitorId: string;
     groupDepth: string;
     previousEntryType: string;
     previousLogTime: string;
     appName: string;
-    sourceFileName: string;
-    lineNumber: string;
+    conclusion: string;
 }
 
 export interface IInnerExceptionViewModel {
-    stack: string;
-    details: string;
+    stackTrace: string;
+    message: string;
     fileName: string;
 }
 
 export interface IExceptionViewModel {
     innerException: IInnerExceptionViewModel;
+    aggregatedExceptions: IExceptionViewModel[];
     message: string;
-    stack: string;
+    stackTrace: string;
 }
