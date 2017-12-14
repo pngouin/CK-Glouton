@@ -6,7 +6,7 @@ import { LogViewerComponent } from 'app/modules/lucene/components';
   selector: 'home',
   template: `
     <div class="ui-g">
-      <div class="ui-g-2">
+      <div class="ui-g-3">
         <querySearchbar (searchEmitter)="searchEvent($event)"></querySearchbar>
         <h3>Criticity Level</h3>
         <criticitySelector></criticitySelector>
@@ -14,7 +14,7 @@ import { LogViewerComponent } from 'app/modules/lucene/components';
         <h3>Current AppNames</h3>
         <applicationNameSelector></applicationNameSelector>
       </div>
-      <div class="ui-g-10">
+      <div class="ui-g-9">
         <div class="ui-g-12">
           <timeSpanNavigator [configuration]="timeSpanNavigatorConfiguration"></timeSpanNavigator>
         </div>
