@@ -5,8 +5,8 @@ $disabledOpacity: 0.35;
 
 //Header
 $headerBorderWidth: 1px;
-$headerBorderColor: #eaaeb3;
-$headerBgColor: #deedf7;
+$headerBorderColor: #0B1F67;
+$headerBgColor: #55A2B4;
 $headerTextColor: #222222;
 $headerFontWeight: bold;
 $headerIconTextColor: #222222;
@@ -14,7 +14,7 @@ $headerIconTextColor: #222222;
 //Content
 $contentBorderWidth: 1px;
 $contentBorderColor: #dddddd;
-$contentBgColor: #f2f5f7;
+$contentBgColor: #e2e2e2;
 $contentTextColor: #362b36;
 
 //Default State
@@ -24,8 +24,8 @@ $stateDefaultBgColor: #e7e7e7;
 $stateDefaultTextColor: #323536;
 
 //Active State
-$stateActiveBorderColor: #2694e8;
-$stateActiveBgColor: #3baae3;
+$stateActiveBorderColor: #024C5E;
+$stateActiveBgColor: #096277;
 $stateActiveTextColor: #ffffff;
 
 //Highlight State
@@ -34,9 +34,9 @@ $stateHighlightBgColor: #ffef8f;
 $stateHighlightTextColor: #363636;
 
 //Focus State
-$stateFocusBorderColor: #74b2e2;
-$stateFocusBgColor: #e4f1fb;
-$stateFocusTextColor: #0070a3;
+$stateFocusBorderColor: #024C5E;
+$stateFocusBgColor: #073e4b;
+$stateFocusTextColor: #ffffff;
 
 //Error State
 $stateErrorBorderColor: #cd0a0a;
@@ -44,9 +44,9 @@ $stateErrorBgColor: #cd0a0a;
 $stateErrorTextColor: #ffffff;
 
 //Hover State
-$stateHoverBorderColor: #74b2e2;
-$stateHoverBgColor: #e4f1fb;
-$stateHoverTextColor: #0070a3;
+$stateHoverBorderColor: #024C5E;
+$stateHoverBgColor: #0c87a3;
+$stateHoverTextColor: #ffffff;
 
 //Forms
 $inputBgColor: #ffffff;
