@@ -3,7 +3,7 @@ import { reducerFactory } from '@ck/rx';
 import { ILucenePreferenceState } from './lucenePreference.state';
 
 const initial: ILucenePreferenceState = {
-    level: 0,
+    level: [],
     appNames: []
 };
 

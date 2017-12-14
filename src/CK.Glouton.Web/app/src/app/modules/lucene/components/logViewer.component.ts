@@ -7,21 +7,19 @@ import { MenuItem } from 'primeng/primeng';
 import { ILogViewModel } from 'app/common/logs/models';
 import { LogService } from 'app/_services';
 import { EffectDispatcher } from '@ck/rx';
-import { ECriticityLevel } from '../models';
 import { ITimeSpanNavigatorState } from 'app/modules/timeSpanNavigator/state/timeSpanNavigator.state';
 
 @Component({
     selector: 'logViewer',
-    templateUrl: 'logViewer.component.html',
-    styles: [ './logViewer.component.css' ]
+    templateUrl: 'logViewer.component.html'
 })
 export class LogViewerComponent {
 
     private _appNames$: Observable<string[]>;
     private _appNames: string[];
 
-    private _level$: Observable<ECriticityLevel>;
-    private _level: ECriticityLevel;
+    private _level$: Observable<string[]>;
+    private _level: string[];
 
     private _dateRange$: Observable<ITimeSpanNavigatorState>;
     private _dateRange: ITimeSpanNavigatorState;
@@ -49,8 +47,13 @@ export class LogViewerComponent {
         this._loading = true;
         this._logs = null;
         this.logService
-            .filter({appName: this._appNames})
-            .subscribe(l => {
+            .filter(
+                {
+                    appName: this._appNames,
+                    keyword: query,
+                    logLevel: this._level
+                }
+            ).subscribe(l => {
                 this._logs = l;
                 this._loading = false;
             });

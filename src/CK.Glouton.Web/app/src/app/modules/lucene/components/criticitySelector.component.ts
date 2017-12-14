@@ -4,7 +4,6 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { EffectDispatcher } from '@ck/rx';
 import { IAppState } from 'app/app.state';
-import { ECriticityLevel } from '../models';
 import { SubmitCriticityEffect } from '../actions';
 
 @Component({
@@ -15,11 +14,9 @@ import { SubmitCriticityEffect } from '../actions';
 
 export class CriticitySelectorComponent {
 
-    private _criticityLevel$: Observable<ECriticityLevel>;
-    private _criticityLevel: ECriticityLevel;
+    private _criticityLevel$: Observable<string[]>;
+    private _criticityLevel: string[];
     private _subscription: Subscription;
-
-    private criticityLevel: string[] = [];
 
     constructor(
         private store: Store<IAppState>,
@@ -30,16 +27,6 @@ export class CriticitySelectorComponent {
     }
 
     onChange( _: boolean ): void {
-        this._criticityLevel = 0;
-        // tslint:disable:one-line
-        this.criticityLevel.forEach(level => {
-            if( level === 'debug' ) { this._criticityLevel |= ECriticityLevel.debug;}
-            else if( level === 'trace' ) { this._criticityLevel |= ECriticityLevel.trace; }
-            else if( level === 'info' ) { this._criticityLevel |= ECriticityLevel.info; }
-            else if( level === 'warn' ) { this._criticityLevel |= ECriticityLevel.warn; }
-            else if( level === 'error' ) { this._criticityLevel |= ECriticityLevel.error; }
-            else if( level === 'fatal' ) { this._criticityLevel |= ECriticityLevel.fatal; }
-        });
         this.effectDispatcher.dispatch(new SubmitCriticityEffect(this._criticityLevel));
     }
 }
