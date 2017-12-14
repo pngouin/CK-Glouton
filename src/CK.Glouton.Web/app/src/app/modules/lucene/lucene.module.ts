@@ -7,7 +7,8 @@ import {
     CheckboxModule,
     InputTextModule,
     TabViewModule,
-    ButtonModule
+    ButtonModule,
+    ProgressSpinnerModule
 } from 'primeng/primeng';
 
 import * as components from './components';
@@ -20,7 +21,8 @@ import * as components from './components';
         CheckboxModule,
         InputTextModule,
         TabViewModule,
-        ButtonModule
+        ButtonModule,
+        ProgressSpinnerModule
     ],
     declarations: [
         ...Object.values(components)

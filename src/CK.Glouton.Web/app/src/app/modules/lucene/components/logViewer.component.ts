@@ -12,7 +12,8 @@ import { ITimeSpanNavigatorState } from 'app/modules/timeSpanNavigator/state/tim
 
 @Component({
     selector: 'logViewer',
-    templateUrl: 'logViewer.component.html'
+    templateUrl: 'logViewer.component.html',
+    styles: [ './logViewer.component.css' ]
 })
 export class LogViewerComponent {
 
@@ -28,12 +29,14 @@ export class LogViewerComponent {
     private _subscriptions: Subscription[];
 
     private _logs: ILogViewModel[];
+    private _loading: boolean;
 
     constructor(
         private logService: LogService,
         private store: Store<IAppState>,
     ) {
         this._subscriptions = [];
+        this._loading = false;
         this._appNames$ = this.store.select(s => s.luceneParameters.appNames);
         this._level$ = this.store.select(s => s.luceneParameters.level);
         this._dateRange$ = this.store.select( s => s.timeSpanNavigator);
@@ -43,8 +46,13 @@ export class LogViewerComponent {
     }
 
     public getLogs(query: string): void {
+        this._loading = true;
+        this._logs = null;
         this.logService
             .filter({appName: this._appNames})
-            .subscribe(l => this._logs = l);
+            .subscribe(l => {
+                this._logs = l;
+                this._loading = false;
+            });
     }
 }
