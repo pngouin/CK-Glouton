@@ -17,7 +17,7 @@ namespace CK.Glouton.Model.Logs
             return new OpenGroupViewModel
             {
                 LogLevel = document.Get( LogField.LOG_LEVEL ),
-                LogTime = document.Get( LogField.LOG_TIME ),
+                LogTime = DateTools.StringToDate( document.Get( LogField.LOG_TIME ) ).ToString( "dd/MM/yyyy HH:mm:ss.fff" ),
                 Text = document.Get( LogField.TEXT ),
                 SourceFileName = document.Get( LogField.SOURCE_FILE_NAME ),
                 Exception = ExceptionViewModel.Get( luceneSearcher, document )
