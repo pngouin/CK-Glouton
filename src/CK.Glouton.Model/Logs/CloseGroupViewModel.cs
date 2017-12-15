@@ -11,14 +11,14 @@ namespace CK.Glouton.Model.Logs
         public IExceptionViewModel Exception { get; set; }
         public string LogTime { get; set; }
 
-        public static CloseGroupViewModel Get( ILuceneSearcher searcher, Document doc )
+        public static CloseGroupViewModel Get( ILuceneSearcher searcher, Document document )
         {
             CloseGroupViewModel obj = new CloseGroupViewModel
             {
-                LogLevel = doc.Get( LogField.LOG_LEVEL ),
-                LogTime = doc.Get( LogField.LOG_TIME ),
-                Conclusion = doc.Get( LogField.CONCLUSION ),
-                Exception = ExceptionViewModel.Get( searcher, doc )
+                LogLevel = document.Get( LogField.LOG_LEVEL ),
+                LogTime = DateTools.StringToDate( document.Get( LogField.LOG_TIME ) ).ToString( "dd/MM/yyyy HH:mm:ss.fff" ),
+                Conclusion = document.Get( LogField.CONCLUSION ),
+                Exception = ExceptionViewModel.Get( searcher, document )
             };
 
             return obj;
