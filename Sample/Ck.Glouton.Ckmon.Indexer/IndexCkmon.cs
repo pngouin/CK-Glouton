@@ -13,16 +13,20 @@ namespace Ck.Glouton.Ckmon.Indexer
     {
         public IndexCkmon(LuceneConfiguration configuration)
         {
-            string path = GetFiles().First();
-            using (var indexer = new LuceneIndexer(configuration))
-            using (LogReader reader = LogReader.Open(path))
+
+            foreach (var path in GetFiles())
             {
-                reader.MoveNext();
-                for (; ; )
+                string appName = "CKMON-" + Guid.NewGuid().ToString().Substring(0, 8);
+                using (var indexer = new LuceneIndexer(configuration))
+                using (LogReader reader = LogReader.Open(path))
                 {
-                    indexer.IndexLog(reader.CurrentMulticast, configuration.Directory);
-                    if (!reader.MoveNext())
-                        return;
+                    reader.MoveNext();
+                    for (; ; )
+                    {
+                        indexer.IndexLog(reader.CurrentMulticast, appName);
+                        if (!reader.MoveNext())
+                            return;
+                    }
                 }
             }
         }
