@@ -10,6 +10,7 @@ namespace CK.Glouton.Model.Logs
         public ELogType LogType => ELogType.CloseGroup;
         public IExceptionViewModel Exception { get; set; }
         public string LogTime { get; set; }
+        public string GroupDepth { get; set; }
 
         public static CloseGroupViewModel Get( ILuceneSearcher searcher, Document document )
         {
@@ -18,7 +19,8 @@ namespace CK.Glouton.Model.Logs
                 LogLevel = document.Get( LogField.LOG_LEVEL ),
                 LogTime = DateTools.StringToDate( document.Get( LogField.LOG_TIME ) ).ToString( "dd/MM/yyyy HH:mm:ss.fff" ),
                 Conclusion = document.Get( LogField.CONCLUSION ),
-                Exception = ExceptionViewModel.Get( searcher, document )
+                GroupDepth = document.Get( LogField.GROUP_DEPTH ),
+                Exception = ExceptionViewModel.Get( searcher, document)
             };
 
             return obj;
