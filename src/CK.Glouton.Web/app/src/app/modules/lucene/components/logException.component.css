@@ -1,0 +1,14 @@
+p {
+    margin: 6px;
+}
+
+.black {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 7px;
+    max-width: 100%;
+}
+code {
+    white-space: pre-wrap;
+    word-break: break-all;
+}
