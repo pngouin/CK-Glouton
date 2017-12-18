@@ -58,4 +58,9 @@ export class LogViewerComponent {
                 this._loading = false;
             });
     }
+
+    public getMarginLeft (log : ILogViewModel) : number
+    {
+        return log.groupDepth * 8;
+    }
 }
