@@ -96,22 +96,22 @@ namespace CK.Glouton.Service
         private (List<ILogViewModel> logs, int index) LogsPrettifier(List<ILogViewModel> logs, int index)
         {
             var indexSnapshot = index;
-            for (; index < logs.Count; index += 1)
+            for( ; index < logs.Count; index += 1 )
             {
-                if (logs[index].LogType == ELogType.OpenGroup)
+                if( logs[index].LogType == ELogType.OpenGroup )
                 {
-                    if ( !(logs[index] is OpenGroupViewModel parent) )
+                    if ( !(logs[index] is OpenGroupViewModel parent ) )
                         throw new InvalidOperationException( nameof( parent ) );
-                    var groupLogs = LogsPrettifier(logs, index + 1);
+                    var groupLogs = LogsPrettifier( logs, index + 1 );
                     parent.GroupLogs = groupLogs.logs;
-                    logs.RemoveRange(index + 1, groupLogs.index - index);
+                    logs.RemoveRange( index + 1, groupLogs.index - index );
                 }
-                else if (logs[index].LogType == ELogType.CloseGroup)
+                else if( logs[index].GroupDepth > 0 && logs[index].LogType == ELogType.CloseGroup )
                 {
-                    return (logs.GetRange(indexSnapshot, index - indexSnapshot + 1), index);
+                    return ( logs.GetRange( indexSnapshot, index - indexSnapshot + 1 ), index );
                 }
             }
-            return (logs, indexSnapshot);
+            return ( logs, indexSnapshot );
         }
     }
 }
