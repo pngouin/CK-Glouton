@@ -11,7 +11,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { reducer } from './app.reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import * as components from './_components';
 import * as modules from './_modules';
@@ -31,6 +31,7 @@ const stateStorageKey: string = 'hln_glouton/state';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    BrowserAnimationsModule,
     ...Object.values(modules),
     StoreModule.provideStore(reducer),
     RouterModule.forRoot(rootRouterConfig),

@@ -8,8 +8,10 @@ import {
     InputTextModule,
     TabViewModule,
     ButtonModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    DialogModule
 } from 'primeng/primeng';
+
 
 import * as components from './components';
 
@@ -22,7 +24,8 @@ import * as components from './components';
         InputTextModule,
         TabViewModule,
         ButtonModule,
-        ProgressSpinnerModule
+        ProgressSpinnerModule,
+        DialogModule
     ],
     declarations: [
         ...Object.values(components)
