@@ -15,3 +15,7 @@ code {
     border-radius:7px;
     max-width: 60em;
 }
+
+.dialogSize {
+    max-width: 60em;
+}
