@@ -1,5 +1,6 @@
 ﻿using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
+using System.Collections.Generic;
 
 namespace CK.Glouton.Model.Logs
 {
@@ -12,7 +13,7 @@ namespace CK.Glouton.Model.Logs
         public string SourceFileName { get; set; }
         public IExceptionViewModel Exception { get; set; }
         public string GroupDepth { get; set; }
-
+        public List<ILogViewModel> GroupLogs { get; set; }
 
         public static OpenGroupViewModel Get( ILuceneSearcher luceneSearcher, Document document )
         {

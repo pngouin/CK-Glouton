@@ -75,8 +75,7 @@ namespace CK.Glouton.Service
             };
             if (configuration.Fields == null)
                 configuration.Fields = new[] { "LogLevel" };
-
-            return _searcherManager.GetSearcher(appNames)?.Search(configuration) ?? new List<ILogViewModel>();
+            return LogsPrettifier(_searcherManager.GetSearcher(appNames)?.Search(configuration) ?? new List<ILogViewModel>(), 0).Item1;
         }
 
         public List<string> GetMonitorIdList()
@@ -92,6 +91,27 @@ namespace CK.Glouton.Service
         public List<string> GetAppNameList()
         {
             return _searcherManager.AppName.ToList();
+        }
+
+        private (List<ILogViewModel> logs, int index) LogsPrettifier(List<ILogViewModel> logs, int index)
+        {
+            var indexSnapshot = index;
+            for (; index < logs.Count; index += 1)
+            {
+                if (logs[index].LogType == ELogType.OpenGroup)
+                {
+                    if ( !(logs[index] is OpenGroupViewModel parent) )
+                        throw new InvalidOperationException( nameof( parent ) );
+                    var groupLogs = LogsPrettifier(logs, index + 1);
+                    parent.GroupLogs = groupLogs.logs;
+                    logs.RemoveRange(index + 1, groupLogs.index - index);
+                }
+                else if (logs[index].LogType == ELogType.CloseGroup)
+                {
+                    return (logs.GetRange(indexSnapshot, index - indexSnapshot + 1), index);
+                }
+            }
+            return (logs, indexSnapshot);
         }
     }
 }
