@@ -14,7 +14,7 @@ export interface ILogViewModel {
     exception: IExceptionViewModel;
     logLevel:string;
     monitorId: string;
-    groupDepth: string;
+    groupDepth: number;
     previousEntryType: string;
     previousLogTime: string;
     appName: string;
