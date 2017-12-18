@@ -31,7 +31,7 @@
 </div>
 
 <div *ngIf="log.exception" class="exception-border">
-
+    <exception [data]="log.exception"></exception>
 </div>
 
 <div *ngIf="log.previousLogTime && log.previousEntryType">
