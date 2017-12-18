@@ -16,8 +16,6 @@ export class LogComponent implements OnInit {
     @Input('data')
     log : ILogViewModel;
 
-    @Output() childrenClick = new EventEmitter<ILogViewModel>();
-
     private display : boolean = false;
 
     constructor() {  }
