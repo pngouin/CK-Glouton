@@ -1,5 +1,6 @@
 ﻿using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
+using System;
 
 namespace CK.Glouton.Model.Logs
 {
@@ -14,7 +15,7 @@ namespace CK.Glouton.Model.Logs
         public IExceptionViewModel Exception { get; set; }
         public string LogLevel { get; set; }
         public string MonitorId { get; set; }
-        public string GroupDepth { get; set; }
+        public int GroupDepth { get; set; }
         public string PreviousEntryType { get; set; }
         public string PreviousLogTime { get; set; }
         public string AppId { get; set; }
@@ -24,7 +25,7 @@ namespace CK.Glouton.Model.Logs
             return new LineViewModel
             {
                 MonitorId = document.Get( LogField.MONITOR_ID ),
-                GroupDepth = document.Get( LogField.GROUP_DEPTH ),
+                GroupDepth = Int32.Parse(document.Get(LogField.GROUP_DEPTH)),
                 PreviousEntryType = document.Get( LogField.PREVIOUS_ENTRY_TYPE ),
                 PreviousLogTime = document.Get( LogField.PREVIOUS_LOG_TIME ),
                 LogLevel = document.Get( LogField.LOG_LEVEL ),
