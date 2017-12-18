@@ -3,6 +3,7 @@ import { Input } from '@angular/core/';
 import { ILogViewModel } from 'app/common/logs/models';
 import { Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
+import { DialogModule } from 'primeng/primeng';
 
 @Component({
     selector: 'log',
@@ -16,6 +17,8 @@ export class LogComponent implements OnInit {
     log : ILogViewModel;
 
     @Output() childrenClick = new EventEmitter<ILogViewModel>();
+
+    private display : boolean = false;
 
     constructor() {  }
 
@@ -39,7 +42,7 @@ export class LogComponent implements OnInit {
     }
 
     getText() : string {
-        const maxLength = 80 - this.log.groupDepth * 15;
+        const maxLength = 80 - this.log.groupDepth * 3;
         if (!this.log.text)
             return "";
         if ( this.log.text.length > maxLength)
@@ -47,10 +50,9 @@ export class LogComponent implements OnInit {
         return this.log.text;
     }
 
-    onClick(log : ILogViewModel) : void
+    onClick() : void
     {
-        console.log(log);
-        this.childrenClick.emit(log);
+        this.display = true;
     }
 
     ngOnInit() { }
