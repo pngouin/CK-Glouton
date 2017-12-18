@@ -1,4 +1,5 @@
 ﻿using CK.Core;
+using CK.Glouton.Handler.Tcp;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -108,11 +109,17 @@ namespace CK.Glouton.Tests
                             var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
                             grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
 
+                            Thread.Sleep( TestHelper.DefaultSleepTime );
+
                             var clientActivityMonitor1 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
                             grandOutputClient1.EnsureGrandOutputClient( clientActivityMonitor1 );
 
+                            Thread.Sleep( TestHelper.DefaultSleepTime );
+
                             var clientActivityMonitor2 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
                             grandOutputClient2.EnsureGrandOutputClient( clientActivityMonitor2 );
+
+                            Thread.Sleep( TestHelper.DefaultSleepTime );
 
                             var clientActivityMonitor3 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
                             grandOutputClient3.EnsureGrandOutputClient( clientActivityMonitor3 );
@@ -191,6 +198,17 @@ namespace CK.Glouton.Tests
                     }
                 }
             }
+        }
+
+        [Test]
+        public void ApplyConfiguration()
+        {
+            var activityMonitor = new ActivityMonitor();
+            var tcpHandlerConfiguration = new TcpHandlerConfiguration();
+            var tcpHandler = new TcpHandler( tcpHandlerConfiguration );
+
+            // ApplyConfiguration should always return false for now. Need to think about its implication before implementing.
+            tcpHandler.ApplyConfiguration( activityMonitor, tcpHandlerConfiguration ).Should().BeFalse();
         }
     }
 }

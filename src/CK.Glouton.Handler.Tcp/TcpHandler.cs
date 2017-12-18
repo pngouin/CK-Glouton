@@ -47,13 +47,10 @@ namespace CK.Glouton.Handler.Tcp
 
         public void Deactivate( IActivityMonitor m )
         {
-            if( _controlChannelClient == null )
-                return;
-
-            _controlChannelClient.Dispose();
+            _controlChannelClient?.Dispose();
             _controlChannelClient = null;
-            _memoryStream.Dispose();
-            _binaryWriter.Dispose();
+            _memoryStream?.Dispose();
+            _binaryWriter?.Dispose();
         }
 
         public void OnTimer( IActivityMonitor m, TimeSpan timerSpan )
