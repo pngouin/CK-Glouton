@@ -11,4 +11,8 @@
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00005" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
+  </ItemGroup>
+
 </Project>

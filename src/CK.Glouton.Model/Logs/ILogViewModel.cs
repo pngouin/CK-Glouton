@@ -6,5 +6,7 @@
         IExceptionViewModel Exception { get; set; }
         string LogTime { get; set; }
         string LogLevel { get; set; }
+        int GroupDepth { get; set; }
+
     }
 }

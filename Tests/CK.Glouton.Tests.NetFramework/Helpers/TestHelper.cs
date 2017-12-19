@@ -1,7 +1,6 @@
 ﻿using CK.ControlChannel.Abstractions;
 using CK.Core;
 using CK.Glouton.Server;
-using CK.Monitoring.Handlers;
 using System.IO;
 using System.Net.Security;
 using System.Runtime.CompilerServices;
@@ -83,14 +82,7 @@ namespace CK.Glouton.Tests
                 activityMonitor ?? new ActivityMonitor(),
                 authorizationHandler ?? DefaultAuthHandler,
                 null, // Todo: Same as above
-                userCertificateValidationCallback,
-                new BinaryGloutonHandler( new BinaryFileConfiguration
-                {
-                    Path = Path.Combine( GetTestLogDirectory(), "gzip" ),
-                    MaxCountPerFile = 10000,
-                    UseGzipCompression = true
-                } ),
-                new LuceneGloutonHandler()
+                userCertificateValidationCallback
             );
         }
 
@@ -120,12 +112,14 @@ namespace CK.Glouton.Tests
         /// <returns></returns>
         internal static string GetTestLogDirectory()
         {
-            var logPath = Path.Combine( GetProjectPath(), "Logs" );
+            var logPath = Path.Combine( Directory.GetParent( ProjectPath ).FullName, "Logs" );
             if( !Directory.Exists( logPath ) )
                 Directory.CreateDirectory( logPath );
             return logPath;
         }
 
+        private static string _projectPath;
+        private static string ProjectPath => _projectPath ?? ( _projectPath = GetProjectPath() );
         private static string GetProjectPath( [CallerFilePath]string path = null ) => Path.GetDirectoryName( path );
     }
 }

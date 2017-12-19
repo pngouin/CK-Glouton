@@ -14,9 +14,10 @@ export class Initializer {
      */
     public static validateArgument(argument: any): argument is ITimeSpanNavigatorSettings {
         if(argument === undefined || argument === null) {return false;}
-        return (argument as ITimeSpanNavigatorSettings).from !== undefined
-            && (argument as ITimeSpanNavigatorSettings).to !== undefined
-            && (argument as ITimeSpanNavigatorSettings).scale !== undefined;
+        argument = argument as ITimeSpanNavigatorSettings;
+        return argument.from !== undefined
+            && argument.to !== undefined
+            && argument.initialScale !== undefined
+            && argument.edges !== undefined;
     }
-
 }

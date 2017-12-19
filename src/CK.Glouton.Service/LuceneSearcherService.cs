@@ -1,119 +1,116 @@
 ﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 
 namespace CK.Glouton.Service
 {
     public class LuceneSearcherService : ILuceneSearcherService
     {
-        public List<ILogViewModel> Search( string directory, string query )
+        private readonly LuceneConfiguration _configuration;
+        private readonly LuceneSearcherManager _searcherManager;
+
+        public LuceneSearcherService( IOptions<LuceneConfiguration> configuration )
         {
+            _configuration = configuration.Value;
+            _searcherManager = new LuceneSearcherManager( _configuration );
+        }
+
+        public List<ILogViewModel> Search( string query, params string[] appNames )
+        {
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            {
+                MaxResult = _configuration.MaxSearch,
+                Fields = new[] { "LogLevel", "Exception" },
+            };
+
             if( query == "*" )
-                return GetAll( directory, 25 );
-
-            var result = new List<ILogViewModel>();
-            var luceneSearcher = new LuceneSearcher( LuceneConstant.GetPath( directory ), new[] { "LogLevel", "Exception" } );
-            var hits = luceneSearcher.Search( query );
-
-            foreach( var scoreDocument in hits.ScoreDocs )
             {
-                var document = luceneSearcher.GetDocument( scoreDocument );
-                switch( document.Get( "LogType" ) )
-                {
-                    case "OpenGroup":
-                        result.Add( OpenGroupViewModel.Get( luceneSearcher, document ) );
-                        break;
-                    case "Line":
-                        result.Add( LineViewModel.Get( luceneSearcher, document ) );
-                        break;
-                    case "CloseGroup":
-                        result.Add( CloseGroupViewModel.Get( luceneSearcher, document ) );
-                        break;
-                    default:
-                        throw new ArgumentException( nameof( document ) );
-                }
+                configuration.SearchAll( LuceneWantAll.Log );
+                return _searcherManager.GetSearcher( appNames ).Search( configuration );
             }
-            return result;
+
+            configuration.SearchMethod = SearchMethod.FullText;
+            return _searcherManager.GetSearcher( appNames ).Search( configuration );
         }
 
-        public List<ILogViewModel> GetAll( string directory, int max )
+        public List<ILogViewModel> GetAll( params string[] appNames )
         {
-            var result = new List<ILogViewModel>();
-            var searcher = new LuceneSearcher( LuceneConstant.GetPath( directory ), new[] { "LogLevel" } );
-            var hits = searcher.GetAllLog( max );
-
-            if( hits == null )
-                return null;
-
-            foreach( var scoreDoc in hits.ScoreDocs )
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
-                var document = searcher.GetDocument( scoreDoc );
-                switch( document.Get( "LogType" ) )
-                {
-                    case "OpenGroup":
-                        result.Add( OpenGroupViewModel.Get( searcher, document ) );
-                        break;
-                    case "Line":
-                        result.Add( LineViewModel.Get( searcher, document ) );
-                        break;
-                    case "CloseGroup":
-                        result.Add( CloseGroupViewModel.Get( searcher, document ) );
-                        break;
-                    default:
-                        throw new ArgumentException( nameof( document ) );
-                }
-            }
-            return result;
+                MaxResult = _configuration.MaxSearch,
+                Fields = new[] { "LogLevel" },
+            };
+
+            configuration.SearchAll( LuceneWantAll.Log );
+
+            return _searcherManager.GetSearcher( appNames ).Search( configuration );
         }
 
-        public List<ILogViewModel> GetLogWithFilters( string monitorId, string appName, DateTime start, DateTime end, string[] fields, string[] logLevel, string keyword )
+        /// <summary>
+        /// Return the selected log.
+        /// </summary>
+        /// <param name="monitorId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="fields"></param>
+        /// <param name="logLevel"></param>
+        /// <param name="query"></param>
+        /// <param name="appNames"></param>
+        /// <returns></returns>
+        public List<ILogViewModel> GetLogWithFilters( string monitorId, DateTime start, DateTime end, string[] fields, string[] logLevel, string query, params string[] appNames )
         {
-            var result = new List<ILogViewModel>();
-            var searcher = new LuceneSearcher( new[] { "LogLevel" } );
-            var hits = searcher.Search( searcher.CreateQuery( monitorId, appName, fields, logLevel, start, end, keyword ) );
-
-            foreach( var scoreDoc in hits.ScoreDocs )
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
-                var doc = searcher.GetDocument( scoreDoc );
-                switch( doc.Get( "LogType" ) )
-                {
-                    case "OpenGroup":
-                        result.Add( OpenGroupViewModel.Get( searcher, doc ) );
-                        break;
-                    case "Line":
-                        result.Add( LineViewModel.Get( searcher, doc ) );
-                        break;
-                    case "CloseGroup":
-                        result.Add( CloseGroupViewModel.Get( searcher, doc ) );
-                        break;
-                    default:
-                        throw new ArgumentException( nameof( doc ) );
-                }
-            }
-            return result;
-
+                MonitorId = monitorId,
+                DateStart = start,
+                DateEnd = end,
+                Fields = fields,
+                LogLevel = logLevel,
+                Query = query,
+                MaxResult = _configuration.MaxSearch
+            };
+            if( configuration.Fields == null )
+                configuration.Fields = new[] { "LogLevel" };
+            return LogsPrettifier( _searcherManager.GetSearcher( appNames )?.Search( configuration )?.OrderBy( l => l.LogTime ).ToList() ?? new List<ILogViewModel>(), 0 ).logs;
         }
 
-        public ISet<string> GetMonitorIdList()
+        public List<string> GetMonitorIdList()
         {
-            return new LuceneSearcher( new string[] { } ).MonitorIdList;
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
+            return _searcherManager.GetSearcher( GetAppNameList().ToArray() ).GetAllMonitorId().ToList();
         }
 
         /// <summary>
         /// Return of the App Name indexed by Lucene.
         /// </summary>
         /// <returns></returns>
-        public ISet<string> GetAppNameList()
+        public List<string> GetAppNameList()
         {
-            var directoryInfo = new DirectoryInfo( LuceneConstant.GetPath() );
-            var dirs = new HashSet<string>();
+            return _searcherManager.AppName.ToList();
+        }
 
-            foreach( var info in directoryInfo.GetDirectories() )
-                dirs.Add( info.Name );
-
-            return dirs;
+        private (List<ILogViewModel> logs, int index) LogsPrettifier( List<ILogViewModel> logs, int index )
+        {
+            var indexSnapshot = index;
+            for( ; index < logs.Count ; index += 1 )
+            {
+                if( logs[ index ].LogType == ELogType.OpenGroup )
+                {
+                    if( !( logs[ index ] is OpenGroupViewModel parent ) )
+                        throw new InvalidOperationException( nameof( parent ) );
+                    var groupLogs = LogsPrettifier( logs, index + 1 );
+                    parent.GroupLogs = groupLogs.logs;
+                    logs.RemoveRange( index + 1, groupLogs.index - index );
+                }
+                else if( logs[ index ].GroupDepth > 0 && logs[ index ].LogType == ELogType.CloseGroup )
+                {
+                    return (logs.GetRange( indexSnapshot, index - indexSnapshot + 1 ), index);
+                }
+            }
+            return (logs, indexSnapshot);
         }
     }
 }

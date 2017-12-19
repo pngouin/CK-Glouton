@@ -1,0 +1,21 @@
+code {
+    background-color: #ffffff;
+    padding: 7px;
+    word-break: break-all;
+}
+
+.exception-border {
+    border: 2px solid #ff0000;
+    padding: 1em;
+    margin-top: 1em;
+    /* background-color: #000000;
+    color: #ffffff; */
+    -moz-border-radius:7px;
+    -webkit-border-radius:7px;
+    border-radius:7px;
+    max-width: 60em;
+}
+
+.dialogSize {
+    max-width: 60em;
+}

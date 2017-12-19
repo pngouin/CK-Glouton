@@ -7,10 +7,7 @@
   <ItemGroup>
     <PackageReference Include="CK.ControlChannel.Abstractions" Version="0.0.0-a03" />
     <PackageReference Include="CK.Monitoring" Version="8.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00005" />
   </ItemGroup>
 
 </Project>

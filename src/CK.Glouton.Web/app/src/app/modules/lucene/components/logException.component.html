@@ -1,0 +1,37 @@
+<div *ngIf="exception.message">
+  Message:
+  <div class="black">
+    <code>{{exception.message}}</code>
+  </div>
+</div>
+<div *ngIf="exception.stackTrace">
+  <p>Stack Trace: </p>
+  <div class="black">
+    <code>{{exception.stackTrace}}</code>
+  </div>
+</div>
+<div *ngIf="exception.innerException">
+  <p>Inner Exception: </p>
+  <div *ngIf="exception.innerException.fileName">
+    <p>File Name:
+      <code class="black">{{exception.fileName}}</code>
+    </p>
+  </div>
+  <div *ngIf="exception.innerException.message">
+    Message:
+    <div class="black">
+      <code>{{exception.message}}</code>
+    </div>
+  </div>
+  <div *ngIf="exception.innerException.stackTrace">
+    <p>Stack Trace: </p>
+    <div class="black">
+      <code>{{exception.stackTrace}}</code>
+    </div>
+  </div>
+</div>
+<div *ngIf="exception.aggregatedExceptions">
+  <div *ngFor="let exce of exception.aggregatedExceptions">
+    <exception [data]="exce"></exception>
+  </div>
+</div>

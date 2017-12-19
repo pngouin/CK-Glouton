@@ -132,10 +132,5 @@ namespace CK.Glouton.Handler.Tcp
             var assemblyName = type.GetTypeInfo().Assembly.GetName();
             dictionary[ $"ASSEMBLY:{assemblyName.Name}" ] = assemblyName.FullName;
         }
-
-        public void AddAssemblyInformationFromType( Type type )
-        {
-            AddAssemblyInformation( AdditionalAuthenticationData ?? ( AdditionalAuthenticationData = new Dictionary<string, string>() ), type );
-        }
     }
 }
