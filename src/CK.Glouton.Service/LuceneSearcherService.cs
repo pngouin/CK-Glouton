@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using CK.Glouton.Lucene;
+﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CK.Glouton.Service
 {
@@ -16,10 +15,10 @@ namespace CK.Glouton.Service
         public LuceneSearcherService( IOptions<LuceneConfiguration> configuration )
         {
             _configuration = configuration.Value;
-            _searcherManager = new LuceneSearcherManager(_configuration);
+            _searcherManager = new LuceneSearcherManager( _configuration );
         }
 
-        public List<ILogViewModel> Search(string query, params string[] appNames )
+        public List<ILogViewModel> Search( string query, params string[] appNames )
         {
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
@@ -27,17 +26,17 @@ namespace CK.Glouton.Service
                 Fields = new[] { "LogLevel", "Exception" },
             };
 
-            if (query == "*")
+            if( query == "*" )
             {
-                configuration.SearchAll(LuceneWantAll.Log);
-                return _searcherManager.GetSearcher(appNames).Search(configuration);
+                configuration.SearchAll( LuceneWantAll.Log );
+                return _searcherManager.GetSearcher( appNames ).Search( configuration );
             }
 
             configuration.SearchMethod = SearchMethod.FullText;
-            return _searcherManager.GetSearcher(appNames).Search(configuration);
+            return _searcherManager.GetSearcher( appNames ).Search( configuration );
         }
 
-        public List<ILogViewModel> GetAll(params string[] appNames)
+        public List<ILogViewModel> GetAll( params string[] appNames )
         {
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
@@ -45,9 +44,9 @@ namespace CK.Glouton.Service
                 Fields = new[] { "LogLevel" },
             };
 
-            configuration.SearchAll(LuceneWantAll.Log);
+            configuration.SearchAll( LuceneWantAll.Log );
 
-            return _searcherManager.GetSearcher(appNames).Search(configuration);
+            return _searcherManager.GetSearcher( appNames ).Search( configuration );
         }
 
         /// <summary>
@@ -61,7 +60,7 @@ namespace CK.Glouton.Service
         /// <param name="query"></param>
         /// <param name="appNames"></param>
         /// <returns></returns>
-        public List<ILogViewModel> GetLogWithFilters( string monitorId, DateTime start, DateTime end, string[] fields, string[] logLevel, string query,  params string[] appNames)
+        public List<ILogViewModel> GetLogWithFilters( string monitorId, DateTime start, DateTime end, string[] fields, string[] logLevel, string query, params string[] appNames )
         {
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
@@ -73,15 +72,15 @@ namespace CK.Glouton.Service
                 Query = query,
                 MaxResult = _configuration.MaxSearch
             };
-            if (configuration.Fields == null)
+            if( configuration.Fields == null )
                 configuration.Fields = new[] { "LogLevel" };
-            return LogsPrettifier(_searcherManager.GetSearcher(appNames)?.Search(configuration) ?? new List<ILogViewModel>(), 0).Item1;
+            return LogsPrettifier( _searcherManager.GetSearcher( appNames )?.Search( configuration )?.OrderBy( l => l.LogTime ).ToList() ?? new List<ILogViewModel>(), 0 ).logs;
         }
 
         public List<string> GetMonitorIdList()
         {
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
-            return _searcherManager.GetSearcher(GetAppNameList().ToArray()).GetAllMonitorId().ToList();
+            return _searcherManager.GetSearcher( GetAppNameList().ToArray() ).GetAllMonitorId().ToList();
         }
 
         /// <summary>
@@ -93,25 +92,25 @@ namespace CK.Glouton.Service
             return _searcherManager.AppName.ToList();
         }
 
-        private (List<ILogViewModel> logs, int index) LogsPrettifier(List<ILogViewModel> logs, int index)
+        private (List<ILogViewModel> logs, int index) LogsPrettifier( List<ILogViewModel> logs, int index )
         {
             var indexSnapshot = index;
-            for( ; index < logs.Count; index += 1 )
+            for( ; index < logs.Count ; index += 1 )
             {
-                if( logs[index].LogType == ELogType.OpenGroup )
+                if( logs[ index ].LogType == ELogType.OpenGroup )
                 {
-                    if ( !(logs[index] is OpenGroupViewModel parent ) )
+                    if( !( logs[ index ] is OpenGroupViewModel parent ) )
                         throw new InvalidOperationException( nameof( parent ) );
                     var groupLogs = LogsPrettifier( logs, index + 1 );
                     parent.GroupLogs = groupLogs.logs;
                     logs.RemoveRange( index + 1, groupLogs.index - index );
                 }
-                else if( logs[index].GroupDepth > 0 && logs[index].LogType == ELogType.CloseGroup )
+                else if( logs[ index ].GroupDepth > 0 && logs[ index ].LogType == ELogType.CloseGroup )
                 {
-                    return ( logs.GetRange( indexSnapshot, index - indexSnapshot + 1 ), index );
+                    return (logs.GetRange( indexSnapshot, index - indexSnapshot + 1 ), index);
                 }
             }
-            return ( logs, indexSnapshot );
+            return (logs, indexSnapshot);
         }
     }
 }
