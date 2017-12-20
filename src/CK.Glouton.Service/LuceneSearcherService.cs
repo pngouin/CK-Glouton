@@ -20,7 +20,7 @@ namespace CK.Glouton.Service
 
         public List<ILogViewModel> Search( string query, params string[] appNames )
         {
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            var configuration = new LuceneSearcherConfiguration
             {
                 MaxResult = _configuration.MaxSearch,
                 Fields = new[] { "LogLevel", "Exception" },
@@ -38,7 +38,7 @@ namespace CK.Glouton.Service
 
         public List<ILogViewModel> GetAll( params string[] appNames )
         {
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            var configuration = new LuceneSearcherConfiguration
             {
                 MaxResult = _configuration.MaxSearch,
                 Fields = new[] { "LogLevel" },
@@ -62,7 +62,7 @@ namespace CK.Glouton.Service
         /// <returns></returns>
         public List<ILogViewModel> GetLogWithFilters( string monitorId, DateTime start, DateTime end, string[] fields, string[] logLevel, string query, params string[] appNames )
         {
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            var configuration = new LuceneSearcherConfiguration
             {
                 MonitorId = monitorId,
                 DateStart = start,
@@ -74,12 +74,11 @@ namespace CK.Glouton.Service
             };
             if( configuration.Fields == null )
                 configuration.Fields = new[] { "LogLevel" };
-            return LogsPrettifier( _searcherManager.GetSearcher( appNames )?.Search( configuration )?.OrderBy( l => l.LogTime ).ToList() ?? new List<ILogViewModel>(), 0 ).logs;
+            return LogsPrettifier( _searcherManager.GetSearcher( appNames )?.Search( configuration )?.OrderBy( l => l.LogTime ).ToList() ?? new List<ILogViewModel>() );
         }
 
         public List<string> GetMonitorIdList()
         {
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
             return _searcherManager.GetSearcher( GetAppNameList().ToArray() ).GetAllMonitorId().ToList();
         }
 
@@ -92,25 +91,40 @@ namespace CK.Glouton.Service
             return _searcherManager.AppName.ToList();
         }
 
-        private (List<ILogViewModel> logs, int index) LogsPrettifier( List<ILogViewModel> logs, int index )
+        private List<ILogViewModel> LogsPrettifier( List<ILogViewModel> logs )
         {
+            for( var index = 0 ; index < logs.Count ; index += 1 )
+            {
+                if( logs[ index ].LogType != ELogType.OpenGroup )
+                    continue;
+                BuildChildren( ref logs, index++ );
+            }
+            return logs;
+        }
+
+        private void BuildChildren( ref List<ILogViewModel> logs, int index )
+        {
+            if( !( logs[ index++ ] is OpenGroupViewModel parent ) )
+                throw new InvalidOperationException( nameof( parent ) );
+
             var indexSnapshot = index;
             for( ; index < logs.Count ; index += 1 )
             {
-                if( logs[ index ].LogType == ELogType.OpenGroup )
+                switch( logs[ index ].LogType )
                 {
-                    if( !( logs[ index ] is OpenGroupViewModel parent ) )
-                        throw new InvalidOperationException( nameof( parent ) );
-                    var groupLogs = LogsPrettifier( logs, index + 1 );
-                    parent.GroupLogs = groupLogs.logs;
-                    logs.RemoveRange( index + 1, groupLogs.index - index );
-                }
-                else if( logs[ index ].GroupDepth > 0 && logs[ index ].LogType == ELogType.CloseGroup )
-                {
-                    return (logs.GetRange( indexSnapshot, index - indexSnapshot + 1 ), index);
+                    case ELogType.OpenGroup:
+                        BuildChildren( ref logs, index );
+                        break;
+
+                    case ELogType.CloseGroup:
+                        parent.GroupLogs = logs.RemoveAndGetRange( indexSnapshot, Math.Max( index - indexSnapshot + 1, logs.Count - indexSnapshot ) );
+                        return;
+
+                    default:
+                        continue;
                 }
             }
-            return (logs, indexSnapshot);
+            parent.GroupLogs = logs.RemoveAndGetRange( indexSnapshot, Math.Max( index - indexSnapshot + 1, logs.Count - indexSnapshot ) );
         }
     }
 }
