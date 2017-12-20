@@ -258,14 +258,16 @@ namespace CK.Glouton.Tests
         public void luceneSearcherManager_return_good_appName()
         {
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
-            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + Guid.NewGuid().ToString();
+            var fakeName = Guid.NewGuid().ToString();
+            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + fakeName;
 
             Directory.CreateDirectory( directoryPath );
 
             var appName = searcherManager.AppName;
-            appName.Count.Should().Be( 1 );
-            appName.First().Should().Be( LuceneSearcherConfiguration.Directory );
-
+            appName.Count.Should().BeGreaterOrEqualTo(1);
+            appName.Any(a => a == LuceneSearcherConfiguration.Directory).Should().BeTrue();
+            appName.Any(a => a == fakeName).Should().BeFalse();
+            
             Directory.Delete( directoryPath );
         }
 
