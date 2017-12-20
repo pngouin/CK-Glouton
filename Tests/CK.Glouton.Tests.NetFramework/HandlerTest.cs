@@ -3,6 +3,8 @@ using CK.Glouton.Handler.Tcp;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace CK.Glouton.Tests
@@ -110,38 +112,38 @@ namespace CK.Glouton.Tests
                             grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
 
                             Thread.Sleep( TestHelper.DefaultSleepTime );
+                            var clients = new List<ActivityMonitor>();
+                            var guids = new List<string>();
 
-                            var clientActivityMonitor1 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
-                            grandOutputClient1.EnsureGrandOutputClient( clientActivityMonitor1 );
+                            for (int i = 0; i < 3; i++)
+                            {
+                                clients.Add(new ActivityMonitor { MinimalFilter = LogFilter.Debug });
+                                guids.Add(Guid.NewGuid().ToString());
+                            }
 
-                            Thread.Sleep( TestHelper.DefaultSleepTime );
+                            grandOutputClient1.EnsureGrandOutputClient(clients[0]);
 
-                            var clientActivityMonitor2 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
-                            grandOutputClient2.EnsureGrandOutputClient( clientActivityMonitor2 );
+                            Thread.Sleep(TestHelper.DefaultSleepTime);
+                            grandOutputClient2.EnsureGrandOutputClient(clients[1]);
 
-                            Thread.Sleep( TestHelper.DefaultSleepTime );
+                            Thread.Sleep(TestHelper.DefaultSleepTime);
+                            grandOutputClient3.EnsureGrandOutputClient(clients[2]);
 
-                            var clientActivityMonitor3 = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
-                            grandOutputClient3.EnsureGrandOutputClient( clientActivityMonitor3 );
+                            for (int i = 0; i < clients.Count; i++)
+                            {
+                                clients[i].Info(guids[i]);
+                                clients[i].CloseGroup();
+                            }
 
-                            var guid1 = Guid.NewGuid().ToString();
-                            var guid2 = Guid.NewGuid().ToString();
-                            var guid3 = Guid.NewGuid().ToString();
+                            Thread.Sleep(TestHelper.DefaultSleepTime);
+                            var logs = server.CloseAndGetLogs();
 
-                            clientActivityMonitor1.Info( guid1 );
-                            clientActivityMonitor2.Info( guid2 );
-                            clientActivityMonitor3.Info( guid3 );
-
-                            Thread.Sleep( TestHelper.DefaultSleepTime * 8 );
-
-                            server.GetLogEntry( guid1 ).Validate( guid1 ).Should().BeTrue();
-                            server.GetLogEntry( guid2 ).Validate( guid2 ).Should().BeTrue();
-                            server.GetLogEntry( guid3 ).Validate( guid3 ).Should().BeTrue();
+                            for (int i = 0; i < guids.Count; i++)
+                            {
+                                logs.Any(l => l.Text == guids[i]).Should().BeTrue();
+                            }
 
                             serverActivityMonitor.CloseGroup();
-                            clientActivityMonitor1.CloseGroup();
-                            clientActivityMonitor2.CloseGroup();
-                            clientActivityMonitor3.CloseGroup();
                         }
                     }
                 }
