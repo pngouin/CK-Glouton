@@ -2,8 +2,8 @@
 {
     public interface IInnerExceptionViewModel
     {
-        string Stack { get; set; }
-        string Details { get; set; }
+        string StackTrace { get; set; }
+        string Message { get; set; }
         string FileName { get; set; }
     }
 }

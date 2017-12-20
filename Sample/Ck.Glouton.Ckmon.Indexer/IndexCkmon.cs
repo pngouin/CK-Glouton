@@ -6,34 +6,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Ck.Glouton.Ckmon.Indexer
 {
     public class IndexCkmon
     {
-        public IndexCkmon(LuceneConfiguration configuration)
+        public IndexCkmon(LuceneConfiguration configuration, string pathCkmon)
         {
-
-            foreach (var path in GetFiles())
+            using (var indexer = new LuceneIndexer(configuration))
+            using (LogReader reader = LogReader.Open(pathCkmon))
             {
-                string appName = "CKMON-" + Guid.NewGuid().ToString().Substring(0, 8);
-                using (var indexer = new LuceneIndexer(configuration))
-                using (LogReader reader = LogReader.Open(path))
+                reader.MoveNext();
+                for ( ; ; )
                 {
-                    reader.MoveNext();
-                    for (; ; )
-                    {
-                        indexer.IndexLog(reader.CurrentMulticast, appName);
-                        if (!reader.MoveNext())
-                            return;
-                    }
+                    indexer.IndexLog(reader.CurrentMulticast, configuration.Directory);
+                    if (!reader.MoveNext())
+                        return;
                 }
             }
-        }
-
-        private string[] GetFiles ()
-        {
-            return Directory.GetFiles("./ckmon", "*.ckmon", SearchOption.TopDirectoryOnly);
         }
     }
 }

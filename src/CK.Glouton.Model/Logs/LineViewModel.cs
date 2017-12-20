@@ -18,7 +18,7 @@ namespace CK.Glouton.Model.Logs
         public int GroupDepth { get; set; }
         public string PreviousEntryType { get; set; }
         public string PreviousLogTime { get; set; }
-        public string AppId { get; set; }
+        public string AppName { get; set; }
 
         public static LineViewModel Get ( ILuceneSearcher luceneSearcher, Document document )
         {
@@ -35,7 +35,7 @@ namespace CK.Glouton.Model.Logs
                 LineNumber = document.Get( LogField.LINE_NUMBER ),
                 LogTime = DateTools.StringToDate( document.Get( LogField.LOG_TIME ) ).ToString( "dd/MM/yyyy HH:mm:ss.fff" ),
                 Exception = ExceptionViewModel.Get( luceneSearcher, document ),
-                AppId = document.Get( LogField.APP_NAME )
+                AppName = document.Get( LogField.APP_NAME )
             };
         }
     }

@@ -1,0 +1,9 @@
+<div class="ui-g">
+    <div *ngIf="_applicationNames"><div *ngFor="let applicationName of _applicationNames; let i = index">
+        <div class="ui-g-12">
+            <p-checkbox name="appName" value={{applicationName}} label={{applicationName}}
+                [(ngModel)]="_selected" inputId={{i}} (onChange)="onChange($checked)">
+            </p-checkbox>
+        </div>            
+    </div></div>
+</div>
