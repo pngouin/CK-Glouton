@@ -85,7 +85,7 @@ namespace CK.Glouton.Lucene
                             ) );
                         break;
 
-                    case LogField.CK_TRAIT:
+                    case LogField.CK_TRAIT: // TODO: Add foreach on every field contained in the stringfield. Need to split on pipes.
                         document.Add( new StringField(
                             propertyInfo.Name,
                             logValue.ToString(),
