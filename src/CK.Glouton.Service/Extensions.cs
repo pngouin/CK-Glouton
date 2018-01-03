@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CK.Glouton.Service
 {
@@ -9,6 +10,16 @@ namespace CK.Glouton.Service
             var range = @this.GetRange( index, count );
             @this.RemoveRange( index, count );
             return range;
+        }
+
+        public static IEnumerable<T> TakeWhileInclusive<T>( this IEnumerable<T> enumerable, Func<T, bool> predicate )
+        {
+            foreach( var item in enumerable )
+            {
+                yield return item;
+                if( !predicate( item ) )
+                    break;
+            }
         }
     }
 }
