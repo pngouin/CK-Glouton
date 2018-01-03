@@ -288,8 +288,8 @@ namespace CK.Glouton.Tests
             Directory.CreateDirectory( directoryPath );
 
             var appName = searcherManager.AppName;
-            appName.Count.Should().Be( 1 );
-            appName.First().Should().Be( LuceneSearcherConfiguration.Directory );
+            appName.Count.Should().NotBe(Directory.GetDirectories(LuceneSearcherConfiguration.Path).Length);
+            appName.Contains(LuceneSearcherConfiguration.Directory).Should().BeTrue();
 
             Directory.Delete( directoryPath );
         }
