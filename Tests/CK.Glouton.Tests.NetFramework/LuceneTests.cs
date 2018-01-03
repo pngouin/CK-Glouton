@@ -234,6 +234,18 @@ namespace CK.Glouton.Tests
             result.Count.Should().Be( 1 );
 
             //
+            // Search all log with GroupDepth 
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                GroupDepth = 1
+            };
+            result = searcher.Search(configuration);
+            result.Count.Should().Be(2);
+
+            //
             // Search all document with a LogLevel and a monitorId
             //
             configuration = new LuceneSearcherConfiguration
@@ -252,6 +264,19 @@ namespace CK.Glouton.Tests
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
             var s = searcherManager.GetSearcher( new[] { Guid.NewGuid().ToString() } );
             s.Should().BeNull();
+        }
+
+        [Test]
+        public void luceneSearcherManager_return_log_order_by_date()
+        {
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
+            var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
+
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
+            configuration.SearchAll(LuceneWantAll.Log);
+            var result = searcher.Search(configuration);
+
+            result.SequenceEqual(result.OrderByDescending(l => l.LogTime)).Should().BeTrue();
         }
 
         [Test]
