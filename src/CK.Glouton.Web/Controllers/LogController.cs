@@ -57,6 +57,7 @@ namespace CK.Glouton.Web.Controllers
         /// <param name="fields">Fields to look for. By default: <code>{ "Tags", "FileName", "Text" }</code>.</param>
         /// <param name="keyword">Which keywords to consider. By default: <code>"*"</code>.</param>
         /// <param name="logLevel">Log levels to consider during the search. By default: <code>{ "Debug", "Trace", "Info", "Warn", "Error", "Fatal" }</code>.</param>
+        /// <param name="groupDepth"></param>
         /// <returns></returns>
         [HttpGet( "filter" )]
         public object Filter

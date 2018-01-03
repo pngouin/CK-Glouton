@@ -71,12 +71,13 @@ namespace CK.Glouton.Service
                 Fields = fields,
                 LogLevel = logLevel,
                 Query = query,
-                MaxResult = _configuration.MaxSearch
+                MaxResult = _configuration.MaxSearch,
+                GroupDepth = groupDepth
             };
             if( configuration.Fields == null )
                 configuration.Fields = new[] { "LogLevel" };
 
-            var logs = _searcherManager.GetSearcher( appNames )?.Search( configuration )?.Where( l => l.GroupDepth == groupDepth ).ToList() ?? new List<ILogViewModel>();
+            var logs = _searcherManager.GetSearcher( appNames )?.Search( configuration ) ?? new List<ILogViewModel>();
             return groupDepth == 0 ? logs : logs.TakeWhileInclusive( l => l.LogType == ELogType.CloseGroup ).ToList();
         }
 
