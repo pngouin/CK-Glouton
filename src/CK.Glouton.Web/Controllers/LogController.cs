@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CK.Glouton.Web.Controllers
 {
@@ -27,7 +28,7 @@ namespace CK.Glouton.Web.Controllers
         /// <param name="max">The number of logs to return.</param>
         /// <returns></returns>
         [HttpGet( "all/{appName}" )]
-        public List<ILogViewModel> GetAll( [FromRoute] string appName, [FromQuery] int max = 0 )
+        public object GetAll( [FromRoute] string appName, [FromQuery] int max = 0 )
         {
             return _luceneSearcherService.GetAll( appName ) ?? new List<ILogViewModel>();
         }
@@ -40,9 +41,9 @@ namespace CK.Glouton.Web.Controllers
         /// <param name="query">The query which will be processed by lucene.</param>
         /// <returns></returns>
         [HttpGet( "search/{appName}" )]
-        public List<ILogViewModel> Search( [FromRoute] string appName, [FromQuery] string query = "" )
+        public object Search( [FromRoute] string appName, [FromQuery] string query = "" )
         {
-            return string.IsNullOrEmpty( query ) ? GetAll( appName ) : _luceneSearcherService.Search( appName, query );
+            return string.IsNullOrEmpty( query ) ? GetAll( appName ) : _luceneSearcherService.Search(query, appName );
         }
 
         /// <summary>
@@ -58,26 +59,21 @@ namespace CK.Glouton.Web.Controllers
         /// <param name="logLevel">Log levels to consider during the search. By default: <code>{ "Debug", "Trace", "Info", "Warn", "Error", "Fatal" }</code>.</param>
         /// <returns></returns>
         [HttpGet( "filter" )]
-        public List<ILogViewModel> Filter
+        public object Filter
         (
-            [FromQuery] string monitorId, [FromQuery] string appName,
+            [FromQuery] string monitorId, [FromQuery] string[] appName,
             [FromQuery] DateTime from, [FromQuery] DateTime to,
             [FromQuery] string[] fields, [FromQuery] string keyword,
             [FromQuery] string[] logLevel
         )
         {
-            if( monitorId == null || monitorId == "*" )
-                monitorId = "All";
-            if( appName == null || appName == "*" )
-                appName = "All";
-            if( fields.Length == 0 || fields[ 0 ] == "*" )
-                fields = new[] { "Tags", "FileName", "Text" };
-            if( logLevel.Length == 0 || logLevel[ 0 ] == "*" )
-                logLevel = new[] { "Debug", "Trace", "Info", "Warn", "Error", "Fatal" };
-            if( keyword == null )
-                keyword = "*";
+            if (appName == null || appName.Length == 0)
+                return BadRequest();
+            fields = fields.All(d => d == null) ? null : fields.Where(d => d != null).ToArray();
+            logLevel = logLevel.All(d => d == null) ? null : logLevel.Where(d => d != null).ToArray();
+            appName = appName.All(d => d == null) ? null : appName.Where(d => d != null).ToArray();
 
-            return _luceneSearcherService.GetLogWithFilters( monitorId, from, to, fields, logLevel, keyword, appName);
+            return _luceneSearcherService.GetLogWithFilters(monitorId, from, to, fields, logLevel, keyword, appName);
         }
 
         /// <summary>
@@ -86,7 +82,7 @@ namespace CK.Glouton.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet( "monitorId" )]
-        public List<string> GetAllMonitorId()
+        public object GetAllMonitorId()
         {
             return _luceneSearcherService.GetMonitorIdList() ?? new List<string>();
         }
@@ -97,7 +93,7 @@ namespace CK.Glouton.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet( "appName" )]
-        public List<string> GetAllAppName()
+        public object GetAllAppName()
         {
             return _luceneSearcherService.GetAppNameList() ?? new List<string>();
         }

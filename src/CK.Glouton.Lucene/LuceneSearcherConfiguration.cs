@@ -15,8 +15,7 @@ namespace CK.Glouton.Lucene
         public string[] Fields { get; set; }
         public string[] LogLevel { get; set; }
         public string Query { get; set; }
-        public string[] AppName { get; set; }
-        public uint MaxResult { get; set; }
+        public int MaxResult { get; set; }
         public SearchMethod SearchMethod { get; set; }
 
         internal LuceneWantAll All { get; set; }

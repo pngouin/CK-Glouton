@@ -41,6 +41,10 @@ namespace CK.Glouton.Server.Handlers
             _file.Write( LogEntry.Read( _binaryReader, version, out _ ) );
         }
 
+        public void OnTimer( IActivityMonitor activityMonitor, TimeSpan timerDuration )
+        {
+        }
+
         public bool ApplyConfiguration( IGloutonHandlerConfiguration configuration )
         {
             if( !( configuration is BinaryGloutonHandlerConfiguration cF ) || cF.Path != _configuration.Path )

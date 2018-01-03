@@ -27,7 +27,10 @@ namespace CK.Glouton.Lucene
                 var dirs = new HashSet<string>();
 
                 foreach( var info in directoryInfo.GetDirectories() )
-                    dirs.Add( info.Name );
+                {
+                    if( IndexExists( info.Name ) )
+                        dirs.Add( info.Name );
+                }
 
                 return dirs;
             }
@@ -40,10 +43,13 @@ namespace CK.Glouton.Lucene
         /// <returns></returns>
         public LuceneSearcher GetSearcher( params string[] appNames )
         {
+            if (appNames == null)
+                return null;
+
             var readers = new List<IndexReader>();
             foreach( var appName in appNames )
             {
-                if( !System.IO.Directory.Exists( _configuration.Path + "\\" + appName ) )
+                if( !IndexExists( appName ) )
                     continue;
                 var reader = GetReader( appName );
                 if( reader != null )
@@ -89,6 +95,11 @@ namespace CK.Glouton.Lucene
         private Directory GetDirectory( string appName )
         {
             return FSDirectory.Open( _configuration.Path + "\\" + appName );
+        }
+
+        private bool IndexExists (string appname)
+        {
+            return DirectoryReader.IndexExists( GetDirectory( appname ) );
         }
     }
 }

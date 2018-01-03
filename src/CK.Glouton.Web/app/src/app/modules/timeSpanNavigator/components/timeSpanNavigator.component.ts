@@ -9,6 +9,8 @@ import { ITimeSpanNavigator, ITimeSpanNavigatorSettings, Scale, IScaleEdge, IEdg
 import { SubmitTimeSpanEffect } from '../actions';
 import { Initializer } from './initializer';
 
+import '../../../common/extends/arrayExtends';
+
 @Component({
     selector: 'timeSpanNavigator',
     templateUrl: './timeSpanNavigator.component.html'
@@ -35,12 +37,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
     @Input()
     configuration: ITimeSpanNavigatorSettings;
 
-    @Input()
-    edges : IScaleEdge;
-
-    @Output()
-    onDateChange = new EventEmitter<Date[]>();
-
     constructor(
         private store: Store<IAppState>,
         private effectDispatcher: EffectDispatcher
@@ -61,12 +57,12 @@ export class TimeSpanNavigatorComponent implements OnInit {
      */
     private getEdges(scale: Scale): IEdge {
         switch(scale) {
-            case Scale.Year: return this.edges.Years;
-            case Scale.Months: return this.edges.Months;
-            case Scale.Days: return this.edges.Days;
-            case Scale.Hours: return this.edges.Hours;
-            case Scale.Minutes: return this.edges.Minutes;
-            case Scale.Seconds: return this.edges.Seconds;
+            case Scale.Year: return this.configuration.edges.Years;
+            case Scale.Months: return this.configuration.edges.Months;
+            case Scale.Days: return this.configuration.edges.Days;
+            case Scale.Hours: return this.configuration.edges.Hours;
+            case Scale.Minutes: return this.configuration.edges.Minutes;
+            case Scale.Seconds: return this.configuration.edges.Seconds;
             default: throw new Error('Invalid parameter( scale )');
         }
     }
@@ -82,7 +78,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         this._scaleDescription = `Current scale: ${Scale[this._currentScale]}`;
         this._nextScaleDescription = '';
         this._range = [25, 75]; // Todo: Change me
-        this._rangeSnapshot = this.copyArray<number>(this._range);
+        this._rangeSnapshot = this._range.copy();
     }
 
     /**
@@ -152,8 +148,8 @@ export class TimeSpanNavigatorComponent implements OnInit {
             actualDifference *= Math.pow(-1, difference < 0 ? 0 : 1);
             this._dateRange[updatedSlider] =
                 this.setDateScaleValue(this._dateRange[updatedSlider], actualDifference, this._currentScale);
-            this.onDateChange.emit(this._dateRange);
-            this._rangeSnapshot = this.copyArray<number>(event.values);
+            this._rangeSnapshot = event.values.copy();
+            this.effectDispatcher.dispatch(new SubmitTimeSpanEffect({from: this._dateRange[0], to: this._dateRange[1]}));
         }
     }
 
@@ -177,13 +173,6 @@ export class TimeSpanNavigatorComponent implements OnInit {
         return date;
     }
 
-    private copyArray<T>(array: T[]): T[] {
-        let i = array.length;
-        let newArray = [];
-        while(i--) newArray[i] = array[i];
-        return newArray;
-    }
-
     /**
      * Initilization method.
      */
@@ -191,7 +180,7 @@ export class TimeSpanNavigatorComponent implements OnInit {
         if(!Initializer.validateArgument(this.configuration)) {throw new Error('Configuration is invalid!');}
         this._timeSpan.next({from: new Date(), to: new Date()});
         this._dateRange = [this.configuration.from, this.configuration.to];
-        this.updateScale(this.configuration.scale);
+        this.updateScale(this.configuration.initialScale);
     }
 }
 

@@ -50,8 +50,12 @@ namespace CK.Glouton.Server
 
         public void Start( HandlersManagerConfiguration configuration )
         {
-            _sink.Start();
+            _sink.Start( configuration.TimerDuration, TimeSpan.FromMinutes( 5 ), OnExternalTimer );
             ApplyConfiguration( configuration, true );
+        }
+
+        private static void OnExternalTimer()
+        {
         }
 
         #region IDisposable Support

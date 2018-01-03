@@ -2,7 +2,16 @@ import { NgModule } from '@angular/core';
 import { ApplicationNameSelectorComponent } from './components';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RadioButtonModule } from 'primeng/primeng';
+import {
+    RadioButtonModule,
+    CheckboxModule,
+    InputTextModule,
+    TabViewModule,
+    ButtonModule,
+    ProgressSpinnerModule,
+    DialogModule
+} from 'primeng/primeng';
+
 
 import * as components from './components';
 
@@ -10,7 +19,13 @@ import * as components from './components';
     imports: [
         CommonModule,
         FormsModule,
-        RadioButtonModule
+        RadioButtonModule,
+        CheckboxModule,
+        InputTextModule,
+        TabViewModule,
+        ButtonModule,
+        ProgressSpinnerModule,
+        DialogModule
     ],
     declarations: [
         ...Object.values(components)
@@ -19,4 +34,4 @@ import * as components from './components';
         ...Object.values(components)
     ]
 })
-export class NameModule { }
+export class LucenePreferenceModule { }

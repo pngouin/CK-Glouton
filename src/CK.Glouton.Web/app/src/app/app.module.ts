@@ -11,14 +11,13 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { reducer } from './app.reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import * as components from './_components';
 import * as modules from './_modules';
 import * as services from './_services';
 // import * as guards from './_guards';
-
-import * as timeSpanNavigatorRx from './modules/timeSpanNavigator/actions';
+import * as actionsRx from './_actions';
 
 const stateStorageKey: string = 'hln_glouton/state';
 
@@ -32,13 +31,12 @@ const stateStorageKey: string = 'hln_glouton/state';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    BrowserAnimationsModule,
     ...Object.values(modules),
     StoreModule.provideStore(reducer),
     RouterModule.forRoot(rootRouterConfig),
     SignatureEffectsModule.runAfterBootstrap({
-      handlers: [
-        ...Object.values(timeSpanNavigatorRx)
-      ],
+      handlers: [ ...Object.values(actionsRx) ],
       storage: {key: stateStorageKey}
     }),
     StoreDevtoolsModule.instrumentOnlyWithExtension({maxAge: 5})

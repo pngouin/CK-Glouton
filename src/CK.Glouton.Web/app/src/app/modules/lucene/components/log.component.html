@@ -1,0 +1,12 @@
+<div (click)="onClick()">
+    <p [style.margin-left.px]="marginLeft(log)" class="card" ><b [style.color]="getColor(log)" >{{log.logLevel}}</b>    {{log.logTime}}    {{getText()}}</p>
+</div>
+<div *ngIf="log.groupLogs">
+    <div *ngFor="let log of log.groupLogs">
+        <log [data]="log"></log>
+    </div>
+</div>
+
+<p-dialog header="{{log.logTime}}" [(visible)]="display">
+    <logComplex [data]="log"></logComplex>
+</p-dialog>

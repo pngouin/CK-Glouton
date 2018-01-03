@@ -17,12 +17,6 @@ export interface ITimeSpanNavigator {
     to: Date;
 }
 
-export interface ITimeSpanNavigatorSettings {
-    from: Date;
-    to: Date;
-    scale: Scale;
-}
-
 export interface IDefaultScale {
     from: Date;
     to: Date;

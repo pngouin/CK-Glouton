@@ -9,8 +9,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -28,23 +28,23 @@ namespace CK.Glouton.Tests
 #else
         [OneTimeSetUp]
 #endif
-        public void ConstructIndex ()
+        public void ConstructIndex()
         {
-            using (var server = TestHelper.DefaultGloutonServer())
+            using( var server = TestHelper.DefaultGloutonServer() )
             {
-                server.Open(new HandlersManagerConfiguration
+                server.Open( new HandlersManagerConfiguration
                 {
                     GloutonHandlers = { LuceneGloutonHandlerConfiguration }
-                });
+                } );
 
-                using (var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient())
+                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
-                    var activityMonitor = new ActivityMonitor(false) { MinimalFilter = LogFilter.Debug };
-                    grandOutputClient.EnsureGrandOutputClient(activityMonitor);
+                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
+                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
 
-                    activityMonitor.Info("Hello world");
-                    activityMonitor.Error("CriticalError");
-                    activityMonitor.Fatal(ThrowAggregateException(3));
+                    activityMonitor.Info( "Hello world" );
+                    activityMonitor.Error( "CriticalError" );
+                    activityMonitor.Fatal( ThrowAggregateException( 3 ) );
 
                 }
             }
@@ -84,7 +84,7 @@ namespace CK.Glouton.Tests
         [Test]
         public void log_can_be_indexed_and_searched_with_full_text_search()
         {
-            
+
 
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
             var searcher = searcherManager.GetSearcher( LuceneSearcherConfiguration.Directory );
@@ -94,7 +94,6 @@ namespace CK.Glouton.Tests
                 Fields = new[] { "LogLevel", "Text" },
                 SearchMethod = SearchMethod.FullText,
                 MaxResult = 10,
-                AppName = new string[] { LuceneSearcherConfiguration.Directory },
                 Query = "Text:\"Hello world\""
             };
 
@@ -130,10 +129,12 @@ namespace CK.Glouton.Tests
                 Fields = new[] { "Text" },
                 SearchMethod = SearchMethod.WithConfigurationObject,
                 MaxResult = 10,
-                AppName = new string[] { LuceneSearcherConfiguration.Directory },
                 Query = "\"Hello world\""
             };
 
+            //
+            // Search an all document with `Text` field equal to "Hello world"
+            //
             var result = searcher.Search( configuration );
             result.Should().NotBeNull();
             result.Count.Should().Be( 1 );
@@ -142,10 +143,24 @@ namespace CK.Glouton.Tests
             var log = result[ 0 ] as LineViewModel;
             log.Text.Should().Be( "Hello world" );
             log.LogLevel.Should().Contain( "Info" );
+            log.Tags.Should().BeOfType<string>();
+            log.SourceFileName.Should().BeOfType<string>();
+            log.LineNumber.Should().BeOfType<string>();
+            log.LogLevel.Should().BeOfType<string>();
+            log.MonitorId.Should().BeOfType<string>();
+            log.GroupDepth.Should().BeOfType( typeof( int ) );
+            log.PreviousEntryType.Should().BeOfType<string>();
+            log.PreviousLogTime.Should().BeOfType<string>();
+            log.AppName.Should().BeOfType<string>();
+            log.LogTime.Should().BeOfType<string>();
+            log.Exception.Should().BeNull();
 
+            //
+            // Search an all document with `Text` field equal to "CriticalError"
+            //
             configuration.Query = "CriticalError";
-
             result = searcher.Search( configuration );
+
             result.Should().NotBeNull();
             result.Count.Should().Be( 1 );
             result[ 0 ].LogType.Should().Be( ELogType.Line );
@@ -153,6 +168,119 @@ namespace CK.Glouton.Tests
             log = result[ 0 ] as LineViewModel;
             log.Text.Should().Be( "CriticalError" );
             log.LogLevel.Should().Contain( "Error" );
+
+
+
+            configuration.SearchAll( LuceneWantAll.Log );
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 8 ); // TODO: If add log to the index change the number or get an alternative technique.
+
+            //
+            // Search all document with LogLevel between 0002-01-01 to 9999-01-01
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                Fields = new string[ 0 ],
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                DateStart = new DateTime( 2, 01, 01 ),
+                DateEnd = new DateTime( 9999, 01, 01 )
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 8 );
+
+            //
+            // Search all document with LogLevel between 0002-01-01 to 0003-01-01
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                DateStart = new DateTime( 2, 01, 01 ),
+                DateEnd = new DateTime( 3, 01, 01 )
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 0 );
+
+
+            //
+            // Search all MonitorId in all appname contain in the searcher
+            //
+            var monitorId = searcher.GetAllMonitorId();
+            monitorId.Count.Should().Be( 2 );
+
+            //
+            // Search with false MonitorId
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                MonitorId = Guid.NewGuid().ToString()
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 0 );
+
+            //
+            // Search all fatal log
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                LogLevel = new string[] { "Fatal" }
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 1 );
+
+            //
+            // Search all document with a LogLevel and a monitorId
+            //
+            configuration = new LuceneSearcherConfiguration
+            {
+                SearchMethod = SearchMethod.WithConfigurationObject,
+                MaxResult = 10,
+                Fields = new string[] { LogField.MONITOR_ID }
+            };
+            result = searcher.Search( configuration );
+            result.Count.Should().Be( 8 );
+        }
+
+        [Test]
+        public void get_searcher_with_bad_appname()
+        {
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
+            var s = searcherManager.GetSearcher( new[] { Guid.NewGuid().ToString() } );
+            s.Should().BeNull();
+        }
+
+        [Test]
+        public void luceneSearcherManager_return_good_appName()
+        {
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
+            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + Guid.NewGuid().ToString();
+
+            Directory.CreateDirectory( directoryPath );
+
+            var appName = searcherManager.AppName;
+            appName.Count.Should().Be( 1 );
+            appName.First().Should().Be( LuceneSearcherConfiguration.Directory );
+
+            Directory.Delete( directoryPath );
+        }
+
+        [Test]
+        public void bad_configuration_should_throw_exception()
+        {
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
+            var searcher = searcherManager.GetSearcher( LuceneSearcherConfiguration.Directory );
+
+            Action action = () => searcher.Search( null );
+            action.ShouldThrow<ArgumentNullException>();
+
+            action = () => searcher.Search( new LuceneSearcherConfiguration() );
+            action.ShouldThrow<ArgumentException>();
+
         }
 
         [Test]
@@ -164,7 +292,6 @@ namespace CK.Glouton.Tests
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 MaxResult = 10,
-                AppName = new string[] { LuceneSearcherConfiguration.Directory }
             };
             configuration.SearchAll( LuceneWantAll.Exception );
 

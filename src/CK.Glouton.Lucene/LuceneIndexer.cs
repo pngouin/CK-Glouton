@@ -24,7 +24,6 @@ namespace CK.Glouton.Lucene
         private DateTime _lastCommit;
         private int _numberOfFileToCommit;
         private int _exceptionDepth;
-        private LuceneSearcher _searcher;
 
         public LuceneIndexer( LuceneConfiguration luceneConfiguration )
         {
@@ -169,11 +168,6 @@ namespace CK.Glouton.Lucene
         public void IndexLog( IMulticastLogEntry log, string appName )
         {
             WriteDocument( GetDocument( log, appName ) );
-        }
-
-        public void IndexLog( ILogEntry log, string appName )
-        {
-            IndexLog( (IMulticastLogEntry)log, appName );
         }
 
         public void IndexLog( ILogEntry log, IReadOnlyDictionary<string, string> clientData )
