@@ -243,7 +243,7 @@ namespace CK.Glouton.Tests
                 GroupDepth = 1
             };
             result = searcher.Search(configuration);
-            result.Count.Should().Be(2);
+            result.All(l => l.GroupDepth == 1).Should().BeTrue();
 
             //
             // Search all document with a LogLevel and a monitorId
