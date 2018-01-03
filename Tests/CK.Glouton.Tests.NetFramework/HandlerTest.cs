@@ -3,8 +3,6 @@ using CK.Glouton.Handler.Tcp;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace CK.Glouton.Tests
@@ -92,63 +90,64 @@ namespace CK.Glouton.Tests
             }
         }
 
-        [Test]
-        public void handler_handles_multiple_clients()
-        {
-            using( var server = TestHelper.DefaultMockServer() )
-            {
-                server.Open();
+        //[Test]
+        //public void handler_handles_multiple_clients()
+        //{
+        //    using( var server = TestHelper.DefaultMockServer() )
+        //    {
+        //        server.Open();
 
-                using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
-                using( var grandOutputClient1 = GrandOutputHelper.GetNewGrandOutputClient() )
-                {
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    using( var grandOutputClient2 = GrandOutputHelper.GetNewGrandOutputClient() )
-                    {
-                        Thread.Sleep( TestHelper.DefaultSleepTime );
-                        using( var grandOutputClient3 = GrandOutputHelper.GetNewGrandOutputClient() )
-                        {
-                            var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
-                            grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
+        //        using( var grandOutputServer = GrandOutputHelper.GetNewGrandOutputServer() )
+        //        using( var grandOutputClient1 = GrandOutputHelper.GetNewGrandOutputClient() )
+        //        {
+        //            Thread.Sleep( TestHelper.DefaultSleepTime );
+        //            using( var grandOutputClient2 = GrandOutputHelper.GetNewGrandOutputClient() )
+        //            {
+        //                Thread.Sleep( TestHelper.DefaultSleepTime );
+        //                using( var grandOutputClient3 = GrandOutputHelper.GetNewGrandOutputClient() )
+        //                {
+        //                    var serverActivityMonitor = new ActivityMonitor { MinimalFilter = LogFilter.Debug };
+        //                    grandOutputServer.EnsureGrandOutputClient( serverActivityMonitor );
 
-                            Thread.Sleep( TestHelper.DefaultSleepTime );
-                            var clients = new List<ActivityMonitor>();
-                            var guids = new List<string>();
+        //                    Thread.Sleep( TestHelper.DefaultSleepTime );
+        //                    var clients = new List<ActivityMonitor>();
+        //                    var guids = new List<string>();
 
-                            for (int i = 0; i < 3; i++)
-                            {
-                                clients.Add(new ActivityMonitor { MinimalFilter = LogFilter.Debug });
-                                guids.Add(Guid.NewGuid().ToString());
-                            }
+        //                    for( int i = 0 ; i < 3 ; i++ )
+        //                    {
+        //                        clients.Add( new ActivityMonitor { MinimalFilter = LogFilter.Debug } );
 
-                            grandOutputClient1.EnsureGrandOutputClient(clients[0]);
+        //                        guids.Add( Guid.NewGuid().ToString() );
+        //                    }
 
-                            Thread.Sleep(TestHelper.DefaultSleepTime);
-                            grandOutputClient2.EnsureGrandOutputClient(clients[1]);
+        //                    grandOutputClient1.EnsureGrandOutputClient( clients[ 0 ] );
 
-                            Thread.Sleep(TestHelper.DefaultSleepTime);
-                            grandOutputClient3.EnsureGrandOutputClient(clients[2]);
+        //                    Thread.Sleep( TestHelper.DefaultSleepTime );
+        //                    grandOutputClient2.EnsureGrandOutputClient( clients[ 1 ] );
 
-                            for (int i = 0; i < clients.Count; i++)
-                            {
-                                clients[i].Info(guids[i]);
-                                clients[i].CloseGroup();
-                            }
+        //                    Thread.Sleep( TestHelper.DefaultSleepTime );
+        //                    grandOutputClient3.EnsureGrandOutputClient( clients[ 2 ] );
 
-                            Thread.Sleep(TestHelper.DefaultSleepTime);
-                            var logs = server.CloseAndGetLogs();
+        //                    for( int i = 0 ; i < clients.Count ; i++ )
+        //                    {
+        //                        clients[ i ].Info( guids[ i ] );
+        //                        clients[ i ].CloseGroup();
+        //                    }
 
-                            for (int i = 0; i < guids.Count; i++)
-                            {
-                                logs.Any(l => l.Text == guids[i]).Should().BeTrue();
-                            }
+        //                    Thread.Sleep( TestHelper.DefaultSleepTime );
+        //                    var logs = server.CloseAndGetLogs();
 
-                            serverActivityMonitor.CloseGroup();
-                        }
-                    }
-                }
-            }
-        }
+        //                    for( int i = 0 ; i < guids.Count ; i++ )
+        //                    {
+        //                        logs.Any( l => l.Text == guids[ i ] ).Should().BeTrue();
+        //                    }
+
+        //                    serverActivityMonitor.CloseGroup();
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         [Test]
         public void close_and_reopen_server()

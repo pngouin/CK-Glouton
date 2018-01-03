@@ -1,12 +1,12 @@
-﻿using System;
+﻿using CK.Core;
+using CK.Glouton.Model.Server;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CK.Core;
-using CK.Glouton.Model.Server;
 
 namespace CK.Glouton.Server
 {
@@ -22,8 +22,27 @@ namespace CK.Glouton.Server
 
         private HandlersManagerConfiguration[] _newConfigurations;
 
+        private TimeSpan _timerDuration;
+        private long _deltaTicks;
+        private long _nextTicks;
+        private long _nextExternalTicks;
+        private long _deltaExternalTicks;
+        private Action _externalOnTimer;
+
         private volatile int _stopFlag;
         private volatile bool _forceClose;
+
+        public TimeSpan TimerDuration
+        {
+            get => _timerDuration;
+            set
+            {
+                if( _timerDuration == value )
+                    return;
+                _timerDuration = value;
+                _deltaTicks = value.Ticks;
+            }
+        }
 
         public DispatcherSink( IActivityMonitor activityMonitor )
         {
@@ -78,6 +97,33 @@ namespace CK.Glouton.Server
                     }
                 }
 
+                var now = DateTime.UtcNow.Ticks;
+                if( now >= _nextTicks )
+                {
+                    foreach( var handler in _gloutonHandlers )
+                    {
+                        try
+                        {
+                            handler.OnTimer( _activityMonitor, _timerDuration );
+                        }
+                        catch( Exception exception )
+                        {
+                            var message = $"{handler.GetType().FullName}.OnTimer() crashed.";
+                            ActivityMonitor.CriticalErrorCollector.Add( exception, message );
+                            _activityMonitor.Fatal( message, exception );
+                            if( faulty == null )
+                                faulty = new List<IGloutonHandler>();
+                            faulty.Add( handler );
+                        }
+                    }
+                    _nextTicks = now + _deltaTicks;
+                    if( now >= _nextExternalTicks )
+                    {
+                        _externalOnTimer();
+                        _nextExternalTicks = now + _deltaExternalTicks;
+                    }
+                }
+
                 if( faulty != null )
                 {
                     foreach( var handler in faulty )
@@ -85,7 +131,6 @@ namespace CK.Glouton.Server
                         SafeActivateOrDeactivate( handler, false );
                         _gloutonHandlers.Remove( handler );
                     }
-                    faulty = null;
                 }
             }
 
@@ -96,27 +141,28 @@ namespace CK.Glouton.Server
         private void DoConfigure( HandlersManagerConfiguration[] newConfigurations )
         {
             Util.InterlockedSet( ref _newConfigurations, t => t.Skip( newConfigurations.Length ).ToArray() );
-            var configuration = newConfigurations[newConfigurations.Length - 1];
+            var configuration = newConfigurations[ newConfigurations.Length - 1 ];
+            TimerDuration = configuration.TimerDuration;
             var toKeep = new List<IGloutonHandler>();
 
-            for( var iConfiguration = 0; iConfiguration < configuration.GloutonHandlers.Count; ++iConfiguration )
+            for( var iConfiguration = 0 ; iConfiguration < configuration.GloutonHandlers.Count ; ++iConfiguration )
             {
-                for( var iHandler = 0; iHandler < _gloutonHandlers.Count; ++iHandler )
+                for( var iHandler = 0 ; iHandler < _gloutonHandlers.Count ; ++iHandler )
                 {
                     try
                     {
-                        if( !_gloutonHandlers[iHandler].ApplyConfiguration( configuration.GloutonHandlers[iConfiguration] ) )
+                        if( !_gloutonHandlers[ iHandler ].ApplyConfiguration( configuration.GloutonHandlers[ iConfiguration ] ) )
                             continue;
 
                         configuration.GloutonHandlers.RemoveAt( iConfiguration-- );
-                        toKeep.Add( _gloutonHandlers[iHandler] );
+                        toKeep.Add( _gloutonHandlers[ iHandler ] );
                         _gloutonHandlers.RemoveAt( iHandler );
                         break;
                     }
                     catch( Exception exception )
                     {
-                        var handler = _gloutonHandlers[iHandler];
-                        var message = $"Existing {handler.GetType().FullName} crashed with the configuration {configuration.GloutonHandlers[iConfiguration].GetType().FullName}.";
+                        var handler = _gloutonHandlers[ iHandler ];
+                        var message = $"Existing {handler.GetType().FullName} crashed with the configuration {configuration.GloutonHandlers[ iConfiguration ].GetType().FullName}.";
                         ActivityMonitor.CriticalErrorCollector.Add( exception, message );
                         _activityMonitor.Fatal( message, exception );
                         _gloutonHandlers.RemoveAt( iHandler-- );
@@ -169,9 +215,16 @@ namespace CK.Glouton.Server
             return true;
         }
 
-        public void Start()
+        public void Start( TimeSpan timerDuration, TimeSpan externalTimerDuration, Action externalTimer )
         {
             _task.Start();
+            _timerDuration = timerDuration;
+            _deltaTicks = timerDuration.Ticks;
+            _deltaExternalTicks = externalTimerDuration.Ticks;
+            _externalOnTimer = externalTimer;
+            var now = DateTime.UtcNow.Ticks;
+            _nextTicks = now + _deltaTicks;
+            _nextExternalTicks = now + _deltaExternalTicks;
         }
 
         public CancellationToken StopToken => _stopTokenSource.Token;
@@ -196,7 +249,7 @@ namespace CK.Glouton.Server
             _queue.Dispose();
             _stopTokenSource.Dispose();
 
-            foreach (var h in _gloutonHandlers)
+            foreach( var h in _gloutonHandlers )
                 h.Dispose();
         }
 

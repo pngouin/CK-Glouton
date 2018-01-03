@@ -7,6 +7,7 @@ namespace CK.Glouton.Model.Server
     {
         void Open( IActivityMonitor activityMonitor );
         void OnGrandOutputEventInfo( ReceivedData receivedData );
+        void OnTimer( IActivityMonitor activityMonitor, TimeSpan timerDuration );
         bool ApplyConfiguration( IGloutonHandlerConfiguration configuration );
         void Close();
     }
