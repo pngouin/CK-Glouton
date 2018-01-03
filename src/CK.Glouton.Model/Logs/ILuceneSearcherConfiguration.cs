@@ -7,6 +7,7 @@ namespace CK.Glouton.Model.Logs
     public interface ILuceneSearcherConfiguration
     {
         int MaxResult { get; set; }
+        int? GroupDepth { get; set; }
         string MonitorId { get; set; }
         DateTime DateStart { get; set; }
         DateTime DateEnd { get; set; }

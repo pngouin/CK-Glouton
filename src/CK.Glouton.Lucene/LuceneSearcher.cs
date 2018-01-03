@@ -85,10 +85,16 @@ namespace CK.Glouton.Lucene
             if( configuration.MonitorId != null ) bQuery.Add( CreateMonitorIdQuery( configuration ), Occur.MUST );
             if( configuration.DateEnd.Year != 1 && configuration.DateStart.Year != 1 ) bQuery.Add( CreateTimeQuery( configuration ), Occur.MUST );
             if( configuration.LogLevel != null ) bQuery.Add( CreateLogLevelQuery( configuration ), Occur.MUST );
+            if (configuration.GroupDepth != null) bQuery.Add( CreateGroupDepthQuery( configuration ), Occur.MUST);
 
             bQuery.Add( CreateFieldQuery( configuration ), Occur.MUST );
 
             return bQuery;
+        }
+
+        private Query CreateGroupDepthQuery(ILuceneSearcherConfiguration configuration)
+        {
+            return new WildcardQuery( new Term( LogField.GROUP_DEPTH, configuration.GroupDepth.ToString() ) );
         }
 
         private Query CreateTimeQuery( ILuceneSearcherConfiguration configuration )
