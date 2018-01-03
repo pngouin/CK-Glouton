@@ -272,11 +272,14 @@ namespace CK.Glouton.Tests
             LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
             var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
 
-            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration();
+            LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
+            {
+                MaxResult = 20
+            };
+
             configuration.SearchAll(LuceneWantAll.Log);
             var result = searcher.Search(configuration);
-
-            result.SequenceEqual(result.OrderByDescending(l => l.LogTime)).Should().BeTrue();
+            result.SequenceEqual(result.OrderBy(l => l.LogTime)).Should().BeTrue();
         }
 
         [Test]
