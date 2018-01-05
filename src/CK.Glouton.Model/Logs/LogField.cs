@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CK.Glouton.Model.Logs
+﻿namespace CK.Glouton.Model.Logs
 {
     public class LogField
     {

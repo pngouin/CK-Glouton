@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using CK.Glouton.Model.Lucene;
 
 namespace CK.Glouton.Tests
 {
@@ -92,7 +93,7 @@ namespace CK.Glouton.Tests
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 Fields = new[] { "LogLevel", "Text" },
-                SearchMethod = SearchMethod.FullText,
+                ESearchMethod = ESearchMethod.FullText,
                 MaxResult = 10,
                 Query = "Text:\"Hello world\""
             };
@@ -127,7 +128,7 @@ namespace CK.Glouton.Tests
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 Fields = new[] { "Text" },
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 Query = "\"Hello world\""
             };
@@ -171,7 +172,7 @@ namespace CK.Glouton.Tests
 
 
 
-            configuration.SearchAll( LuceneWantAll.Log );
+            configuration.SearchAll( ELuceneWantAll.Log );
             result = searcher.Search( configuration );
             result.Count.Should().Be( 8 ); // TODO: If add log to the index change the number or get an alternative technique.
 
@@ -181,7 +182,7 @@ namespace CK.Glouton.Tests
             configuration = new LuceneSearcherConfiguration
             {
                 Fields = new string[ 0 ],
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 DateStart = new DateTime( 2, 01, 01 ),
                 DateEnd = new DateTime( 9999, 01, 01 )
@@ -194,7 +195,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 DateStart = new DateTime( 2, 01, 01 ),
                 DateEnd = new DateTime( 3, 01, 01 )
@@ -214,7 +215,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 MonitorId = Guid.NewGuid().ToString()
             };
@@ -226,7 +227,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 LogLevel = new string[] { "Fatal" }
             };
@@ -238,7 +239,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 GroupDepth = 1
             };
@@ -250,7 +251,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 Fields = new string[] { LogField.MONITOR_ID }
             };
@@ -277,7 +278,7 @@ namespace CK.Glouton.Tests
                 MaxResult = 20
             };
 
-            configuration.SearchAll(LuceneWantAll.Log);
+            configuration.SearchAll(ELuceneWantAll.Log);
             var result = searcher.Search(configuration);
             result.SequenceEqual(result.OrderBy(l => l.LogTime)).Should().BeTrue();
         }
@@ -323,7 +324,7 @@ namespace CK.Glouton.Tests
             {
                 MaxResult = 10,
             };
-            configuration.SearchAll( LuceneWantAll.Exception );
+            configuration.SearchAll( ELuceneWantAll.Exception );
 
             var result = searcher.Search( configuration );
             result.Should().NotBeNull();

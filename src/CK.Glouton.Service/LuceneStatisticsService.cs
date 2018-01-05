@@ -1,8 +1,7 @@
 ﻿using CK.Glouton.Lucene;
+using CK.Glouton.Model.Lucene;
 using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CK.Glouton.Service
 {
@@ -11,10 +10,10 @@ namespace CK.Glouton.Service
         private readonly LuceneConfiguration _configuration;
         private readonly LuceneStatistics _stats;
 
-        public LuceneStatisticsService(IOptions<LuceneConfiguration> configuration)
+        public LuceneStatisticsService( IOptions<LuceneConfiguration> configuration )
         {
             _configuration = configuration.Value;
-            _stats = new LuceneStatistics(_configuration);
+            _stats = new LuceneStatistics( _configuration );
         }
 
         public int AllLogCount() => _stats.AllLogCount;
@@ -22,25 +21,25 @@ namespace CK.Glouton.Service
         public int AppNameCount => _stats.AppNameCount;
         public IEnumerable<string> GetAppNames => _stats.GetAppNames;
 
-        public Dictionary<string, int> GetLogByAppName ()
+        public Dictionary<string, int> GetLogByAppName()
         {
             Dictionary<string, int> result = new Dictionary<string, int>();
-            foreach (var appName in _stats.GetAppNames)
+            foreach( var appName in _stats.GetAppNames )
             {
-                result.Add(appName, _stats.LogInAppNameCount(appName));
+                result.Add( appName, _stats.LogInAppNameCount( appName ) );
             }
             return result;
         }
 
-        public Dictionary<string, int> GetExceptionByAppName ()
+        public Dictionary<string, int> GetExceptionByAppName()
         {
             Dictionary<string, int> result = new Dictionary<string, int>();
-            foreach (var appName in _stats.GetAppNames)
+            foreach( var appName in _stats.GetAppNames )
             {
-                result.Add(appName, _stats.ExceptionInAppNameCount(appName));
+                result.Add( appName, _stats.ExceptionInAppNameCount( appName ) );
             }
             return result;
         }
-        
+
     }
 }
