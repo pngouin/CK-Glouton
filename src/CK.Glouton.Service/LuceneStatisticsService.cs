@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CK.Glouton.Service
 {
-    public class LuceneStatisticsService
+    public class LuceneStatisticsService : ILuceneStatisticsService
     {
         private readonly LuceneConfiguration _configuration;
         private readonly LuceneStatistics _stats;
