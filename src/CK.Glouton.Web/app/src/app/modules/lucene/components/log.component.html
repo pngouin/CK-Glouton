@@ -1,5 +1,5 @@
 <div (click)="onClick()">
-    <p [style.margin-left.px]="marginLeft(log)" class="card" ><b [style.color]="getColor(log)" >{{log.logLevel}}</b>    {{log.logTime}}    {{getText()}}</p>
+    <p [style.margin-left.px]="marginLeft(log)" class="card" ><b [style.color]="getColor(log)" >{{log.logLevel}}</b> |   {{log.logTime}}  |  {{getText()}}</p>
 </div>
 <div *ngIf="log.groupLogs">
     <div *ngFor="let log of log.groupLogs">
