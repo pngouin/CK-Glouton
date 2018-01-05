@@ -69,6 +69,10 @@ namespace CK.Glouton.Server.Handlers
             _blockingQueue.Enqueue( () => indexer.IndexLog( entry, clientData ) );
         }
 
+        public void OnTimer( IActivityMonitor activityMonitor, TimeSpan timerDuration )
+        {
+        }
+
         public bool ApplyConfiguration( IGloutonHandlerConfiguration configuration )
         {
             return false;

@@ -17,8 +17,9 @@ namespace CK.Glouton.Lucene
         public string Query { get; set; }
         public int MaxResult { get; set; }
         public SearchMethod SearchMethod { get; set; }
-
         internal LuceneWantAll All { get; set; }
+        public int? GroupDepth { get; set; }
+
         internal bool WantAll;
 
         public ILuceneSearcherConfiguration SearchAll( LuceneWantAll all )

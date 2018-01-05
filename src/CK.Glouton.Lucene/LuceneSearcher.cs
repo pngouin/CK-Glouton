@@ -16,6 +16,7 @@ namespace CK.Glouton.Lucene
     public class LuceneSearcher : ILuceneSearcher
     {
         private readonly IndexSearcher _indexSearcher;
+        private readonly Sort _sort;
 
         /// <summary>
         /// Basic Searcher in a Lucene index for CK.Monitoring log.
@@ -25,6 +26,9 @@ namespace CK.Glouton.Lucene
         public LuceneSearcher( MultiReader multiReader )
         {
             _indexSearcher = new IndexSearcher( multiReader );
+            _sort = new Sort(
+                SortField.FIELD_SCORE,
+                new SortField(LogField.LOG_TIME, SortFieldType.STRING));
         }
 
         /// <summary>
@@ -48,7 +52,7 @@ namespace CK.Glouton.Lucene
             if( searchConfiguration.WantAll )
                 return Search( searchConfiguration, GetAll( searchConfiguration.All ) );
 
-            return CreateLogsResult( _indexSearcher?.Search(  CreateQuery( searchConfiguration ) , searchConfiguration.MaxResult ) );
+            return CreateLogsResult( _indexSearcher?.Search(  CreateQuery( searchConfiguration ) , searchConfiguration.MaxResult, _sort ) );
         }
 
         private Query GetAll( LuceneWantAll all )
@@ -81,10 +85,16 @@ namespace CK.Glouton.Lucene
             if( configuration.MonitorId != null ) bQuery.Add( CreateMonitorIdQuery( configuration ), Occur.MUST );
             if( configuration.DateEnd.Year != 1 && configuration.DateStart.Year != 1 ) bQuery.Add( CreateTimeQuery( configuration ), Occur.MUST );
             if( configuration.LogLevel != null ) bQuery.Add( CreateLogLevelQuery( configuration ), Occur.MUST );
+            if (configuration.GroupDepth != null) bQuery.Add( CreateGroupDepthQuery( configuration ), Occur.MUST);
 
             bQuery.Add( CreateFieldQuery( configuration ), Occur.MUST );
 
             return bQuery;
+        }
+
+        private Query CreateGroupDepthQuery(ILuceneSearcherConfiguration configuration)
+        {
+            return new WildcardQuery( new Term( LogField.GROUP_DEPTH, configuration.GroupDepth.ToString() ) );
         }
 
         private Query CreateTimeQuery( ILuceneSearcherConfiguration configuration )
@@ -141,7 +151,7 @@ namespace CK.Glouton.Lucene
 
         private List<ILogViewModel> Search( LuceneSearcherConfiguration configuration, Query searchQuery )
         {
-            return CreateLogsResult( _indexSearcher?.Search( searchQuery, configuration.MaxResult ) );
+            return CreateLogsResult( _indexSearcher?.Search( searchQuery, configuration.MaxResult, _sort ) );
         }
 
         public Document GetDocument( ScoreDoc scoreDoc )
@@ -156,7 +166,7 @@ namespace CK.Glouton.Lucene
 
         public Document GetDocument( string key, string value, int maxResult )
         {
-            return GetDocument( _indexSearcher?.Search( new TermQuery( new Term( key, value ) ), maxResult ).ScoreDocs.First() );
+            return GetDocument( _indexSearcher?.Search( new TermQuery( new Term( key, value ) ), maxResult, _sort ).ScoreDocs.First() );
         }
 
         private bool CheckSearchConfiguration( LuceneSearcherConfiguration configuration ) // TODO: Check if the check is good.

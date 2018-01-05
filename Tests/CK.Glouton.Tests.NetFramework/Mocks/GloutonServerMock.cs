@@ -87,6 +87,12 @@ namespace CK.Glouton.Tests
             _controlChannelServer.Close();
         }
 
+        public List<ILogEntry> CloseAndGetLogs()
+        {
+            _controlChannelServer.Close();
+            return ListLog;
+        }
+
         /// <summary>
         /// Open the handled control channel.
         /// </summary>

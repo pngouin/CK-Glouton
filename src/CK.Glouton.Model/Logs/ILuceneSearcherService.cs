@@ -5,10 +5,10 @@ namespace CK.Glouton.Model.Logs
 {
     public interface ILuceneSearcherService
     {
-        List<ILogViewModel> GetAll(params string[] appNames);
+        List<ILogViewModel> GetAll( params string[] appNames );
         List<string> GetAppNameList();
-        List<ILogViewModel> GetLogWithFilters(string monitorId, DateTime start, DateTime end, string[] fields, string[] logLevel, string query, params string[] appNames);
+        List<ILogViewModel> GetLogWithFilters( string monitorId, DateTime start, DateTime end, string[] fields, string[] logLevel, string query, string[] appNames, int groupDepth = 0 );
         List<string> GetMonitorIdList();
-        List<ILogViewModel> Search(string query, params string[] appNames);
+        List<ILogViewModel> Search( string query, params string[] appNames );
     }
 }
