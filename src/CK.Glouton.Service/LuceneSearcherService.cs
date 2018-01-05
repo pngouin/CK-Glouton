@@ -78,7 +78,7 @@ namespace CK.Glouton.Service
                 configuration.Fields = new[] { "LogLevel" };
 
             var logs = _searcherManager.GetSearcher( appNames )?.Search( configuration ) ?? new List<ILogViewModel>();
-            return groupDepth == 0 ? logs : logs.TakeWhileInclusive( l => l.LogType == ELogType.CloseGroup ).ToList();
+            return groupDepth == 0 ? logs : logs.TakeWhileInclusive( l => l.LogType != ELogType.CloseGroup ).ToList();
         }
 
         public List<string> GetMonitorIdList()
