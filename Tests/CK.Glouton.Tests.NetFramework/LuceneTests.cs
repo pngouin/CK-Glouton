@@ -243,7 +243,7 @@ namespace CK.Glouton.Tests
                 GroupDepth = 1
             };
             result = searcher.Search(configuration);
-            result.Count.Should().Be(2);
+            result.All(l => l.GroupDepth == 1).Should().BeTrue();
 
             //
             // Search all document with a LogLevel and a monitorId
@@ -286,14 +286,16 @@ namespace CK.Glouton.Tests
         public void luceneSearcherManager_return_good_appName()
         {
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
-            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + Guid.NewGuid().ToString();
+            var fakeName = Guid.NewGuid().ToString();
+            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + fakeName;
 
             Directory.CreateDirectory( directoryPath );
 
             var appName = searcherManager.AppName;
             appName.Count.Should().NotBe(Directory.GetDirectories(LuceneSearcherConfiguration.Path).Length);
             appName.Contains(LuceneSearcherConfiguration.Directory).Should().BeTrue();
-
+            appName.Any(a => a == fakeName).Should().BeFalse();
+            
             Directory.Delete( directoryPath );
         }
 
