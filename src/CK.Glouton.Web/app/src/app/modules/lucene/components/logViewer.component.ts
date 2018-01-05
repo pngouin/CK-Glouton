@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { IAppState } from 'app/app.state';
 import { MenuItem } from 'primeng/primeng';
 import { ILogViewModel } from 'app/common/logs/models';
-import { LogService } from 'app/_services';
+import { LogService, LuceneParametersSnapshotService } from 'app/_services';
 import { EffectDispatcher } from '@ck/rx';
 import { ITimeSpanNavigatorState } from 'app/modules/timeSpanNavigator/state/timeSpanNavigator.state';
 
@@ -32,6 +32,7 @@ export class LogViewerComponent {
     constructor(
         private logService: LogService,
         private store: Store<IAppState>,
+        private luceneParamertersSnapshotService: LuceneParametersSnapshotService
     ) {
         this._subscriptions = [];
         this._loading = false;
@@ -46,6 +47,12 @@ export class LogViewerComponent {
     public getLogs(query: string): void {
         this._loading = true;
         this._logs = null;
+
+        this.luceneParamertersSnapshotService.keyword = query;
+        this.luceneParamertersSnapshotService.appNames = this._appNames;
+        this.luceneParamertersSnapshotService.level = this._level;
+        this.luceneParamertersSnapshotService.dateRange = this._dateRange;
+
         this.logService
             .filter(
                 {
@@ -59,8 +66,7 @@ export class LogViewerComponent {
             });
     }
 
-    public getMarginLeft (log : ILogViewModel) : number
-    {
+    public getMarginLeft (log : ILogViewModel): number {
         return log.groupDepth * 8;
     }
 }
