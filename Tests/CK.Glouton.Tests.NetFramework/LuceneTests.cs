@@ -28,38 +28,13 @@ namespace CK.Glouton.Tests
 #else
         [OneTimeSetUp]
 #endif
-        public void ConstructIndex()
+        public void constructIndex()
         {
-            using( var server = TestHelper.DefaultGloutonServer() )
-            {
-                server.Open( new HandlersManagerConfiguration
-                {
-                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
-                } );
-
-                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
-                {
-                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
-                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
-
-                    activityMonitor.Info( "Hello world" );
-                    activityMonitor.Error( "CriticalError" );
-                    activityMonitor.Fatal( ThrowAggregateException( 3 ) );
-
-                }
-            }
+            LuceneTestIndexBuilder.ConstructIndex();
         }
 
         private const int LuceneMaxSearch = 10;
-        private static readonly string LucenePath = Path.Combine( TestHelper.GetTestLogDirectory(), "Lucene" );
-
-        private static readonly LuceneGloutonHandlerConfiguration LuceneGloutonHandlerConfiguration = new LuceneGloutonHandlerConfiguration
-        {
-            MaxSearch = LuceneMaxSearch,
-            Path = LucenePath,
-            OpenMode = OpenMode.CREATE,
-            Directory = ""
-        };
+        private static readonly string LucenePath = Path.Combine(TestHelper.GetTestLogDirectory(), "Lucene");
 
         private static readonly LuceneConfiguration LuceneSearcherConfiguration = new LuceneConfiguration
         {
@@ -67,19 +42,6 @@ namespace CK.Glouton.Tests
             Path = LucenePath,
             Directory = Assembly.GetExecutingAssembly().GetName().Name
         };
-
-        public static AggregateException ThrowAggregateException( int numberOfException )
-        {
-            List<Exception> exceptions = new List<Exception>();
-            for( int i = 0 ; i < numberOfException ; i++ )
-            {
-                try
-                { throw new Exception(); }
-                catch( Exception ex ) { exceptions.Add( ex ); }
-            }
-
-            return new AggregateException( "Aggregate exceptions list", exceptions );
-        }
 
         [Test]
         public void log_can_be_indexed_and_searched_with_full_text_search()
