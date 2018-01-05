@@ -35,12 +35,18 @@ namespace CK.Glouton.Lucene
             return _luceneSearcher.GetSearcher(appName).Search(_allSearchLog).Count;
         }
 
-        public int AllLogCount () => _luceneSearcher.GetSearcher(_luceneSearcher.AppName.ToArray()).Search(_allSearchLog).Count;
+        public int ExceptionInAppNameCount (string appName)
+        {
+            if (!_luceneSearcher.AppName.Contains(appName)) return 0;
+            return _luceneSearcher.GetSearcher(appName).Search(_allSearchException).Count;
+        }
 
-        public int AllExceptionCount () => _luceneSearcher.GetSearcher(_luceneSearcher.AppName.ToArray()).Search(_allSearchException).Count;
+        public int AllLogCount => _luceneSearcher.GetSearcher(_luceneSearcher.AppName.ToArray()).Search(_allSearchLog).Count;
 
-        public IEnumerable<string> GetAppName => _luceneSearcher.AppName;
-        public int AppNameCount() => _luceneSearcher.AppName.Count;
+        public int AllExceptionCount => _luceneSearcher.GetSearcher(_luceneSearcher.AppName.ToArray()).Search(_allSearchException).Count;
+
+        public IEnumerable<string> GetAppNames => _luceneSearcher.AppName;
+        public int AppNameCount => _luceneSearcher.AppName.Count;
 
     }
 }
