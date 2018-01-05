@@ -22,6 +22,7 @@ namespace CK.Glouton.Web
             services.AddOptions();
             services.Configure<LuceneConfiguration>( Configuration.GetSection( "Lucene" ) );
             services.AddSingleton<ILuceneSearcherService, LuceneSearcherService>();
+            services.AddSingleton<ILuceneStatisticsService, LuceneStatisticsService>();
             services.AddMvc();
         }
 
