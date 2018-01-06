@@ -17,28 +17,28 @@ namespace CK.Glouton.Web.Controllers
             _luceneStatistics = luceneStatistics;
         }
 
-        [HttpGet("logperappname")]
-        public Dictionary<string, int> LogPerAppName()
+        [HttpGet("log/total/by/appname")]
+        public Dictionary<string, int?> LogPerAppName()
         {
             return _luceneStatistics.GetLogByAppName();
         }
 
-        [HttpGet("exceptionperappname")]
-        public Dictionary<string, int> ExceptionPerAppName()
+        [HttpGet("exception/total/by/appname")]
+        public Dictionary<string, int?> ExceptionPerAppName()
         {
             return _luceneStatistics.GetExceptionByAppName();
         }
 
-        [HttpGet("Log")]
-        public int AllLogCount() => _luceneStatistics.AllLogCount();
+        [HttpGet("log/total")]
+        public int? AllLogCount() => _luceneStatistics.AllLogCount();
 
-        [HttpGet("AppName")]
-        public int AppNameCount() => _luceneStatistics.AppNameCount;
+        [HttpGet("appname/total")]
+        public int? AppNameCount() => _luceneStatistics.AppNameCount;
 
-        [HttpGet("Exception")]
-        public int AllException() => _luceneStatistics.AllExceptionCount;
+        [HttpGet("exception/total")]
+        public int? AllException() => _luceneStatistics.AllExceptionCount;
 
-        [HttpGet("AppNames")]
+        [HttpGet("appnames")]
         public IEnumerable<string> AppNames() => _luceneStatistics.GetAppNames;
     }
 }
