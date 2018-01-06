@@ -6,9 +6,9 @@ namespace CK.Glouton.Lucene
 {
     public class LuceneStatistics
     {
-        LuceneSearcherManager _luceneSearcher;
-        LuceneSearcherConfiguration _allSearchLog;
-        LuceneSearcherConfiguration _allSearchException;
+        private readonly LuceneSearcherManager _luceneSearcher;
+        private readonly LuceneSearcherConfiguration _allSearchLog;
+        private readonly LuceneSearcherConfiguration _allSearchException;
 
         public LuceneStatistics( LuceneConfiguration configuration )
         {
@@ -29,16 +29,12 @@ namespace CK.Glouton.Lucene
 
         public int LogInAppNameCount( string appName )
         {
-            if( !_luceneSearcher.AppName.Contains( appName ) )
-                return 0;
-            return _luceneSearcher.GetSearcher( appName ).Search( _allSearchLog ).Count;
+            return !_luceneSearcher.AppName.Contains( appName ) ? -1 : _luceneSearcher.GetSearcher( appName ).Search( _allSearchLog ).Count;
         }
 
         public int ExceptionInAppNameCount( string appName )
         {
-            if( !_luceneSearcher.AppName.Contains( appName ) )
-                return 0;
-            return _luceneSearcher.GetSearcher( appName ).Search( _allSearchException ).Count;
+            return !_luceneSearcher.AppName.Contains( appName ) ? -1 : _luceneSearcher.GetSearcher( appName ).Search( _allSearchException ).Count;
         }
 
         public int AllLogCount => _luceneSearcher.GetSearcher( _luceneSearcher.AppName.ToArray() ).Search( _allSearchLog ).Count;
