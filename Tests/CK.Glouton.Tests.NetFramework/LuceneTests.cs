@@ -346,15 +346,17 @@ namespace CK.Glouton.Tests
         }
 
         [Test]
-        public void lucene_statistic_return_no_null_int()
+        public void lucene_statistic_good_value() //TODO: Get a good name...
         {
             LuceneStatistics luceneStatistics = new LuceneStatistics(LuceneSearcherConfiguration);
-            luceneStatistics.AllExceptionCount.Should().NotBeNull();
-            luceneStatistics.AllLogCount.Should().NotBeNull();
+            luceneStatistics.AllExceptionCount.Should().BeGreaterThan(0);
+            luceneStatistics.AllLogCount.Should().BeGreaterThan(0);
             luceneStatistics.AppNameCount.Should().NotBe(-1);
             luceneStatistics.GetAppNames.Count().Should().BeGreaterThan(0);
-            luceneStatistics.LogInAppNameCount("badappaname").Should().NotBeNull();
+            luceneStatistics.LogInAppNameCount("badappaname").Should().BeLessThan(0);
             luceneStatistics.LogInAppNameCount("badappaname").Should().Be(-1);
+            luceneStatistics.ExceptionInAppNameCount("badappaname").Should().BeLessThan(0);
+            luceneStatistics.ExceptionInAppNameCount("badappaname").Should().Be(-1);
         }
     }
 }

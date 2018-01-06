@@ -18,13 +18,13 @@ namespace CK.Glouton.Web.Controllers
         }
 
         [HttpGet("log/total/by/appname")]
-        public Dictionary<string, int?> LogPerAppName()
+        public Dictionary<string, int> LogPerAppName()
         {
             return _luceneStatistics.GetLogByAppName();
         }
 
         [HttpGet("exception/total/by/appname")]
-        public Dictionary<string, int?> ExceptionPerAppName()
+        public Dictionary<string, int> ExceptionPerAppName()
         {
             return _luceneStatistics.GetExceptionByAppName();
         }

@@ -15,17 +15,17 @@ namespace CK.Glouton.Service
             _stats = new LuceneStatistics(configuration.Value);
         }
 
-        public int? AllLogCount() => _stats.AllLogCount;
-        public int? AllExceptionCount => _stats.AllExceptionCount;
-        public int? AppNameCount => _stats.AppNameCount;
+        public int AllLogCount() => _stats.AllLogCount;
+        public int AllExceptionCount => _stats.AllExceptionCount;
+        public int AppNameCount => _stats.AppNameCount;
         public IEnumerable<string> GetAppNames => _stats.GetAppNames;
 
-        public Dictionary<string, int?> GetLogByAppName()
+        public Dictionary<string, int> GetLogByAppName()
         {
             return _stats.GetAppNames.ToDictionary(appName => appName, appName => _stats.LogInAppNameCount(appName));
         }
 
-        public Dictionary<string, int?> GetExceptionByAppName()
+        public Dictionary<string, int> GetExceptionByAppName()
         {
             return _stats.GetAppNames.ToDictionary(appName => appName, appName => _stats.ExceptionInAppNameCount(appName));
         }
