@@ -16,14 +16,14 @@ namespace CK.Glouton.Service
             _stats = new LuceneStatistics( _configuration );
         }
 
-        public int AllLogCount() => _stats.AllLogCount;
-        public int AllExceptionCount => _stats.AllExceptionCount;
-        public int AppNameCount => _stats.AppNameCount;
+        public int? AllLogCount() => _stats.AllLogCount;
+        public int? AllExceptionCount => _stats.AllExceptionCount;
+        public int? AppNameCount => _stats.AppNameCount;
         public IEnumerable<string> GetAppNames => _stats.GetAppNames;
 
-        public Dictionary<string, int> GetLogByAppName()
+        public Dictionary<string, int?> GetLogByAppName()
         {
-            Dictionary<string, int> result = new Dictionary<string, int>();
+            Dictionary<string, int?> result = new Dictionary<string, int?>();
             foreach( var appName in _stats.GetAppNames )
             {
                 result.Add( appName, _stats.LogInAppNameCount( appName ) );
@@ -31,9 +31,9 @@ namespace CK.Glouton.Service
             return result;
         }
 
-        public Dictionary<string, int> GetExceptionByAppName()
+        public Dictionary<string, int?> GetExceptionByAppName()
         {
-            Dictionary<string, int> result = new Dictionary<string, int>();
+            Dictionary<string, int?> result = new Dictionary<string, int?>();
             foreach( var appName in _stats.GetAppNames )
             {
                 result.Add( appName, _stats.ExceptionInAppNameCount( appName ) );

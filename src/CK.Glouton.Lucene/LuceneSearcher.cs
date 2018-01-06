@@ -20,8 +20,7 @@ namespace CK.Glouton.Lucene
         /// <summary>
         /// Basic Searcher in a Lucene index for CK.Monitoring log.
         /// </summary>
-        /// <param name="luceneConfiguration"></param>
-        /// <param name="fields"></param>
+        /// <param name="multiReader"></param>
         public LuceneSearcher( MultiReader multiReader )
         {
             _indexSearcher = new IndexSearcher( multiReader );
@@ -34,7 +33,7 @@ namespace CK.Glouton.Lucene
         /// Search into Lucene index.
         /// If the <see cref="LuceneSearcherConfiguration"/> is not correct return null.
         /// </summary>
-        /// <param name="searchQuery"></param>
+        /// <param name="searchConfiguration"></param>
         /// <returns></returns>
         public List<ILogViewModel> Search( LuceneSearcherConfiguration searchConfiguration )
         {
@@ -52,6 +51,14 @@ namespace CK.Glouton.Lucene
                 return Search( searchConfiguration, GetAll( searchConfiguration.All ) );
 
             return CreateLogsResult( _indexSearcher?.Search( CreateQuery( searchConfiguration ), searchConfiguration.MaxResult, _sort ) );
+        }
+
+        public int? SearchCount(LuceneSearcherConfiguration luceneSearcherConfiguration)
+        {
+            if (!CheckSearchConfiguration(luceneSearcherConfiguration))
+                return -1;
+
+            return _indexSearcher?.Search(CreateQuery(luceneSearcherConfiguration), luceneSearcherConfiguration.MaxResult).TotalHits;
         }
 
         private Query GetAll( ELuceneWantAll all )
