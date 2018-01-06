@@ -344,5 +344,17 @@ namespace CK.Glouton.Tests
                 exception.StackTrace.Should().NotBeNullOrEmpty();
             }
         }
+
+        [Test]
+        public void lucene_statistic_return_no_null_int()
+        {
+            LuceneStatistics luceneStatistics = new LuceneStatistics(LuceneSearcherConfiguration);
+            luceneStatistics.AllExceptionCount.Should().NotBeNull();
+            luceneStatistics.AllLogCount.Should().NotBeNull();
+            luceneStatistics.AppNameCount.Should().NotBe(-1);
+            luceneStatistics.GetAppNames.Count().Should().BeGreaterThan(0);
+            luceneStatistics.LogInAppNameCount("badappaname").Should().NotBeNull();
+            luceneStatistics.LogInAppNameCount("badappaname").Should().Be(-1);
+        }
     }
 }
