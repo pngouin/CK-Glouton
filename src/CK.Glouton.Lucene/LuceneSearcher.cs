@@ -151,9 +151,7 @@ namespace CK.Glouton.Lucene
                     bFieldQuery.Add( new QueryParser( LuceneVersion.LUCENE_48, field, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ).Parse( configuration.Query ), Occur.SHOULD );
                 else
                 {
-                    if( configuration.Query == null )
-                        configuration.Query = "*";
-                    bFieldQuery.Add( new WildcardQuery( new Term( field, configuration.Query ) ), Occur.SHOULD );
+                    bFieldQuery.Add( new WildcardQuery( new Term( field, configuration.Query ?? "*") ), Occur.SHOULD );
                 }
             }
             return bFieldQuery;
