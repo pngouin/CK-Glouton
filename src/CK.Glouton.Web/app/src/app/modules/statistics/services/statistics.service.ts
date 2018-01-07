@@ -5,10 +5,12 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class StatisticsService {
 
-    private statistics : string = "/api/stats";
+    private statistics : string = '/api/stats';
 
-    constructor(private httpClient: HttpClient) { }
-    
+    constructor(
+        private httpClient: HttpClient
+    ) { }
+
     public getTotalLogCount(): Observable<number> {
         return this.httpClient
             .get<number>(`${this.statistics}/log/total`);
