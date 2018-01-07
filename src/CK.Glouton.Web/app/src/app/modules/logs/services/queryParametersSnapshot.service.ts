@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { ITimeSpanNavigatorState } from 'app/modules/timeSpanNavigator/state/timeSpanNavigator.state';
 
 @Injectable()
-export class LuceneParametersSnapshotService {
+export class QueryParametersSnapshotService {
 
     private _appNames: string[];
     get appNames(): string[] { return this._appNames; }

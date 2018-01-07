@@ -6,7 +6,7 @@ import { EventEmitter } from '@angular/core';
 import { DialogModule } from 'primeng/primeng';
 import { LogService } from 'app/_services';
 import { LogType } from 'app/common/logs/models';
-import { LuceneParametersSnapshotService } from '../services';
+import { QueryParametersSnapshotService } from '../services';
 
 @Component({
     selector: 'log',
@@ -23,7 +23,7 @@ export class LogComponent {
 
     constructor(
         private logService: LogService,
-        private luceneParamertersSnapshotService: LuceneParametersSnapshotService
+        private queryParamertersSnapshotService: QueryParametersSnapshotService
     ) {
     }
 
@@ -60,9 +60,9 @@ export class LogComponent {
 
         this.logService.filter(
             {
-                appName: this.luceneParamertersSnapshotService.appNames,
-                keyword: this.luceneParamertersSnapshotService.keyword,
-                logLevel: this.luceneParamertersSnapshotService.level,
+                appName: this.queryParamertersSnapshotService.appNames,
+                keyword: this.queryParamertersSnapshotService.keyword,
+                logLevel: this.queryParamertersSnapshotService.level,
                 from: this.log.logTime,
                 groupDepth: this.log.groupDepth + 1
             }
