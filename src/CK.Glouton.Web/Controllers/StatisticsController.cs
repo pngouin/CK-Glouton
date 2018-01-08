@@ -30,13 +30,13 @@ namespace CK.Glouton.Web.Controllers
         }
 
         [HttpGet("log/total")]
-        public int? AllLogCount() => _luceneStatistics.AllLogCount();
+        public int AllLogCount() => _luceneStatistics.AllLogCount();
 
         [HttpGet("appname/total")]
-        public int? AppNameCount() => _luceneStatistics.AppNameCount;
+        public int AppNameCount() => _luceneStatistics.AppNameCount;
 
         [HttpGet("exception/total")]
-        public int? AllException() => _luceneStatistics.AllExceptionCount;
+        public int AllException() => _luceneStatistics.AllExceptionCount;
 
         [HttpGet("appnames")]
         public IEnumerable<string> AppNames() => _luceneStatistics.GetAppNames;
