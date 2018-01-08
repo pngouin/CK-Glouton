@@ -22,7 +22,7 @@ export class CriticitySelectorComponent {
         private store: Store<IAppState>,
         private effectDispatcher: EffectDispatcher
     ) {
-        this._criticityLevel$ = this.store.select(s => s.luceneParameters.level);
+        this._criticityLevel$ = this.store.select(s => s.logsParameters.level);
         this._subscription = this._criticityLevel$.subscribe(l => this._criticityLevel = l);
     }
 

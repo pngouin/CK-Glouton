@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { IAppState } from 'app/app.state';
 import { MenuItem } from 'primeng/primeng';
 import { ILogViewModel } from 'app/common/logs/models';
-import { LogService } from 'app/_services';
+import { LogService, QueryParametersSnapshotService } from 'app/_services';
 import { EffectDispatcher } from '@ck/rx';
 import { ITimeSpanNavigatorState } from 'app/modules/timeSpanNavigator/state/timeSpanNavigator.state';
 
@@ -32,11 +32,12 @@ export class LogViewerComponent {
     constructor(
         private logService: LogService,
         private store: Store<IAppState>,
+        private queryParamertersSnapshotService: QueryParametersSnapshotService
     ) {
         this._subscriptions = [];
         this._loading = false;
-        this._appNames$ = this.store.select(s => s.luceneParameters.appNames);
-        this._level$ = this.store.select(s => s.luceneParameters.level);
+        this._appNames$ = this.store.select(s => s.logsParameters.appNames);
+        this._level$ = this.store.select(s => s.logsParameters.level);
         this._dateRange$ = this.store.select( s => s.timeSpanNavigator);
         this._subscriptions.push(this._appNames$.subscribe(a => this._appNames = a));
         this._subscriptions.push(this._level$.subscribe(l => this._level = l));
@@ -46,6 +47,12 @@ export class LogViewerComponent {
     public getLogs(query: string): void {
         this._loading = true;
         this._logs = null;
+
+        this.queryParamertersSnapshotService.keyword = query;
+        this.queryParamertersSnapshotService.appNames = this._appNames;
+        this.queryParamertersSnapshotService.level = this._level;
+        this.queryParamertersSnapshotService.dateRange = this._dateRange;
+
         this.logService
             .filter(
                 {
@@ -59,8 +66,7 @@ export class LogViewerComponent {
             });
     }
 
-    public getMarginLeft (log : ILogViewModel) : number
-    {
+    public getMarginLeft (log : ILogViewModel): number {
         return log.groupDepth * 8;
     }
 }

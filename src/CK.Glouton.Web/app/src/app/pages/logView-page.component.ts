@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { ITimeSpanNavigatorSettings, Scale } from 'app/modules/timeSpanNavigator/models';
-import { LogViewerComponent } from 'app/modules/lucene/components';
+import { LogViewerComponent } from 'app/modules/logs/components';
 
 @Component({
   selector: 'home',

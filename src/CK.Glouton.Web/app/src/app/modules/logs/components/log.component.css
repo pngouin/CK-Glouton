@@ -1,0 +1,7 @@
+.card {
+    padding: 5px;
+    background-color: white;
+    word-break: break-all;
+    margin: 0;
+    border-bottom: 1px solid gray;
+}
