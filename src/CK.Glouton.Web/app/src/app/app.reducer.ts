@@ -1,7 +1,7 @@
 import { ActionReducer } from '@ngrx/store';
 
 import timeSpanNavigatorReducer from './modules/timeSpanNavigator/state/timeSpanNavigator.reducer';
-import luceneParametersReducer from './modules/lucene/state/lucenePreference.reducer';
+import logsParametersReducer from './modules/logs/state/logsPreference.reducer';
 
 /**
  * The compose function is one of our most handy tools. In basic terms, you give
@@ -39,7 +39,7 @@ import { combineReducers } from '@ngrx/store';
  */
 const reducers: any = {
     timeSpanNavigator: timeSpanNavigatorReducer,
-    luceneParameters: luceneParametersReducer
+    logsParameters: logsParametersReducer
 };
 
 const developmentReducer: ActionReducer<any> = compose(storeFreeze, combineReducers)(reducers);

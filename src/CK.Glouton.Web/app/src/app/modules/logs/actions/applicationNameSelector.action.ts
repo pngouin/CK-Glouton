@@ -1,6 +1,6 @@
 import { Action, Store } from '@ngrx/store';
 import { ActionHandler, EffectHandler, IActionHandler, IEffectsHandler } from '@ck/rx';
-import { ILucenePreferenceState } from '../state/lucenePreference.state';
+import { ILogsPreferenceState } from '../state/logsPreference.state';
 import { IAppState } from 'app/app.state';
 
 export class SubmitAppNamesEffect implements Action {
@@ -23,7 +23,7 @@ export class SubmitAppNamesEffectHandler implements IEffectsHandler {
         if(appNames === null || appNames === undefined) { throw new Error('Params cannot be null!'); }
 
         let sAppNames: string[];
-        this.store.select(s => s.luceneParameters.appNames).subscribe(a => sAppNames = a);
+        this.store.select(s => s.logsParameters.appNames).subscribe(a => sAppNames = a);
 
         if(appNames !== sAppNames) { return new SetAppNamesMutation(appNames); }
     }
@@ -38,7 +38,7 @@ export class SetAppNamesMutation implements Action {
 }
 @ActionHandler(SetAppNamesMutation)
 export class SetAppNamesMutationHandler implements IActionHandler {
-    public apply(state: ILucenePreferenceState, action: SetAppNamesMutation): ILucenePreferenceState {
+    public apply(state: ILogsPreferenceState, action: SetAppNamesMutation): ILogsPreferenceState {
         return {
             ...state,
             appNames: action.payload

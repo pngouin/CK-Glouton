@@ -45,6 +45,7 @@ export class LogService {
         params = this.appendStringArrayIfDefined(params, 'fields', searchParameters.fields);
         params = this.appendStringIfDefined(params, 'keyword', searchParameters.keyword);
         params = this.appendStringArrayIfDefined(params, 'logLevel', searchParameters.logLevel);
+        params = this.appendNumberIfDefined(params, 'groupDepth', searchParameters.groupDepth);
 
         return this.httpClient
             .get<ILogViewModel[]>(`${this.logEndpoint}/filter`, {params: params});
@@ -75,9 +76,16 @@ export class LogService {
         return params;
     }
 
+    private appendNumberIfDefined( params: HttpParams, key: string, value: number ): HttpParams {
+        if(key === undefined || key === null) { return params; }
+        if(value === undefined || value === null) { return params; }
+        return params.append(key, value.toString());
+    }
+
     private appendDateIfDefined( params: HttpParams, key: string, value: Date ): HttpParams {
         if(key === undefined || key === null) { return params; }
         if(value === undefined || value === null) { return params; }
+        if(typeof value === 'string') { return params.append(key, value); }
         return params.append(key, value.toISOString());
     }
 }

@@ -1,6 +1,6 @@
 import { Action, Store } from '@ngrx/store';
 import { ActionHandler, EffectHandler, IActionHandler, IEffectsHandler } from '@ck/rx';
-import { ILucenePreferenceState } from '../state/lucenePreference.state';
+import { ILogsPreferenceState } from '../state/logsPreference.state';
 import { IAppState } from 'app/app.state';
 
 export class SubmitCriticityEffect implements Action {
@@ -23,7 +23,7 @@ export class SubmitCriticityEffectHandler implements IEffectsHandler {
         if(criticityLevel === null || criticityLevel === undefined) { throw new Error('Param cannot be null!'); }
 
         let sCriticityLevel: string[];
-        this.store.select(s => s.luceneParameters.level).subscribe(l => sCriticityLevel = l);
+        this.store.select(s => s.logsParameters.level).subscribe(l => sCriticityLevel = l);
 
         if(sCriticityLevel !== criticityLevel) { return new SetCriticityMutation(criticityLevel); }
     }
@@ -38,7 +38,7 @@ export class SetCriticityMutation implements Action {
 }
 @ActionHandler(SetCriticityMutation)
 export class SetCriticityMutationHandler implements IActionHandler {
-    public apply(state: ILucenePreferenceState, action: SetCriticityMutation): ILucenePreferenceState {
+    public apply(state: ILogsPreferenceState, action: SetCriticityMutation): ILogsPreferenceState {
         return {
             ...state,
             level: action.payload

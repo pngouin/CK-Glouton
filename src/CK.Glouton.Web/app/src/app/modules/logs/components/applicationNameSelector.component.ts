@@ -26,7 +26,7 @@ export class ApplicationNameSelectorComponent implements OnInit {
         private effectDispatcher: EffectDispatcher,
         private store: Store<IAppState>
     ) {
-        this._applicationNames$ = this.store.select(s => s.luceneParameters.appNames);
+        this._applicationNames$ = this.store.select(s => s.logsParameters.appNames);
         this._subscription = this._applicationNames$.subscribe(a => this._selected = a);
     }
 

@@ -1,5 +1,5 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Lucene;
 using CK.Glouton.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,6 +22,7 @@ namespace CK.Glouton.Web
             services.AddOptions();
             services.Configure<LuceneConfiguration>( Configuration.GetSection( "Lucene" ) );
             services.AddSingleton<ILuceneSearcherService, LuceneSearcherService>();
+            services.AddSingleton<ILuceneStatisticsService, LuceneStatisticsService>();
             services.AddMvc();
         }
 
