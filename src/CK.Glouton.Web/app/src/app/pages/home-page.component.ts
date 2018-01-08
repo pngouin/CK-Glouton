@@ -5,7 +5,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
   template: `
     <h3>Home Page</h3>
     <div>
-      This is our home page!
+      <statistics></statistics>
     </div>
   `
 })

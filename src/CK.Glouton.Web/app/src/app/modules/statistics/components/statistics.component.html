@@ -1,0 +1,3 @@
+<div *ngIf="statisticsData.exceptionCountByAppName">
+    <p-chart type="pie" [data]="constructDataPieChart(statisticsData.exceptionCountByAppName)"></p-chart>
+</div>
