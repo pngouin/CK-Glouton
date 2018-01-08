@@ -64,6 +64,7 @@ export class LogComponent {
                 keyword: this.queryParamertersSnapshotService.keyword,
                 logLevel: this.queryParamertersSnapshotService.level,
                 from: this.log.logTime,
+                to: this.queryParamertersSnapshotService.dateRange.to,
                 groupDepth: this.log.groupDepth + 1
             }
         ).subscribe(l => {
