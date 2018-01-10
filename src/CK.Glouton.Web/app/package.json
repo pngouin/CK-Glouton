@@ -50,6 +50,7 @@
     "node-sass": "^4.5.1",
     "to-string-loader": "^1.1.5",
     "typescript": "~2.3.0",
+    "chart.js": "~2.1.0",
     "webpack": "~2.5.0",
     "webpack-dev-server": "~2.5.0",
     "webpack-merge": "~3.0.0",
