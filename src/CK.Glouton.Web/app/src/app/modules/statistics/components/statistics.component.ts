@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StatisticsService } from 'app/_services';
 import { StatisticsData } from 'app/common/logs/models';
+import * as palette from './../../../common/js/palette.js';
 
 @Component({
     selector: 'statistics',
@@ -10,6 +11,10 @@ import { StatisticsData } from 'app/common/logs/models';
 
 export class StatisticsComponent implements OnInit {
     statisticsData : StatisticsData;
+
+    dataChartLog : any;
+    dataChartException : any;
+
     constructor(private statisticService: StatisticsService) { 
         this.statisticsData = new StatisticsData();
     }
@@ -30,6 +35,7 @@ export class StatisticsComponent implements OnInit {
             datasets : [
                 {
                     data: value,
+                    backgroundColor: palette.palette('tol-rainbow', keys.length, null, null).map(hex => '#' + hex)
                 }]
         };
 
@@ -41,7 +47,13 @@ export class StatisticsComponent implements OnInit {
         this.statisticService.getAppNames().subscribe(d => this.statisticsData.appNames = d);
         this.statisticService.getTotalExceptionCount().subscribe(d => this.statisticsData.totalExceptionCount = d);
         this.statisticService.getTotalLogCount().subscribe(d => this.statisticsData.totalLogCount = d);
-        this.statisticService.getExceptionCountByAppName().subscribe(d => this.statisticsData.exceptionCountByAppName = d);
-        this.statisticService.getLogCountByAppName().subscribe(d => this.statisticsData.logCountByAppName = d);
+        this.statisticService.getExceptionCountByAppName().subscribe(d => {
+            this.statisticsData.exceptionCountByAppName = d;
+            this.dataChartException = this.constructDataPieChart(this.statisticsData.exceptionCountByAppName);
+        });
+        this.statisticService.getLogCountByAppName().subscribe(d => {
+            this.statisticsData.logCountByAppName = d;
+            this.dataChartLog = this.constructDataPieChart(this.statisticsData.logCountByAppName); 
+        } );
      }
 }
