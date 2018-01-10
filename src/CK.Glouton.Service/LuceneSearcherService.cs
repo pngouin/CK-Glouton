@@ -1,5 +1,6 @@
 ﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Lucene;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -35,11 +36,11 @@ namespace CK.Glouton.Service
 
             if( query == "*" )
             {
-                configuration.SearchAll( LuceneWantAll.Log );
+                configuration.SearchAll( ELuceneWantAll.Log );
                 return _searcherManager.GetSearcher( appNames ).Search( configuration );
             }
 
-            configuration.SearchMethod = SearchMethod.FullText;
+            configuration.ESearchMethod = ESearchMethod.FullText;
             return _searcherManager.GetSearcher( appNames ).Search( configuration );
         }
 
@@ -51,7 +52,7 @@ namespace CK.Glouton.Service
                 Fields = new[] { "LogLevel" },
             };
 
-            configuration.SearchAll( LuceneWantAll.Log );
+            configuration.SearchAll( ELuceneWantAll.Log );
 
             return _searcherManager.GetSearcher( appNames ).Search( configuration );
         }
@@ -85,7 +86,7 @@ namespace CK.Glouton.Service
                 configuration.Fields = new[] { "LogLevel" };
 
             var logs = _searcherManager.GetSearcher( appNames )?.Search( configuration ) ?? new List<ILogViewModel>();
-            return groupDepth == 0 ? logs : logs.TakeWhileInclusive( l => l.LogType == ELogType.CloseGroup ).ToList();
+            return groupDepth == 0 ? logs : logs.TakeWhileInclusive( l => l.LogType != ELogType.CloseGroup ).ToList();
         }
 
         public List<string> GetMonitorIdList()

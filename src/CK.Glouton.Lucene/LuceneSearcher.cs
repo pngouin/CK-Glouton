@@ -8,7 +8,6 @@ using Lucene.Net.Search;
 using Lucene.Net.Util;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace CK.Glouton.Lucene
@@ -21,28 +20,27 @@ namespace CK.Glouton.Lucene
         /// <summary>
         /// Basic Searcher in a Lucene index for CK.Monitoring log.
         /// </summary>
-        /// <param name="luceneConfiguration"></param>
-        /// <param name="fields"></param>
+        /// <param name="multiReader"></param>
         public LuceneSearcher( MultiReader multiReader )
         {
             _indexSearcher = new IndexSearcher( multiReader );
             _sort = new Sort(
                 SortField.FIELD_SCORE,
-                new SortField(LogField.LOG_TIME, SortFieldType.STRING));
+                new SortField( LogField.LOG_TIME, SortFieldType.STRING ) );
         }
 
         /// <summary>
         /// Search into Lucene index.
         /// If the <see cref="LuceneSearcherConfiguration"/> is not correct return null.
         /// </summary>
-        /// <param name="searchQuery"></param>
+        /// <param name="searchConfiguration"></param>
         /// <returns></returns>
         public List<ILogViewModel> Search( LuceneSearcherConfiguration searchConfiguration )
         {
             if( !CheckSearchConfiguration( searchConfiguration ) )
                 return null;
 
-            if( searchConfiguration.SearchMethod == SearchMethod.FullText )
+            if( searchConfiguration.ESearchMethod == ESearchMethod.FullText )
             {
                 return Search( searchConfiguration, new MultiFieldQueryParser( LuceneVersion.LUCENE_48,
                     searchConfiguration.Fields,
@@ -52,21 +50,29 @@ namespace CK.Glouton.Lucene
             if( searchConfiguration.WantAll )
                 return Search( searchConfiguration, GetAll( searchConfiguration.All ) );
 
-            return CreateLogsResult( _indexSearcher?.Search(  CreateQuery( searchConfiguration ) , searchConfiguration.MaxResult, _sort ) );
+            return CreateLogsResult( _indexSearcher?.Search( CreateQuery( searchConfiguration ), searchConfiguration.MaxResult, _sort ) );
         }
 
-        private Query GetAll( LuceneWantAll all )
+        public int? SearchCount(LuceneSearcherConfiguration luceneSearcherConfiguration)
+        {
+            if (!CheckSearchConfiguration(luceneSearcherConfiguration))
+                return -1;
+
+            return _indexSearcher?.Search(CreateQuery(luceneSearcherConfiguration), luceneSearcherConfiguration.MaxResult).TotalHits;
+        }
+
+        private Query GetAll( ELuceneWantAll all )
         {
             Query query = null;
             switch( all )
             {
-                case LuceneWantAll.Exception:
+                case ELuceneWantAll.Exception:
                     query = new QueryParser( LuceneVersion.LUCENE_48,
                                                     LogField.LOG_LEVEL,
                                                     new StandardAnalyzer( LuceneVersion.LUCENE_48 ) )
                                                         .Parse( "Fatal" );
                     break;
-                case LuceneWantAll.Log:
+                case ELuceneWantAll.Log:
                     query = new WildcardQuery( new Term( LogField.LOG_LEVEL, "*" ) );
                     break;
             }
@@ -82,17 +88,21 @@ namespace CK.Glouton.Lucene
         {
             var bQuery = new BooleanQuery();
 
-            if( configuration.MonitorId != null ) bQuery.Add( CreateMonitorIdQuery( configuration ), Occur.MUST );
-            if( configuration.DateEnd.Year != 1 && configuration.DateStart.Year != 1 ) bQuery.Add( CreateTimeQuery( configuration ), Occur.MUST );
-            if( configuration.LogLevel != null ) bQuery.Add( CreateLogLevelQuery( configuration ), Occur.MUST );
-            if (configuration.GroupDepth != null) bQuery.Add( CreateGroupDepthQuery( configuration ), Occur.MUST);
+            if( configuration.MonitorId != null )
+                bQuery.Add( CreateMonitorIdQuery( configuration ), Occur.MUST );
+            if( configuration.DateEnd.Year != 1 && configuration.DateStart.Year != 1 )
+                bQuery.Add( CreateTimeQuery( configuration ), Occur.MUST );
+            if( configuration.LogLevel != null )
+                bQuery.Add( CreateLogLevelQuery( configuration ), Occur.MUST );
+            if( configuration.GroupDepth != null )
+                bQuery.Add( CreateGroupDepthQuery( configuration ), Occur.MUST );
 
             bQuery.Add( CreateFieldQuery( configuration ), Occur.MUST );
 
             return bQuery;
         }
 
-        private Query CreateGroupDepthQuery(ILuceneSearcherConfiguration configuration)
+        private Query CreateGroupDepthQuery( ILuceneSearcherConfiguration configuration )
         {
             return new WildcardQuery( new Term( LogField.GROUP_DEPTH, configuration.GroupDepth.ToString() ) );
         }
@@ -129,7 +139,7 @@ namespace CK.Glouton.Lucene
         {
             var bFieldQuery = new BooleanQuery();
 
-            if (configuration.Fields == null || configuration.Fields.Length == 0)
+            if( configuration.Fields == null || configuration.Fields.Length == 0 )
             {
                 bFieldQuery.Add( new WildcardQuery( new Term( LogField.LOG_LEVEL, "*" ) ), Occur.SHOULD );
                 return bFieldQuery;
@@ -141,9 +151,7 @@ namespace CK.Glouton.Lucene
                     bFieldQuery.Add( new QueryParser( LuceneVersion.LUCENE_48, field, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ).Parse( configuration.Query ), Occur.SHOULD );
                 else
                 {
-                    if( configuration.Query == null )
-                        configuration.Query = "*";
-                    bFieldQuery.Add( new WildcardQuery( new Term( field, configuration.Query ) ), Occur.SHOULD );
+                    bFieldQuery.Add( new WildcardQuery( new Term( field, configuration.Query ?? "*") ), Occur.SHOULD );
                 }
             }
             return bFieldQuery;
@@ -174,7 +182,7 @@ namespace CK.Glouton.Lucene
             if( configuration == null )
                 throw new ArgumentNullException( nameof( configuration ) );
 
-            if(  configuration.MaxResult == 0 )
+            if( configuration.MaxResult == 0 )
                 throw new ArgumentException( nameof( configuration ) );
             return true;
         }
@@ -189,7 +197,7 @@ namespace CK.Glouton.Lucene
             var monitorIds = new HashSet<string>();
             foreach( var doc in hits.ScoreDocs )
             {
-                var monitorId = GetDocument( doc ).Get(LogField.MONITOR_ID);
+                var monitorId = GetDocument( doc ).Get( LogField.MONITOR_ID );
                 monitorIds.Add( monitorId );
             }
 

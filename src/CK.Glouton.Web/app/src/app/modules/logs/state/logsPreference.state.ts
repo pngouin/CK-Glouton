@@ -1,4 +1,4 @@
-export interface ILucenePreferenceState {
+export interface ILogsPreferenceState {
     level: string[];
     appNames: string[];
 }

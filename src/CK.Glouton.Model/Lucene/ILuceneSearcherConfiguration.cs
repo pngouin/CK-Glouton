@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CK.Glouton.Model.Logs
+namespace CK.Glouton.Model.Lucene
 {
     public interface ILuceneSearcherConfiguration
     {
@@ -14,20 +12,7 @@ namespace CK.Glouton.Model.Logs
         string[] Fields { get; set; }
         string[] LogLevel { get; set; }
         string Query { get; set; }
-        SearchMethod SearchMethod { get; set; }
-        ILuceneSearcherConfiguration SearchAll(LuceneWantAll wantAll);
-
-    }
-
-    public enum LuceneWantAll
-    {
-        Log,
-        Exception
-    }
-
-    public enum SearchMethod
-    {
-        WithConfigurationObject,
-        FullText
+        ESearchMethod ESearchMethod { get; set; }
+        ILuceneSearcherConfiguration SearchAll( ELuceneWantAll wantAll );
     }
 }

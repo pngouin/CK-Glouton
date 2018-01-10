@@ -1,0 +1,23 @@
+<div class="ui-g">
+    <div class="ui-g-1">
+        <div *ngIf="isOpenGroup(log)">
+            <button pButton type="button" (click)="onLogClick(log)" class="ui-button-icon-only">
+                <i class="fa fa-angle-double-right"></i>
+            </button>
+        </div>
+    </div>
+    <div (click)="onClick()" class="ui-g-11">
+        <p [style.margin-left.px]="marginLeft(log)" class="card">
+            <b [style.color]="getColor(log)" >{{log.logLevel}}</b> |   {{log.logTime}}  |  {{getText()}}
+        </p>
+    </div>
+</div>
+<div *ngIf="log.children">
+    <div *ngFor="let log of log.children">
+        <log [data]="log"></log>
+    </div>
+</div>
+
+<p-dialog header="{{log.logTime}}" [(visible)]="display">
+    <logComplex [data]="log"></logComplex>
+</p-dialog>

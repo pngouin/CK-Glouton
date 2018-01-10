@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using CK.Glouton.Model.Lucene;
 
 namespace CK.Glouton.Tests
 {
@@ -54,7 +55,7 @@ namespace CK.Glouton.Tests
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 Fields = new[] { "LogLevel", "Text" },
-                SearchMethod = SearchMethod.FullText,
+                ESearchMethod = ESearchMethod.FullText,
                 MaxResult = 10,
                 Query = "Text:\"Hello world\""
             };
@@ -89,7 +90,7 @@ namespace CK.Glouton.Tests
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 Fields = new[] { "Text" },
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 Query = "\"Hello world\""
             };
@@ -133,7 +134,7 @@ namespace CK.Glouton.Tests
 
 
 
-            configuration.SearchAll( LuceneWantAll.Log );
+            configuration.SearchAll( ELuceneWantAll.Log );
             result = searcher.Search( configuration );
             result.Count.Should().Be( 8 ); // TODO: If add log to the index change the number or get an alternative technique.
 
@@ -143,7 +144,7 @@ namespace CK.Glouton.Tests
             configuration = new LuceneSearcherConfiguration
             {
                 Fields = new string[ 0 ],
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 DateStart = new DateTime( 2, 01, 01 ),
                 DateEnd = new DateTime( 9999, 01, 01 )
@@ -156,7 +157,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 DateStart = new DateTime( 2, 01, 01 ),
                 DateEnd = new DateTime( 3, 01, 01 )
@@ -176,7 +177,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 MonitorId = Guid.NewGuid().ToString()
             };
@@ -188,7 +189,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 LogLevel = new string[] { "Fatal" }
             };
@@ -200,19 +201,19 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 GroupDepth = 1
             };
             result = searcher.Search(configuration);
-            result.Count.Should().Be(2);
+            result.All(l => l.GroupDepth == 1).Should().BeTrue();
 
             //
             // Search all document with a LogLevel and a monitorId
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 Fields = new string[] { LogField.MONITOR_ID }
             };
@@ -239,7 +240,7 @@ namespace CK.Glouton.Tests
                 MaxResult = 20
             };
 
-            configuration.SearchAll(LuceneWantAll.Log);
+            configuration.SearchAll(ELuceneWantAll.Log);
             var result = searcher.Search(configuration);
             result.SequenceEqual(result.OrderBy(l => l.LogTime)).Should().BeTrue();
         }
@@ -248,14 +249,16 @@ namespace CK.Glouton.Tests
         public void luceneSearcherManager_return_good_appName()
         {
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
-            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + Guid.NewGuid().ToString();
+            var fakeName = Guid.NewGuid().ToString();
+            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + fakeName;
 
             Directory.CreateDirectory( directoryPath );
 
             var appName = searcherManager.AppName;
             appName.Count.Should().NotBe(Directory.GetDirectories(LuceneSearcherConfiguration.Path).Length);
             appName.Contains(LuceneSearcherConfiguration.Directory).Should().BeTrue();
-
+            appName.Any(a => a == fakeName).Should().BeFalse();
+            
             Directory.Delete( directoryPath );
         }
 
@@ -283,7 +286,7 @@ namespace CK.Glouton.Tests
             {
                 MaxResult = 10,
             };
-            configuration.SearchAll( LuceneWantAll.Exception );
+            configuration.SearchAll( ELuceneWantAll.Exception );
 
             var result = searcher.Search( configuration );
             result.Should().NotBeNull();
@@ -302,6 +305,20 @@ namespace CK.Glouton.Tests
                 exception.Message.Should().NotBeNullOrEmpty();
                 exception.StackTrace.Should().NotBeNullOrEmpty();
             }
+        }
+
+        [Test]
+        public void lucene_statistic_good_value() //TODO: Get a good name...
+        {
+            LuceneStatistics luceneStatistics = new LuceneStatistics(LuceneSearcherConfiguration);
+            luceneStatistics.AllExceptionCount.Should().BeGreaterThan(0);
+            luceneStatistics.AllLogCount.Should().BeGreaterThan(0);
+            luceneStatistics.AppNameCount.Should().NotBe(-1);
+            luceneStatistics.GetAppNames.Count().Should().BeGreaterThan(0);
+            luceneStatistics.LogInAppNameCount("badappaname").Should().BeLessThan(0);
+            luceneStatistics.LogInAppNameCount("badappaname").Should().Be(-1);
+            luceneStatistics.ExceptionInAppNameCount("badappaname").Should().BeLessThan(0);
+            luceneStatistics.ExceptionInAppNameCount("badappaname").Should().Be(-1);
         }
     }
 }
