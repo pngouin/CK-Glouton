@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StatisticsService } from 'app/_services';
-import { StatisticsData } from 'app/common/logs/models';
 import * as palette from './../../../common/js/palette.js';
+import { StatisticsData, IChartData } from 'app/common/statistics/models/statistics.model';
 
 @Component({
     selector: 'statistics',
@@ -10,34 +10,41 @@ import * as palette from './../../../common/js/palette.js';
 })
 
 export class StatisticsComponent implements OnInit {
-    statisticsData : StatisticsData;
+    statisticsData: StatisticsData;
 
-    dataChartLog : any;
-    dataChartException : any;
+    dataChart: IChartData[];
 
-    constructor(private statisticService: StatisticsService) { 
+    constructor(private statisticService: StatisticsService) {
         this.statisticsData = new StatisticsData();
+        this.dataChart = new Array<IChartData>();
     }
 
-    constructDataPieChart ( data : { [index: string]: number } ) : any {
-        let chartData : any;
-        let keys : string[] = [];
-        let value : number[] = [];
-        
-        for (var key in data)
-        {
+    constructDataPieChart(data: { [index: string]: number }, legendText = ""): IChartData {
+        let keys: string[] = [];
+        let value: number[] = [];
+
+        for (var key in data) {
             keys.push(key);
             value.push(data[key]);
         }
 
-        chartData = {
-            labels: keys,
-            datasets : [
-                {
-                    data: value,
-                    backgroundColor: palette.palette('tol-rainbow', keys.length, null, null).map(hex => '#' + hex)
-                }]
-        };
+        let chartData: IChartData = {
+            data: {
+                labels: keys,
+                datasets: [
+                    {
+                        data: value,
+                        backgroundColor: palette.palette('tol-rainbow', keys.length, null, null).map(hex => '#' + hex)
+                    }]
+            }
+        }
+
+        chartData.option = {
+            title: {
+                display: true,
+                text: legendText
+            }
+        }
 
         return chartData;
     }
@@ -49,11 +56,11 @@ export class StatisticsComponent implements OnInit {
         this.statisticService.getTotalLogCount().subscribe(d => this.statisticsData.totalLogCount = d);
         this.statisticService.getExceptionCountByAppName().subscribe(d => {
             this.statisticsData.exceptionCountByAppName = d;
-            this.dataChartException = this.constructDataPieChart(this.statisticsData.exceptionCountByAppName);
+            this.dataChart.push(this.constructDataPieChart(this.statisticsData.exceptionCountByAppName, "Exception by AppName"));
         });
         this.statisticService.getLogCountByAppName().subscribe(d => {
             this.statisticsData.logCountByAppName = d;
-            this.dataChartLog = this.constructDataPieChart(this.statisticsData.logCountByAppName); 
-        } );
-     }
+            this.dataChart.push(this.constructDataPieChart(this.statisticsData.logCountByAppName, "Log by AppName"));
+        });
+    }
 }
