@@ -34,6 +34,11 @@ export interface IChartData {
             padding? : number,
             fontSize? : number,
             text? : string
+        },
+        legend? : {
+            display? : boolean,
+            position? : string, 
+            reverse? : boolean
         }
     }
 }
