@@ -1,5 +1,20 @@
-<div class="ui-g" *ngIf="dataChart.length > 0">
-    <div class="ui-g-6" *ngFor="let chart of dataChart">
-        <p-chart type="pie" [data]="chart.data" [options]="chart.option"></p-chart>
+<div class="main">
+    <h1>Welcome to your Glouton server statistics :</h1>
+
+    <div class="ui-g" *ngIf="dataChart.length > 0">
+        <div class="ui-g-6" *ngFor="let chart of dataChart">
+            <div class="card">
+                <h1>{{chart.option.title.text}}</h1>
+                <p-chart type="doughnut" [data]="chart.data" [options]="chart.option"></p-chart>
+            </div>
+        </div>
+    </div>
+    <div class="data">
+        <div *ngIf="statisticsData.totalLogCount" class="ui-g">
+            <strong> Total log indexed </strong> : {{statisticsData.totalLogCount}}</div>
+        <div *ngIf="statisticsData.totalExceptionCount" class="ui-g">
+            <strong>Total exception indexed </strong>: {{statisticsData.totalExceptionCount}}</div>
+        <div *ngIf="statisticsData.appNames" class="ui-g">
+            <strong>Total app index </strong>: {{statisticsData.appNames.length}}</div>
     </div>
 </div>

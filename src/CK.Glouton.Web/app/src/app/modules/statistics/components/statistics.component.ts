@@ -41,7 +41,7 @@ export class StatisticsComponent implements OnInit {
 
         chartData.option = {
             title: {
-                display: true,
+                display: false,
                 text: legendText
             }
         }
