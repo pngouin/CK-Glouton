@@ -8,11 +8,13 @@
     <PackageReference Include="CK.Monitoring" Version="8.2.0" />
     <PackageReference Include="FluentAssertions" Version="4.19.3" />
     <PackageReference Include="NUnit" Version="2.6.4" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CK.Glouton.Handler.Tcp\CK.Glouton.Handler.Tcp.csproj" />
     <ProjectReference Include="..\..\src\CK.Glouton.Server\CK.Glouton.Server.csproj" />
+    <ProjectReference Include="..\..\src\CK.Glouton.Service\CK.Glouton.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

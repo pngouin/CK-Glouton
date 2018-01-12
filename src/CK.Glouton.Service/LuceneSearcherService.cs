@@ -19,12 +19,19 @@ namespace CK.Glouton.Service
             _searcherManager = new LuceneSearcherManager( _configuration );
         }
 
+        public LuceneSearcherService ( LuceneConfiguration configuration)
+        {
+            _configuration = configuration;
+            _searcherManager = new LuceneSearcherManager(_configuration);
+        }
+
         public List<ILogViewModel> Search( string query, params string[] appNames )
         {
             var configuration = new LuceneSearcherConfiguration
             {
                 MaxResult = _configuration.MaxSearch,
                 Fields = new[] { "LogLevel", "Exception" },
+                Query = query,
             };
 
             if( query == "*" )
