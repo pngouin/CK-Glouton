@@ -5,12 +5,13 @@
         </p>
     </div>
     <div class="ui-g-1" *ngIf="isOpenGroup(log)">
-            <button pButton type="button" (click)="onLogClick(log)" class="ui-button-icon-only">
-                <i class="fa fa-angle-double-right"></i>
-            </button>
-        </div>
+        <button pButton type="button" (click)="onLogClick(log)" class="ui-button-icon-only">
+            <i *ngIf="!displayChildren" class="fa fa-angle-double-right"></i>
+            <i *ngIf="displayChildren" class="fa fa-angle-double-left"></i>
+        </button>
+    </div>
 </div>
-<div *ngIf="log.children">
+<div *ngIf="log.children && displayChildren">
     <div *ngFor="let log of log.children">
         <log [data]="log"></log>
     </div>
