@@ -38,7 +38,7 @@ namespace CK.Glouton.Server.Handlers
         /// <param name="receivedData"></param>
         public void OnGrandOutputEventInfo( ReceivedData receivedData )
         {
-            var version = Convert.ToInt32( receivedData.ServerClientSession.ClientData[ "LogEntryVersion" ] as string );
+            var version = Convert.ToInt32( receivedData.ServerClientSession.ClientData[ "LogEntryVersion" ] );
 
             _memoryStream.SetLength( 0 );
             _memoryStream.Write( receivedData.Data.ToArray(), 0, receivedData.Data.Count );
@@ -46,7 +46,7 @@ namespace CK.Glouton.Server.Handlers
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
             receivedData.ServerClientSession.ClientData.TryGetValue( "AppName", out var appName );
-            var clientData = receivedData.ServerClientSession.ClientData as IReadOnlyDictionary<string, string>;
+            var clientData = receivedData.ServerClientSession.ClientData;
 
             if( !_indexerDictionary.TryGetValue( appName, out var indexer ) )
             {
