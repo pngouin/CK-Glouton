@@ -1,1 +1,38 @@
-Works
+<p-dropdown [options]="fields" [(ngModel)]="selectedField" [style]="{'width':'150px'}" filter="true">
+    <ng-template let-field pTemplate="item">
+        <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+            <div style="font-size:14px;float:left;margin-top:4px">{{field.value}}</div>
+        </div>
+    </ng-template>
+</p-dropdown>
+<p-dropdown [options]="operations" [(ngModel)]="selectedOperation" [style]="{'width':'150px'}" filter="true">
+    <ng-template let-operation pTemplate="item">
+        <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+            <div style="font-size:14px;float:left;margin-top:4px">{{operation.value}}</div>
+        </div>
+    </ng-template>
+</p-dropdown>
+
+<div *ngIf="IsParticular()">
+    <div *ngIf="selectedField == 'LogType'">
+        <p-dropdown [options]="logtypes" [(ngModel)]="selectedOperation" [style]="{'width':'150px'}" filter="true">
+            <ng-template let-logType pTemplate="item">
+                <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                    <div style="font-size:14px;float:left;margin-top:4px">{{logType.value}}</div>
+                </div>
+            </ng-template>
+        </p-dropdown>
+    </div>
+    <div *ngIf="selectedField == 'LogLevel'">
+        <p-dropdown [options]="logLevels" [(ngModel)]="selectedOperation" [style]="{'width':'150px'}" filter="true">
+            <ng-template let-logLevel pTemplate="item">
+                <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                    <div style="font-size:14px;float:left;margin-top:4px">{{logLevel.value}}</div>
+                </div>
+            </ng-template>
+        </p-dropdown>
+    </div>
+</div>
+
+<p>Selected Car: {{selectedField||'none'}}</p>
+<p>Selected Car: {{selectedOperation||'none'}}</p>
