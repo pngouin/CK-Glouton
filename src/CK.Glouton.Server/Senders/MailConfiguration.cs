@@ -16,12 +16,12 @@ namespace CK.Glouton.Server.Senders
 
         public bool Validate()
         {
-            return  string.IsNullOrEmpty(Name) &&
-                    string.IsNullOrEmpty(Email) &&
-                    string.IsNullOrEmpty(SmtpUsername) &&
-                    string.IsNullOrEmpty(SmtpPassword) &&
-                    SmptPort != 0 &&
-                    string.IsNullOrEmpty(SmtpAdress);
+            return !( string.IsNullOrEmpty(Name) ||
+                    string.IsNullOrEmpty(Email) ||
+                    string.IsNullOrEmpty(SmtpUsername) ||
+                    string.IsNullOrEmpty(SmtpPassword) ||
+                    string.IsNullOrEmpty(SmtpAdress) ||
+                    SmptPort <= 0);
         }
     }
 }
