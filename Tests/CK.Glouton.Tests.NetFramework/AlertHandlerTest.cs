@@ -7,6 +7,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -22,45 +23,69 @@ namespace CK.Glouton.Tests
         [Test]
         public void alert_handler_do_not_crash()
         {
-            var sender = new TestAlertSender();
-
             Action openServer = () =>
             {
                 using( var server = TestHelper.DefaultMockServer() )
                 {
                     server.Should().NotBeNull();
-                    server.Open( new HandlersManagerConfiguration
-                    {
-                        GloutonHandlers =
-                        {
-                            new AlertHandlerConfiguration
-                            {
-                                Alerts = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> sender)>
-                                {
-                                    ( log => log.LogLevel == LogLevel.Fatal, new List<IAlertSender> { sender } )
-                                }
-                            }
-                        }
-                    } );
+                    server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration { Alerts = null } } } );
                 }
             };
 
             openServer.ShouldNotThrow();
         }
+
+        [Test]
+        public void sender_can_send_alerts()
+        {
+            using( var server = TestHelper.DefaultGloutonServer() )
+            {
+                var sender = new TestAlertSender();
+
+                server.Open( new HandlersManagerConfiguration
+                {
+                    GloutonHandlers =
+                    {
+                        new AlertHandlerConfiguration
+                        {
+                            Alerts = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>
+                            {
+                                ( log => (log.LogLevel & LogLevel.Fatal) == LogLevel.Fatal, new List<IAlertSender> { sender } ),
+                                ( log => log.Text?.Contains( "Send" ) ?? false, new List<IAlertSender> { sender } )
+                            }
+                        }
+                    }
+                } );
+
+                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
+                {
+                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
+                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
+
+                    activityMonitor.Info( "Hello world" );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    sender.Triggered.Should().BeFalse();
+
+                    activityMonitor.Fatal( "Fatal Error n°42" );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    sender.Triggered.Should().BeTrue();
+                    sender.Triggered = false;
+
+                    activityMonitor.Info( "aze Send rty" );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    sender.Triggered.Should().BeTrue();
+                }
+            }
+        }
     }
 
     internal class TestAlertSender : IAlertSender
     {
-        private readonly IActivityMonitor _activityMonitor;
-
-        public TestAlertSender()
-        {
-            _activityMonitor = new ActivityMonitor();
-        }
+        public bool Triggered { get; set; }
 
         public void Send( ILogEntry logEntry )
         {
-            _activityMonitor.Info( "Sent alert." );
+            Triggered = true;
         }
     }
 }

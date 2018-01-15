@@ -22,6 +22,8 @@ namespace CK.Glouton.Server.Handlers
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
             _alertHandlerConfiguration = alertHandlerConfiguration;
+            if( _alertHandlerConfiguration.Alerts == null )
+                _alertHandlerConfiguration.Alerts = new List<(Func<ILogEntry, bool>, IList<IAlertSender>)>();
         }
 
         public void OnGrandOutputEventInfo( ReceivedData receivedData )
@@ -34,15 +36,35 @@ namespace CK.Glouton.Server.Handlers
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
 
-            foreach( var (condition, senders) in _alertHandlerConfiguration.Alerts )
-            {
-                if( !condition( entry ) )
-                    continue;
+            List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)> faulty = null;
 
-                _activityMonitor.Info( "An alert has been sent" );
-                foreach( var sender in senders )
-                    sender.Send( entry );
+            foreach( var alert in _alertHandlerConfiguration.Alerts )
+            {
+                try
+                {
+                    if( !alert.condition( entry ) )
+                        continue;
+
+                    _activityMonitor.Info( "An alert has been sent" );
+                    foreach( var sender in alert.senders )
+                        sender.Send( entry );
+                }
+                catch( Exception exception )
+                {
+                    const string message = "Alert crashed.";
+                    ActivityMonitor.CriticalErrorCollector.Add( exception, message );
+                    _activityMonitor.Fatal( message, exception );
+                    if( faulty == null )
+                        faulty = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>();
+                    faulty.Add( alert );
+                }
             }
+
+            if( faulty == null )
+                return;
+
+            foreach( var faultyAlert in faulty )
+                _alertHandlerConfiguration.Alerts.Remove( faultyAlert );
         }
 
         public void OnTimer( IActivityMonitor activityMonitor, TimeSpan timerDuration )
