@@ -20,6 +20,7 @@ export class LogComponent {
     log : ILogViewModel;
 
     private display : boolean = false;
+    private displayChildren : boolean = false;
 
     constructor(
         private logService: LogService,
@@ -56,8 +57,8 @@ export class LogComponent {
     }
 
     onLogClick(log: ILogViewModel): void {
+        this.displayChildren = !this.displayChildren; 
         if(log.children !== undefined) { return; }
-
         this.logService.filter(
             {
                 appName: this.queryParamertersSnapshotService.appNames,

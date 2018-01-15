@@ -152,6 +152,9 @@ module.exports = {
         /facade(\\|\/)math/,
          path.resolve(__dirname, '../node_modules/@angular/core/src/facade/math.js')
       ),
+      new webpack.ProvidePlugin({
+        Chart: 'chart.js',
+      }),
   ],
   node: {
     global: true,

@@ -8,6 +8,7 @@
     "noEmit": true,
     "noEmitHelpers": true,
     "importHelpers": true,
+    "allowJs": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
