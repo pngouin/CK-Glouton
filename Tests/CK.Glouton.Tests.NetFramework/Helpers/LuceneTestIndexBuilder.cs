@@ -8,11 +8,14 @@ using System.IO;
 
 namespace CK.Glouton.Tests
 {
-    public class LuceneTestIndexBuilder
+    public static class LuceneTestIndexBuilder
     {
+
+        private static bool _initialized;
         public static void ConstructIndex()
         {
-            if (_initialized) return;
+            if( _initialized )
+                return;
 
             using( var server = TestHelper.DefaultGloutonServer() )
             {
@@ -35,10 +38,9 @@ namespace CK.Glouton.Tests
             _initialized = true;
         }
 
-        static bool _initialized;
 
         private const int LuceneMaxSearch = 10;
-        private static readonly string LucenePath = Path.Combine(TestHelper.GetTestLogDirectory(), "Lucene");
+        private static readonly string LucenePath = Path.Combine( TestHelper.GetTestLogDirectory(), "Lucene" );
 
         private static readonly LuceneGloutonHandlerConfiguration LuceneGloutonHandlerConfiguration = new LuceneGloutonHandlerConfiguration
         {
@@ -48,17 +50,22 @@ namespace CK.Glouton.Tests
             Directory = ""
         };
 
-        public static AggregateException ThrowAggregateException(int numberOfException)
+        public static AggregateException ThrowAggregateException( int numberOfException )
         {
-            List<Exception> exceptions = new List<Exception>();
-            for (int i = 0; i < numberOfException; i++)
+            var exceptions = new List<Exception>();
+            for( var i = 0 ; i < numberOfException ; i++ )
             {
                 try
-                { throw new Exception(); }
-                catch (Exception ex) { exceptions.Add(ex); }
+                {
+                    throw new Exception();
+                }
+                catch( Exception ex )
+                {
+                    exceptions.Add( ex );
+                }
             }
 
-            return new AggregateException("Aggregate exceptions list", exceptions);
+            return new AggregateException( "Aggregate exceptions list", exceptions );
         }
     }
 }

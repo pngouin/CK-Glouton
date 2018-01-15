@@ -1,17 +1,12 @@
-﻿using CK.Core;
-using CK.Glouton.Lucene;
+﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
-using CK.Glouton.Server;
-using CK.Glouton.Server.Handlers;
+using CK.Glouton.Model.Lucene;
 using FluentAssertions;
-using Lucene.Net.Index;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using CK.Glouton.Model.Lucene;
 
 namespace CK.Glouton.Tests
 {
@@ -29,13 +24,13 @@ namespace CK.Glouton.Tests
 #else
         [OneTimeSetUp]
 #endif
-        public void constructIndex()
+        public void ConstructIndex()
         {
             LuceneTestIndexBuilder.ConstructIndex();
         }
 
         private const int LuceneMaxSearch = 10;
-        private static readonly string LucenePath = Path.Combine(TestHelper.GetTestLogDirectory(), "Lucene");
+        private static readonly string LucenePath = Path.Combine( TestHelper.GetTestLogDirectory(), "Lucene" );
 
         private static readonly LuceneConfiguration LuceneSearcherConfiguration = new LuceneConfiguration
         {
@@ -205,8 +200,8 @@ namespace CK.Glouton.Tests
                 MaxResult = 10,
                 GroupDepth = 1
             };
-            result = searcher.Search(configuration);
-            result.All(l => l.GroupDepth == 1).Should().BeTrue();
+            result = searcher.Search( configuration );
+            result.All( l => l.GroupDepth == 1 ).Should().BeTrue();
 
             //
             // Search all document with a LogLevel and a monitorId
@@ -232,17 +227,17 @@ namespace CK.Glouton.Tests
         [Test]
         public void luceneSearcherManager_return_log_order_by_date()
         {
-            LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
-            var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
+            var searcher = searcherManager.GetSearcher( LuceneSearcherConfiguration.Directory );
 
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 MaxResult = 20
             };
 
-            configuration.SearchAll(ELuceneWantAll.Log);
-            var result = searcher.Search(configuration);
-            result.SequenceEqual(result.OrderBy(l => l.LogTime)).Should().BeTrue();
+            configuration.SearchAll( ELuceneWantAll.Log );
+            var result = searcher.Search( configuration );
+            result.SequenceEqual( result.OrderBy( l => l.LogTime ) ).Should().BeTrue();
         }
 
         [Test]
@@ -255,10 +250,10 @@ namespace CK.Glouton.Tests
             Directory.CreateDirectory( directoryPath );
 
             var appName = searcherManager.AppName;
-            appName.Count.Should().NotBe(Directory.GetDirectories(LuceneSearcherConfiguration.Path).Length);
-            appName.Contains(LuceneSearcherConfiguration.Directory).Should().BeTrue();
-            appName.Any(a => a == fakeName).Should().BeFalse();
-            
+            appName.Count.Should().NotBe( Directory.GetDirectories( LuceneSearcherConfiguration.Path ).Length );
+            appName.Contains( LuceneSearcherConfiguration.Directory ).Should().BeTrue();
+            appName.Any( a => a == fakeName ).Should().BeFalse();
+
             Directory.Delete( directoryPath );
         }
 
@@ -310,15 +305,15 @@ namespace CK.Glouton.Tests
         [Test]
         public void lucene_statistic_good_value() //TODO: Get a good name...
         {
-            LuceneStatistics luceneStatistics = new LuceneStatistics(LuceneSearcherConfiguration);
-            luceneStatistics.AllExceptionCount.Should().BeGreaterThan(0);
-            luceneStatistics.AllLogCount.Should().BeGreaterThan(0);
-            luceneStatistics.AppNameCount.Should().NotBe(-1);
-            luceneStatistics.GetAppNames.Count().Should().BeGreaterThan(0);
-            luceneStatistics.LogInAppNameCount("badappaname").Should().BeLessThan(0);
-            luceneStatistics.LogInAppNameCount("badappaname").Should().Be(-1);
-            luceneStatistics.ExceptionInAppNameCount("badappaname").Should().BeLessThan(0);
-            luceneStatistics.ExceptionInAppNameCount("badappaname").Should().Be(-1);
+            LuceneStatistics luceneStatistics = new LuceneStatistics( LuceneSearcherConfiguration );
+            luceneStatistics.AllExceptionCount.Should().BeGreaterThan( 0 );
+            luceneStatistics.AllLogCount.Should().BeGreaterThan( 0 );
+            luceneStatistics.AppNameCount.Should().NotBe( -1 );
+            luceneStatistics.GetAppNames.Count().Should().BeGreaterThan( 0 );
+            luceneStatistics.LogInAppNameCount( "badappaname" ).Should().BeLessThan( 0 );
+            luceneStatistics.LogInAppNameCount( "badappaname" ).Should().Be( -1 );
+            luceneStatistics.ExceptionInAppNameCount( "badappaname" ).Should().BeLessThan( 0 );
+            luceneStatistics.ExceptionInAppNameCount( "badappaname" ).Should().Be( -1 );
         }
     }
 }
