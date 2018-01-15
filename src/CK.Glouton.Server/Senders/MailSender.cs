@@ -12,12 +12,12 @@ namespace CK.Glouton.Server.Senders
     public class MailSender : IAlertSender
     {
         MailboxAddress _from;
-        List<MailboxAddress> _to;
+        List<MailboxAddress> _to = new List<MailboxAddress>();
         IMailConfiguration _configuration;
 
         public MailSender(IMailConfiguration configuration)
         {
-            if (configuration.Validate()) return;
+            if (configuration.Validate()) throw new ArgumentException(nameof(configuration));
             _configuration = configuration;
             _from = new MailboxAddress(_configuration.Name, _configuration.Email);
         }
@@ -48,7 +48,7 @@ namespace CK.Glouton.Server.Senders
             }
 
             message.Subject = $"CK-Glouton Automatic Alert.";
-            var body = new TextPart("plain")
+            message.Body = new TextPart("plain")
             {
                 Text = ConstructTextBody(log)
             };
@@ -59,7 +59,7 @@ namespace CK.Glouton.Server.Senders
         private string ConstructTextBody ( ILogEntry log )
         {
             var builder = new StringBuilder();
-            builder.Append("Hi,");
+            builder.AppendLine("Hi,");
             builder.AppendLine($"File : {log.FileName} : {log.LineNumber}");
             builder.AppendLine($"LogLevel : {log.LogLevel}");
             builder.AppendLine($"At time : {log.LogTime}");
@@ -81,6 +81,10 @@ namespace CK.Glouton.Server.Senders
                 builder.AppendLine("Exception: ");
                 log.Exception.ToStringBuilder(builder, "");
             }
+
+            builder.AppendLine();
+            builder.AppendLine("Automatic message of CK-Glouton");
+            builder.AppendLine("A problem ? https://github.com/ZooPin/ck-glouton/issues");
 
             return builder.ToString();
         }

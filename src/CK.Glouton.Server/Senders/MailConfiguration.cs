@@ -16,7 +16,7 @@ namespace CK.Glouton.Server.Senders
 
         public bool Validate()
         {
-            return !( string.IsNullOrEmpty(Name) ||
+            return ( string.IsNullOrEmpty(Name) ||
                     string.IsNullOrEmpty(Email) ||
                     string.IsNullOrEmpty(SmtpUsername) ||
                     string.IsNullOrEmpty(SmtpPassword) ||
