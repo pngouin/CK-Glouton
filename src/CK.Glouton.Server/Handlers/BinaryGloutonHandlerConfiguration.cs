@@ -1,5 +1,4 @@
-﻿
-using CK.Glouton.Model.Server;
+﻿using CK.Glouton.Model.Server.Handlers;
 
 namespace CK.Glouton.Server.Handlers
 {
