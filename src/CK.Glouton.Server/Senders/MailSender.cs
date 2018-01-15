@@ -1,6 +1,7 @@
 ﻿using CK.Glouton.Model.Server;
 using CK.Monitoring;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using MimeKit;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace CK.Glouton.Server.Senders
         {
             using (var client = new SmtpClient ())
             {
-                client.Connect(_configuration.SmtpAdress, _configuration.SmptPort, false);
+                client.Connect(_configuration.SmtpAdress, _configuration.SmptPort, SecureSocketOptions.Auto);
                 client.Authenticate(_configuration.SmtpUsername, _configuration.SmtpPassword);
                 client.Send(ConstructMail(logEntry));
                 client.Disconnect(true);
