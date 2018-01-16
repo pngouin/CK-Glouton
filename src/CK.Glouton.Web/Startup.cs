@@ -1,5 +1,5 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Lucene;
+using CK.Glouton.Model.Services;
 using CK.Glouton.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

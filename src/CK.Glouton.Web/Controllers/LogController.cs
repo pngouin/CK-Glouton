@@ -1,5 +1,5 @@
 ﻿using CK.Glouton.Model.Logs;
-using CK.Glouton.Model.Lucene;
+using CK.Glouton.Model.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

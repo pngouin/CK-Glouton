@@ -1,6 +1,7 @@
 ﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
 using CK.Glouton.Model.Lucene;
+using CK.Glouton.Model.Services;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,10 @@ namespace CK.Glouton.Service
             _searcherManager = new LuceneSearcherManager( _configuration );
         }
 
-        public LuceneSearcherService ( LuceneConfiguration configuration)
+        public LuceneSearcherService( LuceneConfiguration configuration )
         {
             _configuration = configuration;
-            _searcherManager = new LuceneSearcherManager(_configuration);
+            _searcherManager = new LuceneSearcherManager( _configuration );
         }
 
         public List<ILogViewModel> Search( string query, params string[] appNames )
