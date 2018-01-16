@@ -20,9 +20,14 @@ namespace CK.Glouton.Web
         public void ConfigureServices( IServiceCollection services )
         {
             services.AddOptions();
+
             services.Configure<LuceneConfiguration>( Configuration.GetSection( "Lucene" ) );
             services.AddSingleton<ILuceneSearcherService, LuceneSearcherService>();
             services.AddSingleton<ILuceneStatisticsService, LuceneStatisticsService>();
+
+            // TODO: Add configuration for alert (especially sender)
+            services.AddSingleton<IAlertService, AlertService>();
+
             services.AddMvc();
         }
 
