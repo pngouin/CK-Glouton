@@ -1,7 +1,6 @@
 ﻿using CK.Core;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Services;
-using CK.Glouton.Server.Senders;
 using CK.Monitoring;
 using ExpressionBuilder.Common;
 using ExpressionBuilder.Generics;
@@ -71,14 +70,17 @@ namespace CK.Glouton.Service
 
         private IAlertSender GetAlertSender( string key )
         {
-            switch( key )
-            {
-                case "Mail":
-                    return new MailSender( new MailConfiguration() );
+            // TODO: Create and/or manage senders
+            return null;
 
-                default:
-                    throw new ArgumentException( nameof( key ) );
-            }
+            //switch( key )
+            //{
+            //    case "Mail":
+            //        return new MailSender( new MailConfiguration() );
+
+            //    default:
+            //        throw new ArgumentException( nameof( key ) );
+            //}
         }
 
         private static Operation ParseOperation( string operation )
