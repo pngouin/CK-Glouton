@@ -20,7 +20,7 @@ namespace CK.Glouton.Server
             _sink = new DispatcherSink( activityMonitor );
         }
 
-        private void ApplyConfiguration( HandlersManagerConfiguration configuration, bool waitForApplication = false )
+        public void ApplyConfiguration( HandlersManagerConfiguration configuration, bool waitForApplication = false )
         {
             if( configuration == null )
                 throw new ArgumentNullException( nameof( configuration ) );

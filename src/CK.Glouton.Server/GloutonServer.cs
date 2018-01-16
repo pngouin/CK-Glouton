@@ -53,6 +53,17 @@ namespace CK.Glouton.Server
             _handlersManager.Start( (HandlersManagerConfiguration)handlersManagerConfiguration );
         }
 
+        public void ApplyConfiguration( IHandlersManagerConfiguration handlersManagerConfiguration )
+        {
+            if( handlersManagerConfiguration == null )
+                throw new ArgumentNullException( nameof( handlersManagerConfiguration ) );
+
+            if( !( handlersManagerConfiguration is HandlersManagerConfiguration ) )
+                throw new ArgumentException( nameof( handlersManagerConfiguration ) );
+
+            _handlersManager.Start( (HandlersManagerConfiguration)handlersManagerConfiguration );
+        }
+
         public void Close()
         {
             _controlChannelServer.Close();
