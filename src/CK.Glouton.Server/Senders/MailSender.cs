@@ -1,6 +1,9 @@
 ﻿using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Monitoring;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,9 +12,9 @@ namespace CK.Glouton.Server.Senders
 {
     public class MailSender : IAlertSender
     {
-        MailboxAddress _from;
-        List<MailboxAddress> _to = new List<MailboxAddress>();
-        IMailConfiguration _configuration;
+        private readonly MailboxAddress _from;
+        private readonly List<MailboxAddress> _to = new List<MailboxAddress>();
+        private readonly IMailConfiguration _configuration;
 
         public MailSender( IMailConfiguration configuration )
         {
