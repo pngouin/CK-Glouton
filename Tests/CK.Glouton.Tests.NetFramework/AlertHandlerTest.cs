@@ -1,5 +1,5 @@
 ﻿using CK.Core;
-using CK.Glouton.Model.Server;
+using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using CK.Monitoring;
@@ -8,7 +8,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using CK.Glouton.Model.Server.Handlers;
 
 namespace CK.Glouton.Tests
 {
@@ -37,7 +36,7 @@ namespace CK.Glouton.Tests
         }
 
         [Test]
-        public void sender_can_send_alerts()
+        public void can_send_alerts()
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
@@ -70,9 +69,50 @@ namespace CK.Glouton.Tests
                     activityMonitor.Fatal( "Fatal Error n°42" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
                     sender.Triggered.Should().BeTrue();
-                    sender.Triggered = false;
+
+                    sender.Reset();
 
                     activityMonitor.Info( "aze Send rty" );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    sender.Triggered.Should().BeTrue();
+                }
+            }
+        }
+
+        [Test]
+        public void can_add_alert()
+        {
+            using( var server = TestHelper.DefaultGloutonServer() )
+            {
+                var sender = new TestAlertSender();
+
+                server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration() } } );
+
+                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
+                {
+                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
+                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
+
+                    activityMonitor.Info( "Hello world" );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    sender.Triggered.Should().BeFalse();
+
+                    server.ApplyConfiguration( new HandlersManagerConfiguration
+                    {
+                        GloutonHandlers =
+                        {
+                            new AlertHandlerConfiguration
+                            {
+                                Alerts = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>
+                                {
+                                    ( log => log.Text?.Equals("Hello world") ?? false, new List<IAlertSender> { sender } )
+                                }
+                            }
+                        }
+                    } );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+
+                    activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
                     sender.Triggered.Should().BeTrue();
                 }
@@ -82,11 +122,16 @@ namespace CK.Glouton.Tests
 
     internal class TestAlertSender : IAlertSender
     {
-        public bool Triggered { get; set; }
+        public bool Triggered { get; private set; }
 
         public void Send( ILogEntry logEntry )
         {
             Triggered = true;
+        }
+
+        public void Reset()
+        {
+            Triggered = false;
         }
     }
 }
