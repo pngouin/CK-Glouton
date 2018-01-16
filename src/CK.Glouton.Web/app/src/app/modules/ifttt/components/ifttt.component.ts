@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IData } from '../models/logField.model';
 import { IExpression } from 'app/modules/ifttt/models/expression.model';
+import { Input } from '@angular/core';
 
 @Component({
     selector: 'ifttt',
@@ -14,7 +15,7 @@ export class IftttComponent implements OnInit {
     selectedOperation: string = "";
     selectedInfo: string = "";
 
-    expressions : IExpression[] = [
+    @Input() expressions : IExpression[] = [
         {Field : "", Operation : "", Body : "" }
     ]
 
@@ -41,7 +42,6 @@ export class IftttComponent implements OnInit {
 
     numberOperations: IData[] = [
         { label: "EqualTo", value: "EqualTo" },
-        { label: "Contains", value: "Contains" },
         { label: "NotEqualTo", value: "NotEqualTo" },
         { label: "GreaterThan", value: "GreaterThan" },
         { label: "GreaterThanOrEqualTo", value: "GreaterThanOrEqualTo" },
