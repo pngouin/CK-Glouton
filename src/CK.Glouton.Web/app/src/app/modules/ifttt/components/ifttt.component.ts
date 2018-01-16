@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IData } from '../models/logField.model';
+import { IExpression } from 'app/modules/ifttt/models/expression.model';
 
 @Component({
     selector: 'ifttt',
@@ -13,6 +14,9 @@ export class IftttComponent implements OnInit {
     selectedOperation: string = "";
     selectedInfo: string = "";
 
+    expressions : IExpression[] = [
+        {Field : "", Operation : "", Body : "" }
+    ]
 
     fields: IData[] = [
         { label: "LogType", value: "LogType" },
@@ -61,38 +65,55 @@ export class IftttComponent implements OnInit {
         { label: "IsFiltered", value: "IsFiltered" },
     ]
 
-    private IsParticular() {
-        return this.selectedField == "LogType" ||
-            this.selectedField == "LogLevel";
+    private IsParticular( expression : IExpression ) : boolean {
+        return expression.Field == "LogType" ||
+        expression.Field == "LogLevel";
     }
 
-    private IsNumber() {
-        return this.selectedField == "LineNumber" || 
-            this.selectedField == "GroupDepth";
+    private IsNumber( expression : IExpression) : boolean {
+        return expression.Field == "LineNumber" || 
+            expression.Field == "GroupDepth";
     }
 
-    private getParticularOperation(): IData[] {
-        if (!this.IsParticular() && !this.IsNumber()) {
+    private getParticularOperation(expression : IExpression): IData[] {
+        if (!this.IsParticular(expression) && !this.IsNumber(expression)) {
             return this.operations;
         }
-        if (this.selectedField == "LogType") {
-            this.selectedOperation = "EqualTo";
+        if (expression.Field == "LogType") {
+            expression.Operation = "EqualTo";
             return [{ label: "EqualTo", value: "EqualTo" }];
         }
-        if (this.selectedField == "LogLevel") {
-            this.selectedOperation = "Contains";
+        if (expression.Field == "LogLevel") {
+            expression.Operation = "Contains";
             return [{ label: "Contains", value: "Contains" }]
         }
-        if (this.IsNumber()) {
+        if (this.IsNumber(expression)) {
             return this.numberOperations;
         }
     }
 
-    private resetSelected() {
-        this.selectedInfo = "";
-        this.selectedOperation = ""
+    private resetSelected( expression : IExpression) : void {
+        if ((this.IsNumber(expression) && !this.isNumberOperation(expression.Operation)) || 
+            (!this.IsNumber(expression) && this.isNumberOperation(expression.Operation))
+        ){
+            expression.Body = "";
+            expression.Operation = "";
+        }
     }
 
+    private addExpression (index : number) : void {
+        this.expressions.splice( index+1, 0, {
+            Field : "", Operation : "", Body : ""
+        } );
+    }
+
+    private isNumberOperation ( operation : string) : boolean {
+        return this.numberOperations.findIndex( o => o.value == operation ) != -1;
+    }
+
+    private deleteExpression (index : number) : void {
+        this.expressions.splice(index, 1);
+    }
 
     constructor() { }
 
