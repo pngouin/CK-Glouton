@@ -61,7 +61,7 @@ namespace CK.Glouton.Server
             if( !( handlersManagerConfiguration is HandlersManagerConfiguration ) )
                 throw new ArgumentException( nameof( handlersManagerConfiguration ) );
 
-            _handlersManager.Start( (HandlersManagerConfiguration)handlersManagerConfiguration );
+            _handlersManager.ApplyConfiguration( (HandlersManagerConfiguration)handlersManagerConfiguration );
         }
 
         public void Close()
