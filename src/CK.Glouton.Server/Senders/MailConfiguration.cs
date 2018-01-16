@@ -1,7 +1,4 @@
 ﻿using CK.Glouton.Model.Server;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CK.Glouton.Server.Senders
 {
@@ -16,12 +13,12 @@ namespace CK.Glouton.Server.Senders
 
         public bool Validate()
         {
-            return ( string.IsNullOrEmpty(Name) ||
-                    string.IsNullOrEmpty(Email) ||
-                    string.IsNullOrEmpty(SmtpUsername) ||
-                    string.IsNullOrEmpty(SmtpPassword) ||
-                    string.IsNullOrEmpty(SmtpAdress) ||
-                    SmptPort <= 0);
+            return !( string.IsNullOrEmpty( Name ) ||
+                    string.IsNullOrEmpty( Email ) ||
+                    string.IsNullOrEmpty( SmtpUsername ) ||
+                    string.IsNullOrEmpty( SmtpPassword ) ||
+                    string.IsNullOrEmpty( SmtpAdress ) ||
+                    SmptPort <= 0 );
         }
     }
 }
