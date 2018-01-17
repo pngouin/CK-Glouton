@@ -5,7 +5,8 @@ import * as components from './components';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import {ButtonModule} from 'primeng/primeng';
+import {ButtonModule, MessageModule} from 'primeng/primeng';
+import {KeyFilterModule} from 'primeng/keyfilter';
 
 @NgModule({
     imports: [
@@ -14,6 +15,8 @@ import {ButtonModule} from 'primeng/primeng';
         InputTextModule,
         ButtonModule,
         BrowserModule, 
+        KeyFilterModule,
+        MessageModule,
         FormsModule
     ],
     declarations: [

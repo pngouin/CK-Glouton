@@ -1,0 +1,44 @@
+<div class="ui-g">
+    <p-dropdown [options]="Senders" [(ngModel)]="selectedSender"></p-dropdown>
+</div>
+<div class="ui-g" *ngIf="selectedSender">
+    <div *ngIf="selectedSender.Name == 'Mail'">
+        <div class="ui-inputgroup">
+            <span class="ui-inputgroup-addon">Name</span>
+            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.Name" />
+        </div>
+        <div class="ui-inputgroup">
+            <span class="ui-inputgroup-addon">Email</span>
+            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.Email" />
+        </div>
+        <div class="ui-inputgroup">
+            <span class="ui-inputgroup-addon">SMTP Username</span>
+            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.SmtpUsername" />
+        </div>
+        <div class="ui-inputgroup">
+            <span class="ui-inputgroup-addon">SMTP Password</span>
+            <input type="password" pInputText [(ngModel)]="selectedSender.Configuration.SmtpPassword" />
+        </div>
+        <div class="ui-inputgroup">
+            <span class="ui-inputgroup-addon">SMTP Adress</span>
+            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.SmtpAdress" />
+        </div>
+        <div class="ui-inputgroup">
+            <span class="ui-inputgroup-addon">SMTP Port</span>
+            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.SmtpPort" />
+        </div>
+    </div>
+</div>
+<div class="ui-g">
+    <div class="ui-inputgroup">
+            <span class="ui-inputgroup-addon">Contacts</span>
+            <input type="text" (keyup.enter)="addContact(selectedSender.Configuration, contact)" [(ngModel)]="contact" pInputText />
+        <button pButton type="button" (click)="addContact(selectedSender.Configuration, contact)" icon="fa-plus"></button>
+    </div>
+</div>
+<ul>
+    <li *ngFor="let contact of selectedSender.Configuration.Contacts; let i = index">
+        {{contact}} 
+        <button pButton type="button" (click)="deleteContact(selectedSender.Configuration, i)" icon="fa-minus"></button>
+    </li>
+</ul>
