@@ -1,11 +1,12 @@
-﻿using CK.Glouton.Lucene;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
 using CK.Glouton.Model.Lucene;
 using CK.Glouton.Model.Services;
+using CK.Glouton.Service.Common;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CK.Glouton.Service
 {
