@@ -1,8 +1,8 @@
-﻿using System;
-using CK.Glouton.Model.Server.Handlers;
+﻿using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Service.Common;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
 
 namespace CK.Glouton.Tests
 {
@@ -24,7 +24,7 @@ namespace CK.Glouton.Tests
 
                 // Test all string fields
                 new ExpressionModelTest { Field = "FileName", Operation = "EqualTo", Body = "Test" },
-                //new ExpressionModelTest { Field = "AppName", Operation = "EqualTo", Body = "Test" }, // Issue ?
+                new ExpressionModelTest { Field = "AppName", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "EqualTo", Body = "Test" },
                 //new ExpressionModelTest { Field = "Tags", Operation = "EqualTo", Body = "Test" }, // Inside Issue
                 new ExpressionModelTest { Field = "Exception.Message", Operation = "EqualTo", Body = "Test" },

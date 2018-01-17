@@ -16,9 +16,9 @@ namespace CK.Glouton.Service.Common
         /// <returns></returns>
         /// <exception cref="ArgumentException">Will be thrown if an enum cannot be parsed.</exception>
         /// <exception cref="InvalidOperationException">Will be thrown if an invalid field is encountered.</exception>
-        public static Func<IAlertEntry, bool> Build( this IExpressionModel[] @this )
+        public static Func<AlertEntry, bool> Build( this IExpressionModel[] @this )
         {
-            var filter = new Filter<IAlertEntry>();
+            var filter = new Filter<AlertEntry>();
 
             foreach( var alert in @this )
             {

@@ -1,9 +1,7 @@
-﻿using CK.Monitoring;
-
-namespace CK.Glouton.Model.Server.Handlers
+﻿namespace CK.Glouton.Model.Server.Handlers
 {
     public interface IAlertSender
     {
-        void Send( IAlertEntry logEntry );
+        void Send( AlertEntry logEntry );
     }
 }

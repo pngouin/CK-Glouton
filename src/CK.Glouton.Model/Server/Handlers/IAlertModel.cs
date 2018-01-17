@@ -5,7 +5,7 @@ namespace CK.Glouton.Model.Server.Handlers
 {
     public interface IAlertModel
     {
-        Func<IAlertEntry, bool> Condition { get; set; }
+        Func<AlertEntry, bool> Condition { get; set; }
         IList<IAlertSender> Senders { get; set; }
     }
 }

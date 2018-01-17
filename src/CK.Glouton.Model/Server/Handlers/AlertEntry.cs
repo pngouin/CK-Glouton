@@ -1,10 +1,9 @@
 ﻿using CK.Core;
-using CK.Glouton.Model.Server.Handlers;
 using CK.Monitoring;
 using System;
 using System.Collections.Generic;
 
-namespace CK.Glouton.Server.Handlers
+namespace CK.Glouton.Model.Server.Handlers
 {
     public class AlertEntry : IAlertEntry
     {

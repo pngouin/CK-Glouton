@@ -1,6 +1,5 @@
 ﻿using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
-using CK.Monitoring;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
@@ -29,7 +28,7 @@ namespace CK.Glouton.Server.Senders
             _to.Add( new MailboxAddress( name, email ) );
         }
 
-        public void Send( IAlertEntry logEntry )
+        public void Send( AlertEntry logEntry )
         {
             using( var client = new SmtpClient() )
             {
@@ -40,7 +39,7 @@ namespace CK.Glouton.Server.Senders
             }
         }
 
-        private MimeMessage ConstructMail( ILogEntry log )
+        private MimeMessage ConstructMail( AlertEntry logEntry )
         {
             var message = new MimeMessage();
             message.From.Add( _from );
@@ -52,36 +51,36 @@ namespace CK.Glouton.Server.Senders
             message.Subject = $"CK-Glouton Automatic Alert.";
             message.Body = new TextPart( "plain" )
             {
-                Text = ConstructTextBody( log )
+                Text = ConstructTextBody( logEntry )
             };
 
             return message;
         }
 
-        private static string ConstructTextBody( ILogEntry log )
+        private static string ConstructTextBody( AlertEntry logEntry )
         {
             var builder = new StringBuilder();
             builder.AppendLine( "Hi," );
-            builder.AppendLine( $"File : {log.FileName} : {log.LineNumber}" );
-            builder.AppendLine( $"LogLevel : {log.LogLevel}" );
-            builder.AppendLine( $"At time : {log.LogTime}" );
+            builder.AppendLine( $"File : {logEntry.FileName} : {logEntry.LineNumber}" );
+            builder.AppendLine( $"LogLevel : {logEntry.LogLevel}" );
+            builder.AppendLine( $"At time : {logEntry.LogTime}" );
 
-            if( log.Tags != null )
+            if( logEntry.Tags != null )
             {
-                builder.AppendLine( $"Tags : {log.Tags}" );
+                builder.AppendLine( $"Tags : {logEntry.Tags}" );
             }
 
-            builder.AppendLine( $"Message : {log.Text}" );
+            builder.AppendLine( $"Message : {logEntry.Text}" );
 
-            if( log.Conclusions != null )
+            if( logEntry.Conclusions != null )
             {
-                builder.AppendLine( $"Conclusion : {log.Conclusions}" );
+                builder.AppendLine( $"Conclusion : {logEntry.Conclusions}" );
             }
 
-            if( log.Exception != null )
+            if( logEntry.Exception != null )
             {
                 builder.AppendLine( "Exception: " );
-                log.Exception.ToStringBuilder( builder, "" );
+                logEntry.Exception.ToStringBuilder( builder, "" );
             }
 
             builder.AppendLine();

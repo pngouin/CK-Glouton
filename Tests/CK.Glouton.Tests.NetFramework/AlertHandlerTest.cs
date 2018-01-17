@@ -121,7 +121,7 @@ namespace CK.Glouton.Tests
 
     internal class TestAlertModel : IAlertModel
     {
-        public Func<IAlertEntry, bool> Condition { get; set; }
+        public Func<AlertEntry, bool> Condition { get; set; }
         public IList<IAlertSender> Senders { get; set; }
     }
 
@@ -134,7 +134,7 @@ namespace CK.Glouton.Tests
             Triggered = false;
         }
 
-        public void Send( IAlertEntry logEntry )
+        public void Send( AlertEntry logEntry )
         {
             Triggered = true;
         }
