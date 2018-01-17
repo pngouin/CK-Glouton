@@ -20,23 +20,20 @@ namespace CK.Glouton.Tests
         {
             var model = new IExpressionModel[]
             {
-                // TODO: Add all cases
-
                 // Test all string fields
                 new ExpressionModelTest { Field = "FileName", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "AppName", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "EqualTo", Body = "Test" },
-                //new ExpressionModelTest { Field = "Tags", Operation = "EqualTo", Body = "Test" }, // Inside Issue
                 new ExpressionModelTest { Field = "Exception.Message", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Exception.StackTrace", Operation = "EqualTo", Body = "Test" },
-
-
                 // Test every operator on string fields:
                 new ExpressionModelTest { Field = "Text", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "Contains", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "StartsWith", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "EndsWith", Body = "Test" },
-                new ExpressionModelTest { Field = "Text", Operation = "NotEqualTo", Body = "Test" }
+                new ExpressionModelTest { Field = "Text", Operation = "NotEqualTo", Body = "Test" },
+                // CK Trait
+                new ExpressionModelTest { Field = "Tags", Operation = "EqualTo", Body = "Test" }
             };
 
             Action build = () => model.Build();

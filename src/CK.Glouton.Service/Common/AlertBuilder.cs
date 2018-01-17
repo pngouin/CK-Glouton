@@ -45,11 +45,16 @@ namespace CK.Glouton.Service.Common
                     case "FileName":
                     case "AppName":
                     case "Text":
-                    case "Tags":
                     case "Exception.Message":
                     case "Exception.StackTrace":
                         filter.By( alert.Field, Operation.IsNotNull ).And
                             .By( alert.Field, ParseOperation( alert.Operation ), alert.Body );
+                        break;
+
+                    case "Tags":
+                        var traitContext = new CKTraitContext( "AlertParsing", ';' );
+                        filter.By( alert.Field, Operation.IsNotNull ).And
+                            .By( alert.Field, ParseOperation( alert.Operation ), traitContext.FindOrCreate( alert.Body ) );
                         break;
 
                     default:
