@@ -42,7 +42,7 @@ namespace CK.Glouton.Service.Common
                         filter.By( alert.Field, ParseOperation( alert.Operation ), int.Parse( alert.Body ) );
                         break;
 
-                    case "SourceFileName":
+                    case "FileName":
                     case "AppName":
                     case "Text":
                     case "Tags":
