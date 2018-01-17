@@ -23,7 +23,7 @@ export class IftttComponent implements OnInit {
         { label: "LogType", value: "LogType" },
         { label: "LogLevel", value: "LogLevel" },
         { label: "GroupDepth", value: "GroupDepth" },
-        { label: "SourceFileName", value: "SourceFileName" },
+        { label: "FileName", value: "FileName" },
         { label: "LineNumber", value: "LineNumber" },
         { label: "AppName", value: "AppName" },
         { label: "Text", value: "Text" },
