@@ -1,7 +1,9 @@
-﻿namespace CK.Glouton.Model.Server
+﻿using CK.Monitoring;
+
+namespace CK.Glouton.Model.Server
 {
     public interface IAlertSender
     {
-        void Send( ReceivedData receivedData );
+        void Send( ILogEntry logEntry );
     }
 }
