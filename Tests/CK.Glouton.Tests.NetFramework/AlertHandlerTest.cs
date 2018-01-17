@@ -1,13 +1,13 @@
-﻿using CK.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using CK.Core;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using CK.Monitoring;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -48,10 +48,10 @@ namespace CK.Glouton.Tests
                     {
                         new AlertHandlerConfiguration
                         {
-                            Alerts = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>
+                            Alerts = new List<IAlertModel>
                             {
-                                ( log => (log.LogLevel & LogLevel.Fatal) == LogLevel.Fatal, new List<IAlertSender> { sender } ),
-                                ( log => log.Text?.Contains( "Send" ) ?? false, new List<IAlertSender> { sender } )
+                                new TestAlertModel { Condition = log => (log.LogLevel & LogLevel.Fatal) == LogLevel.Fatal, Senders = new List<IAlertSender> { sender } },
+                                new TestAlertModel { Condition = log => log.Text?.Contains( "Send" ) ?? false, Senders = new List<IAlertSender> { sender } }
                             }
                         }
                     }
@@ -103,9 +103,9 @@ namespace CK.Glouton.Tests
                         {
                             new AlertHandlerConfiguration
                             {
-                                Alerts = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>
+                                Alerts = new List<IAlertModel>
                                 {
-                                    ( log => log.Text?.Equals("Hello world") ?? false, new List<IAlertSender> { sender } )
+                                    new TestAlertModel { Condition = log => log.Text?.Equals("Hello world") ?? false, Senders = new List<IAlertSender> { sender } }
                                 }
                             }
                         }
@@ -120,9 +120,20 @@ namespace CK.Glouton.Tests
         }
     }
 
+    internal class TestAlertModel : IAlertModel
+    {
+        public Func<ILogEntry, bool> Condition { get; set; }
+        public IList<IAlertSender> Senders { get; set; }
+    }
+
     internal class TestAlertSender : IAlertSender
     {
         public bool Triggered { get; private set; }
+
+        public TestAlertSender()
+        {
+            Triggered = false;
+        }
 
         public void Send( ILogEntry logEntry )
         {

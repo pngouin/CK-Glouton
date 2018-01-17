@@ -1,11 +1,11 @@
-﻿using CK.Core;
-using CK.Glouton.Model.Server;
-using CK.Glouton.Model.Server.Handlers;
-using CK.Monitoring;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using CK.Core;
+using CK.Glouton.Model.Server;
+using CK.Glouton.Model.Server.Handlers;
+using CK.Monitoring;
 
 namespace CK.Glouton.Server.Handlers
 {
@@ -24,7 +24,7 @@ namespace CK.Glouton.Server.Handlers
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
             _alertHandlerConfiguration = alertHandlerConfiguration;
             if( _alertHandlerConfiguration.Alerts == null )
-                _alertHandlerConfiguration.Alerts = new List<(Func<ILogEntry, bool>, IList<IAlertSender>)>();
+                _alertHandlerConfiguration.Alerts = new List<IAlertModel>();
         }
 
         public void OnGrandOutputEventInfo( ReceivedData receivedData )
@@ -37,17 +37,17 @@ namespace CK.Glouton.Server.Handlers
 
             var entry = LogEntry.Read( _binaryReader, version, out _ );
 
-            List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)> faulty = null;
+            List<IAlertModel> faulty = null;
 
             foreach( var alert in _alertHandlerConfiguration.Alerts )
             {
                 try
                 {
-                    if( !alert.condition( entry ) )
+                    if( !alert.Condition( entry ) )
                         continue;
 
                     _activityMonitor.Info( "An alert has been sent" );
-                    foreach( var sender in alert.senders )
+                    foreach( var sender in alert.Senders )
                         sender.Send( entry );
                 }
                 catch( Exception exception )
@@ -56,7 +56,7 @@ namespace CK.Glouton.Server.Handlers
                     ActivityMonitor.CriticalErrorCollector.Add( exception, message );
                     _activityMonitor.Fatal( message, exception );
                     if( faulty == null )
-                        faulty = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>();
+                        faulty = new List<IAlertModel>();
                     faulty.Add( alert );
                 }
             }
@@ -75,7 +75,7 @@ namespace CK.Glouton.Server.Handlers
         public bool ApplyConfiguration( IGloutonHandlerConfiguration configuration )
         {
             return configuration is AlertHandlerConfiguration alertHandlerConfiguration
-                && new HashSet<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>( _alertHandlerConfiguration.Alerts )
+                && new HashSet<IAlertModel>( _alertHandlerConfiguration.Alerts )
                     .SetEquals( alertHandlerConfiguration.Alerts );
         }
 
