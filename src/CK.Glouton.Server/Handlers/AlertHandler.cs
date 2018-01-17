@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using CK.Core;
+﻿using CK.Core;
 using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Monitoring;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace CK.Glouton.Server.Handlers
 {
@@ -35,7 +35,9 @@ namespace CK.Glouton.Server.Handlers
             _memoryStream.Write( receivedData.Data.ToArray(), 0, receivedData.Data.Count );
             _memoryStream.Seek( 0, SeekOrigin.Begin );
 
-            var entry = LogEntry.Read( _binaryReader, version, out _ );
+            var logEntry = LogEntry.Read( _binaryReader, version, out _ ) as IMulticastLogEntry;
+            receivedData.ServerClientSession.ClientData.TryGetValue( "AppName", out var appName );
+            var alertEntry = new AlertEntry( logEntry, appName );
 
             List<IAlertModel> faulty = null;
 
@@ -43,12 +45,12 @@ namespace CK.Glouton.Server.Handlers
             {
                 try
                 {
-                    if( !alert.Condition( entry ) )
+                    if( !alert.Condition( alertEntry ) )
                         continue;
 
                     _activityMonitor.Info( "An alert has been sent" );
                     foreach( var sender in alert.Senders )
-                        sender.Send( entry );
+                        sender.Send( alertEntry );
                 }
                 catch( Exception exception )
                 {

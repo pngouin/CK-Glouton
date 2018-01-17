@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using CK.Core;
+﻿using CK.Core;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
-using CK.Monitoring;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -122,7 +121,7 @@ namespace CK.Glouton.Tests
 
     internal class TestAlertModel : IAlertModel
     {
-        public Func<ILogEntry, bool> Condition { get; set; }
+        public Func<IAlertEntry, bool> Condition { get; set; }
         public IList<IAlertSender> Senders { get; set; }
     }
 
@@ -135,7 +134,7 @@ namespace CK.Glouton.Tests
             Triggered = false;
         }
 
-        public void Send( ILogEntry logEntry )
+        public void Send( IAlertEntry logEntry )
         {
             Triggered = true;
         }

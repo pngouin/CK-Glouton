@@ -29,7 +29,7 @@ namespace CK.Glouton.Server.Senders
             _to.Add( new MailboxAddress( name, email ) );
         }
 
-        public void Send( ILogEntry logEntry )
+        public void Send( IAlertEntry logEntry )
         {
             using( var client = new SmtpClient() )
             {
@@ -58,7 +58,7 @@ namespace CK.Glouton.Server.Senders
             return message;
         }
 
-        private string ConstructTextBody( ILogEntry log )
+        private static string ConstructTextBody( ILogEntry log )
         {
             var builder = new StringBuilder();
             builder.AppendLine( "Hi," );

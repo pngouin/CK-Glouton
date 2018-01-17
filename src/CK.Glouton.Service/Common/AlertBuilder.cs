@@ -1,9 +1,9 @@
-﻿using System;
-using CK.Core;
+﻿using CK.Core;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Monitoring;
 using ExpressionBuilder.Common;
 using ExpressionBuilder.Generics;
+using System;
 
 namespace CK.Glouton.Service.Common
 {
@@ -16,9 +16,9 @@ namespace CK.Glouton.Service.Common
         /// <returns></returns>
         /// <exception cref="ArgumentException">Will be thrown if an enum cannot be parsed.</exception>
         /// <exception cref="InvalidOperationException">Will be thrown if an invalid field is encountered.</exception>
-        public static Func<ILogEntry, bool> Build( this IExpressionModel[] @this )
+        public static Func<IAlertEntry, bool> Build( this IExpressionModel[] @this )
         {
-            var filter = new Filter<ILogEntry>();
+            var filter = new Filter<IAlertEntry>();
 
             foreach( var alert in @this )
             {
