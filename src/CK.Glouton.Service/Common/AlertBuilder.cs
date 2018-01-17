@@ -36,7 +36,6 @@ namespace CK.Glouton.Service.Common
                         filter.By( alert.Field, ParseOperation( alert.Operation ), logLevel );
                         break;
 
-                    // TODO: Hack! There might be issue here with int not being defined. Need test!
                     case "GroupDepth":
                     case "LineNumber":
                         filter.By( alert.Field, ParseOperation( alert.Operation ), int.Parse( alert.Body ) );

@@ -40,9 +40,7 @@ namespace CK.Glouton.Model.Server.Handlers
             return MulticastMulticastLogEntry.CreateUnicastLogEntry();
         }
 
-        int IMulticastLogEntry.GroupDepth => MulticastMulticastLogEntry.GroupDepth;
-
-        int IMulticastLogInfo.GroupDepth => ( (IMulticastLogInfo)MulticastMulticastLogEntry ).GroupDepth;
+        public int GroupDepth => MulticastMulticastLogEntry.GroupDepth;
 
         public LogEntryType PreviousEntryType => MulticastMulticastLogEntry.PreviousEntryType;
 

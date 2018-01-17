@@ -20,18 +20,30 @@ namespace CK.Glouton.Tests
         {
             var model = new IExpressionModel[]
             {
-                // Test all string fields
+                // String Field
                 new ExpressionModelTest { Field = "FileName", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "AppName", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Exception.Message", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Exception.StackTrace", Operation = "EqualTo", Body = "Test" },
-                // Test every operator on string fields:
+                // Operations
                 new ExpressionModelTest { Field = "Text", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "Contains", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "StartsWith", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "EndsWith", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "NotEqualTo", Body = "Test" },
+
+                // Int Field
+                new ExpressionModelTest { Field = "LineNumber", Operation = "EqualTo", Body = "42" },
+                new ExpressionModelTest { Field = "GroupDepth", Operation = "EqualTo", Body = "42" },
+                // Operations
+                new ExpressionModelTest { Field = "LineNumber", Operation = "EqualTo", Body = "42" },
+                new ExpressionModelTest { Field = "LineNumber", Operation = "NotEqualTo", Body = "42" },
+                new ExpressionModelTest { Field = "LineNumber", Operation = "GreaterThan", Body = "42" },
+                new ExpressionModelTest { Field = "LineNumber", Operation = "GreaterThanOrEqualTo", Body = "42" },
+                new ExpressionModelTest { Field = "LineNumber", Operation = "LessThan", Body = "42" },
+                new ExpressionModelTest { Field = "LineNumber", Operation = "LessThanOrEqualTo", Body = "42" },
+
                 // CK Trait
                 new ExpressionModelTest { Field = "Tags", Operation = "EqualTo", Body = "Test" }
             };
