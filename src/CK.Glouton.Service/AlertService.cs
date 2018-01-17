@@ -46,6 +46,7 @@ namespace CK.Glouton.Service
                         filter.By( alert.Field, ParseOperation( alert.Operation ), logLevel );
                         break;
 
+                    // TODO: Hack! There might be issue here with int not being defined. Need test!
                     case "GroupDepth":
                     case "LineNumber":
                         filter.By( alert.Field, ParseOperation( alert.Operation ), int.Parse( alert.Body ) );
@@ -57,7 +58,8 @@ namespace CK.Glouton.Service
                     case "Tags":
                     case "Exception.Message":
                     case "Exception.StackTrace":
-                        filter.By( alert.Field, ParseOperation( alert.Operation ), alert.Body );
+                        filter.By( alert.Field, Operation.IsNotNull ).And
+                            .By( alert.Field, ParseOperation( alert.Operation ), alert.Body );
                         break;
 
                     default:
