@@ -1,8 +1,8 @@
-﻿using CK.Glouton.Model.Server.Handlers;
+﻿using System;
+using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Service.Common;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
 
 namespace CK.Glouton.Tests
 {
@@ -20,6 +20,15 @@ namespace CK.Glouton.Tests
         {
             var model = new IExpressionModel[]
             {
+                
+                // TODO: Determine supported operations for the two following interfaces
+
+                // LogType
+                new ExpressionModelTest { Field = "LogType", Operation = "EqualTo", Body = "Line" },
+
+                // Log Level
+                new ExpressionModelTest { Field = "LogLevel", Operation = "EqualTo", Body = "Info" },
+
                 // String Field
                 new ExpressionModelTest { Field = "FileName", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "AppName", Operation = "EqualTo", Body = "Test" },
