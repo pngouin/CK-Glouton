@@ -1,54 +1,54 @@
-﻿using CK.Core;
-using CK.Monitoring;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CK.Core;
+using CK.Monitoring;
 
 namespace CK.Glouton.Model.Server.Handlers
 {
     public class AlertEntry : IAlertEntry
     {
-        public IMulticastLogEntry MulticastMulticastLogEntry { get; set; }
+        public IMulticastLogEntry MulticastLogEntry { get; set; }
         public string AppName { get; set; }
 
         public void WriteLogEntry( CKBinaryWriter w )
         {
-            MulticastMulticastLogEntry.WriteLogEntry( w );
+            MulticastLogEntry.WriteLogEntry( w );
         }
 
-        public LogEntryType LogType => MulticastMulticastLogEntry.LogType;
+        public LogEntryType LogType => MulticastLogEntry.LogType;
 
-        public LogLevel LogLevel => MulticastMulticastLogEntry.LogLevel;
+        public LogLevel LogLevel => MulticastLogEntry.LogLevel;
 
-        public string Text => MulticastMulticastLogEntry.Text;
+        public string Text => MulticastLogEntry.Text;
 
-        public CKTrait Tags => MulticastMulticastLogEntry.Tags;
+        public CKTrait Tags => MulticastLogEntry.Tags;
 
-        public DateTimeStamp LogTime => MulticastMulticastLogEntry.LogTime;
+        public DateTimeStamp LogTime => MulticastLogEntry.LogTime;
 
-        public CKExceptionData Exception => MulticastMulticastLogEntry.Exception;
+        public CKExceptionData Exception => MulticastLogEntry.Exception;
 
-        public string FileName => MulticastMulticastLogEntry.FileName;
+        public string FileName => MulticastLogEntry.FileName;
 
-        public int LineNumber => MulticastMulticastLogEntry.LineNumber;
+        public int LineNumber => MulticastLogEntry.LineNumber;
 
-        public IReadOnlyList<ActivityLogGroupConclusion> Conclusions => MulticastMulticastLogEntry.Conclusions;
+        public IReadOnlyList<ActivityLogGroupConclusion> Conclusions => MulticastLogEntry.Conclusions;
 
-        public Guid MonitorId => MulticastMulticastLogEntry.MonitorId;
+        public Guid MonitorId => MulticastLogEntry.MonitorId;
 
         public ILogEntry CreateUnicastLogEntry()
         {
-            return MulticastMulticastLogEntry.CreateUnicastLogEntry();
+            return MulticastLogEntry.CreateUnicastLogEntry();
         }
 
-        public int GroupDepth => MulticastMulticastLogEntry.GroupDepth;
+        public int GroupDepth => MulticastLogEntry.GroupDepth;
 
-        public LogEntryType PreviousEntryType => MulticastMulticastLogEntry.PreviousEntryType;
+        public LogEntryType PreviousEntryType => MulticastLogEntry.PreviousEntryType;
 
-        public DateTimeStamp PreviousLogTime => MulticastMulticastLogEntry.PreviousLogTime;
+        public DateTimeStamp PreviousLogTime => MulticastLogEntry.PreviousLogTime;
 
         public AlertEntry( IMulticastLogEntry multicastLogEntry, string appName )
         {
-            MulticastMulticastLogEntry = multicastLogEntry;
+            MulticastLogEntry = multicastLogEntry;
             AppName = appName;
         }
     }
