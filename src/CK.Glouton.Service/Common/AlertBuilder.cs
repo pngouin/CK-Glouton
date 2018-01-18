@@ -26,6 +26,9 @@ namespace CK.Glouton.Service.Common
             { Operation.IsNotNull, (member, constant) => Expression.NotEqual( member, Expression.Constant(null) ) },
         };
 
+        /// <summary>
+        /// Refer to <see cref="EField"/> for indexes.
+        /// </summary>
         private static readonly Operation[] AllowedOperations = {
             Operation.EqualTo | Operation.NotEqualTo | Operation.In,
             Operation.EqualTo | Operation.NotEqualTo | Operation.Contains | Operation.StartsWith | Operation.EndsWith,
@@ -33,6 +36,9 @@ namespace CK.Glouton.Service.Common
             Operation.EqualTo
         };
 
+        /// <summary>
+        /// Indexes for <see cref="AlertBuilder.AllowedOperations"/>.
+        /// </summary>
         private enum EField
         {
             Enum,
@@ -84,15 +90,15 @@ namespace CK.Glouton.Service.Common
                 switch( alertExpression.Field )
                 {
                     case "LogType":
-                        if( !Enum.TryParse( alertExpression.Body, out LogEntryType logEntryType ) )
-                            throw new ArgumentException( nameof( logEntryType ) );
+                        if( !Enum.TryParse( alertExpression.Body, out LogEntryType logEntryType ) || logEntryType == 0 )
+                            throw new ArgumentException( $"{nameof( logEntryType )} {alertExpression.Body} is invalid." );
                         constant = Expression.Constant( logEntryType );
                         field = EField.Enum;
                         break;
 
                     case "LogLevel":
-                        if( !Enum.TryParse( alertExpression.Body, out LogLevel logLevel ) )
-                            throw new ArgumentException( nameof( logLevel ) );
+                        if( !Enum.TryParse( alertExpression.Body, out LogLevel logLevel ) || logLevel == 0 )
+                            throw new ArgumentException( $"{nameof( logLevel )} {alertExpression.Body} is invalid." );
                         constant = Expression.Constant( logLevel );
                         field = EField.Enum;
                         break;
@@ -106,6 +112,7 @@ namespace CK.Glouton.Service.Common
                     case "FileName":
                     case "AppName":
                     case "Text":
+                    // TODO: Fix exceptions
                     case "Exception.Message":
                     case "Exception.StackTrace":
                         constant = Expression.Constant( alertExpression.Body );
