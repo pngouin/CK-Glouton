@@ -32,8 +32,8 @@ namespace CK.Glouton.Tests
                 new ExpressionModelTest { Field = "FileName", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "AppName", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "EqualTo", Body = "Test" },
-                //new ExpressionModelTest { Field = "Exception.Message", Operation = "EqualTo", Body = "Test" },
-                //new ExpressionModelTest { Field = "Exception.StackTrace", Operation = "EqualTo", Body = "Test" },
+                new ExpressionModelTest { Field = "Exception.Message", Operation = "EqualTo", Body = "Test" },
+                new ExpressionModelTest { Field = "Exception.StackTrace", Operation = "EqualTo", Body = "Test" },
                 // Operations
                 new ExpressionModelTest { Field = "Text", Operation = "EqualTo", Body = "Test" },
                 new ExpressionModelTest { Field = "Text", Operation = "NotEqualTo", Body = "Test" },

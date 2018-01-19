@@ -3,6 +3,7 @@ using CK.Glouton.Model.Server.Handlers;
 using CK.Monitoring;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace CK.Glouton.Service.Common
@@ -10,6 +11,8 @@ namespace CK.Glouton.Service.Common
     public static class AlertBuilder
     {
         private static readonly ParameterExpression Parameter = Expression.Parameter( typeof( AlertEntry ), "l" );
+
+        private static readonly CKTraitContext TraitContext = new CKTraitContext( "AlertParsing", ';' );
 
         private static readonly Dictionary<Operation, Func<Expression, Expression, Expression>> Expressions = new Dictionary<Operation, Func<Expression, Expression, Expression>>
         {
@@ -37,7 +40,7 @@ namespace CK.Glouton.Service.Common
         };
 
         /// <summary>
-        /// Indexes for <see cref="AlertBuilder.AllowedOperations"/>.
+        /// Indexes for <see cref="AllowedOperations"/>.
         /// </summary>
         private enum EField
         {
@@ -83,7 +86,10 @@ namespace CK.Glouton.Service.Common
 
             foreach( var alertExpression in @this )
             {
-                var member = Expression.Property( Parameter, alertExpression.Field );
+                var member = alertExpression.Field.IndexOf( '.' ) == -1
+                    ? Expression.Property( Parameter, alertExpression.Field )
+                    : BuildMember( alertExpression.Field );
+
                 ConstantExpression constant;
                 EField field;
 
@@ -120,8 +126,7 @@ namespace CK.Glouton.Service.Common
                         break;
 
                     case "Tags":
-                        var traitContext = new CKTraitContext( "AlertParsing", ';' );
-                        constant = Expression.Constant( traitContext.FindOrCreate( alertExpression.Body ) );
+                        constant = Expression.Constant( TraitContext.FindOrCreate( alertExpression.Body ) );
                         field = EField.Trait;
                         break;
 
@@ -141,6 +146,15 @@ namespace CK.Glouton.Service.Common
             }
 
             return Expression.Lambda<Func<AlertEntry, bool>>( expression, Parameter ).Compile();
+        }
+
+        private static MemberExpression BuildMember( string field )
+        {
+            var fields = field.Split( '.' );
+            if( fields.Length == 1 )
+                throw new ArgumentException( $"{nameof( field )} is invalid" );
+
+            return fields.Aggregate<string, MemberExpression>( null, ( current, expression ) => Expression.Property( (Expression)current ?? Parameter, expression ) );
         }
     }
 }
