@@ -15,15 +15,18 @@ export class NavbarComponent implements OnInit {
         this.items = [
             {
                 label : 'Logs',
-                routerLink :  ['/log']
+                routerLink :  ['/log'],
+                icon : 'fa-align-left'
             },
             {
                 label : 'Stats',
-                routerLink : ['/home']
+                routerLink : ['/home'],
+                icon : 'fa-pie-chart'
             },
             {
-                label : 'IFTTT',
-                routerLink : ['/ifttt']
+                label : 'Alert',
+                routerLink : ['/ifttt'],
+                icon: 'fa-bell-o'
             }
         ]
      }
