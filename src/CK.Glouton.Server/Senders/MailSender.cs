@@ -32,7 +32,7 @@ namespace CK.Glouton.Server.Senders
         {
             using( var client = new SmtpClient() )
             {
-                client.Connect( _configuration.SmtpAdress, _configuration.SmptPort, SecureSocketOptions.Auto );
+                client.Connect( _configuration.SmtpAdress, _configuration.SmtpPort, SecureSocketOptions.Auto );
                 client.Authenticate( _configuration.SmtpUsername, _configuration.SmtpPassword );
                 client.Send( ConstructMail( logEntry ) );
                 client.Disconnect( true );

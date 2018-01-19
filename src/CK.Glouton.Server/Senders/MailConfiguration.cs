@@ -9,7 +9,7 @@ namespace CK.Glouton.Server.Senders
         public string SmtpUsername { get; set; }
         public string SmtpPassword { get; set; }
         public string SmtpAdress { get; set; }
-        public int SmptPort { get; set; }
+        public int SmtpPort { get; set; }
 
         public bool Validate()
         {
@@ -18,7 +18,7 @@ namespace CK.Glouton.Server.Senders
                     string.IsNullOrEmpty( SmtpUsername ) ||
                     string.IsNullOrEmpty( SmtpPassword ) ||
                     string.IsNullOrEmpty( SmtpAdress ) ||
-                    SmptPort <= 0 );
+                    SmtpPort <= 0 );
         }
     }
 }

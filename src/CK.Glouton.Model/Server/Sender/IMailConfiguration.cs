@@ -7,7 +7,7 @@
         string SmtpUsername { get; set; }
         string SmtpPassword { get; set; }
         string SmtpAdress { get; set; }
-        int SmptPort { get; set; }
+        int SmtpPort { get; set; }
 
         bool Validate();
     }
