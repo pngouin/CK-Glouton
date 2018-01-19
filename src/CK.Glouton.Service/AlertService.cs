@@ -2,6 +2,7 @@
 using CK.Glouton.Model.Services;
 using CK.Glouton.Service.Common;
 using System;
+using System.Linq;
 
 namespace CK.Glouton.Service
 {
@@ -19,6 +20,7 @@ namespace CK.Glouton.Service
             try
             {
                 var condition = alertExpression.Expressions.Build();
+                var senders = alertExpression.Senders.Select( alertSenderConfiguration => _alertSenderManager.Parse( alertSenderConfiguration ) ).ToList();
 
                 return true;
             }
