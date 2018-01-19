@@ -1,18 +1,17 @@
-﻿using System;
-using System.Linq;
-using CK.Glouton.Model.Server.Handlers;
+﻿using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Services;
 using CK.Glouton.Service.Common;
+using System;
 
 namespace CK.Glouton.Service
 {
     public class AlertService : IAlertService
     {
-        private readonly AlertSenderParser _alertSenderParser;
+        private readonly AlertSenderManager _alertSenderManager;
 
         public AlertService()
         {
-            _alertSenderParser = new AlertSenderParser();
+            _alertSenderManager = new AlertSenderManager();
         }
 
         public bool AddAlert( IAlertExpressionModel alertExpression )
@@ -20,7 +19,6 @@ namespace CK.Glouton.Service
             try
             {
                 var condition = alertExpression.Expressions.Build();
-                var senders = alertExpression.Senders.Select( _alertSenderParser.Parse );
 
                 return true;
             }
@@ -29,11 +27,5 @@ namespace CK.Glouton.Service
                 return false;
             }
         }
-
-
-
-
-
-
     }
 }

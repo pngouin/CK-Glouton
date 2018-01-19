@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using CK.Glouton.Model.Server.Sender;
 
 namespace CK.Glouton.Tests
 {

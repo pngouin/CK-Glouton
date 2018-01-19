@@ -13,9 +13,11 @@ namespace CK.Glouton.Server.Senders
     {
         private readonly MailboxAddress _from;
         private readonly List<MailboxAddress> _to = new List<MailboxAddress>();
-        private readonly IMailConfiguration _configuration;
+        private readonly MailSenderConfiguration _configuration;
 
-        public MailSender( IMailConfiguration configuration )
+        public string SenderType { get; set; } = "Mail";
+
+        public MailSender( MailSenderConfiguration configuration )
         {
             if( configuration.Validate() )
                 throw new ArgumentException( nameof( configuration ) );
@@ -28,11 +30,16 @@ namespace CK.Glouton.Server.Senders
             _to.Add( new MailboxAddress( name, email ) );
         }
 
+        public bool Match( IAlertSenderConfiguration configuration )
+        {
+            return _configuration.Equals( configuration );
+        }
+
         public void Send( AlertEntry logEntry )
         {
             using( var client = new SmtpClient() )
             {
-                client.Connect( _configuration.SmtpAdress, _configuration.SmtpPort, SecureSocketOptions.Auto );
+                client.Connect( _configuration.SmtpAddress, _configuration.SmtpPort, SecureSocketOptions.Auto );
                 client.Authenticate( _configuration.SmtpUsername, _configuration.SmtpPassword );
                 client.Send( ConstructMail( logEntry ) );
                 client.Disconnect( true );
