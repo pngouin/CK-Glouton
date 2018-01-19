@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CK.Glouton.Model.Server;
+﻿using CK.Glouton.Model.Server.Handlers;
 
 namespace CK.Glouton.Server.Handlers
 {

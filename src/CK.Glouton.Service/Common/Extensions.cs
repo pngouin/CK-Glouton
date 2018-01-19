@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CK.Glouton.Service
+namespace CK.Glouton.Service.Common
 {
     internal static class Extensions
     {

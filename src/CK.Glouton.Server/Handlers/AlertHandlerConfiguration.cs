@@ -1,13 +1,11 @@
-﻿using CK.Glouton.Model.Server;
-using CK.Monitoring;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CK.Glouton.Model.Server.Handlers;
 
 namespace CK.Glouton.Server.Handlers
 {
     public class AlertHandlerConfiguration : IGloutonHandlerConfiguration
     {
-        public List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)> Alerts { get; set; }
+        public List<IAlertModel> Alerts { get; set; }
 
         public IGloutonHandlerConfiguration Clone()
         {

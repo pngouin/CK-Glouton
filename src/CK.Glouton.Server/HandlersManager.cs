@@ -1,5 +1,6 @@
 ﻿using CK.Core;
 using CK.Glouton.Model.Server;
+using CK.Glouton.Model.Server.Handlers;
 using System;
 using System.Reflection;
 using System.Threading;
@@ -19,7 +20,7 @@ namespace CK.Glouton.Server
             _sink = new DispatcherSink( activityMonitor );
         }
 
-        private void ApplyConfiguration( HandlersManagerConfiguration configuration, bool waitForApplication = false )
+        public void ApplyConfiguration( HandlersManagerConfiguration configuration, bool waitForApplication = false )
         {
             if( configuration == null )
                 throw new ArgumentNullException( nameof( configuration ) );

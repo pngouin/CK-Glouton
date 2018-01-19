@@ -1,8 +1,7 @@
 ﻿using CK.Core;
-using CK.Glouton.Model.Server;
+using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
-using CK.Monitoring;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -36,7 +35,7 @@ namespace CK.Glouton.Tests
         }
 
         [Test]
-        public void sender_can_send_alerts()
+        public void can_send_alerts()
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
@@ -48,10 +47,10 @@ namespace CK.Glouton.Tests
                     {
                         new AlertHandlerConfiguration
                         {
-                            Alerts = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>
+                            Alerts = new List<IAlertModel>
                             {
-                                ( log => (log.LogLevel & LogLevel.Fatal) == LogLevel.Fatal, new List<IAlertSender> { sender } ),
-                                ( log => log.Text?.Contains( "Send" ) ?? false, new List<IAlertSender> { sender } )
+                                new TestAlertModel { Condition = log => (log.LogLevel & LogLevel.Fatal) == LogLevel.Fatal, Senders = new List<IAlertSender> { sender } },
+                                new TestAlertModel { Condition = log => log.Text?.Contains( "Send" ) ?? false, Senders = new List<IAlertSender> { sender } }
                             }
                         }
                     }
@@ -69,7 +68,8 @@ namespace CK.Glouton.Tests
                     activityMonitor.Fatal( "Fatal Error n°42" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
                     sender.Triggered.Should().BeTrue();
-                    sender.Triggered = false;
+
+                    sender.Reset();
 
                     activityMonitor.Info( "aze Send rty" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
@@ -77,15 +77,71 @@ namespace CK.Glouton.Tests
                 }
             }
         }
+
+        [Test]
+        public void can_add_alert()
+        {
+            using( var server = TestHelper.DefaultGloutonServer() )
+            {
+                var sender = new TestAlertSender();
+
+                server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration() } } );
+
+                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
+                {
+                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
+                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
+
+                    activityMonitor.Info( "Hello world" );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    sender.Triggered.Should().BeFalse();
+
+                    server.ApplyConfiguration( new HandlersManagerConfiguration
+                    {
+                        GloutonHandlers =
+                        {
+                            new AlertHandlerConfiguration
+                            {
+                                Alerts = new List<IAlertModel>
+                                {
+                                    new TestAlertModel { Condition = log => log.Text?.Equals("Hello world") ?? false, Senders = new List<IAlertSender> { sender } }
+                                }
+                            }
+                        }
+                    } );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+
+                    activityMonitor.Info( "Hello world" );
+                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    sender.Triggered.Should().BeTrue();
+                }
+            }
+        }
+    }
+
+    internal class TestAlertModel : IAlertModel
+    {
+        public Func<AlertEntry, bool> Condition { get; set; }
+        public IList<IAlertSender> Senders { get; set; }
     }
 
     internal class TestAlertSender : IAlertSender
     {
-        public bool Triggered { get; set; }
+        public bool Triggered { get; private set; }
 
-        public void Send( ILogEntry logEntry )
+        public TestAlertSender()
+        {
+            Triggered = false;
+        }
+
+        public void Send( AlertEntry logEntry )
         {
             Triggered = true;
+        }
+
+        public void Reset()
+        {
+            Triggered = false;
         }
     }
 }

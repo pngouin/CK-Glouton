@@ -1,44 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CK.Glouton.Lucene;
-using CK.Glouton.Model.Lucene;
+﻿using CK.Glouton.Model.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace CK.Glouton.Web.Controllers
 {
-    [Route("api/stats")]
+    [Route( "api/stats" )]
     public class StatisticsController : Controller
     {
         private readonly ILuceneStatisticsService _luceneStatistics;
-        public StatisticsController(ILuceneStatisticsService luceneStatistics)
+        public StatisticsController( ILuceneStatisticsService luceneStatistics )
         {
             _luceneStatistics = luceneStatistics;
         }
 
-        [HttpGet("log/total/by/appname")]
+        [HttpGet( "log/total/by/appname" )]
         public Dictionary<string, int> LogPerAppName()
         {
             return _luceneStatistics.GetLogByAppName();
         }
 
-        [HttpGet("exception/total/by/appname")]
+        [HttpGet( "exception/total/by/appname" )]
         public Dictionary<string, int> ExceptionPerAppName()
         {
             return _luceneStatistics.GetExceptionByAppName();
         }
 
-        [HttpGet("log/total")]
+        [HttpGet( "log/total" )]
         public int AllLogCount() => _luceneStatistics.AllLogCount();
 
-        [HttpGet("appname/total")]
+        [HttpGet( "appname/total" )]
         public int AppNameCount() => _luceneStatistics.AppNameCount;
 
-        [HttpGet("exception/total")]
+        [HttpGet( "exception/total" )]
         public int AllException() => _luceneStatistics.AllExceptionCount;
 
-        [HttpGet("appnames")]
+        [HttpGet( "appnames" )]
         public IEnumerable<string> AppNames() => _luceneStatistics.GetAppNames;
     }
 }
