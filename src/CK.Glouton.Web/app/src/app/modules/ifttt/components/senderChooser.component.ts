@@ -36,12 +36,40 @@ export class SenderChooserComponent implements OnInit {
 
     ngOnInit() { }
 
-    addContact( mailConfiguration : ISenderMailConfiguration, mail : string ) : void {
-        mailConfiguration.Contacts.push(mail);
-        this.contact = "";
+    getConfigurationKeys ( configuration : object ) : string[] {
+        return Object.keys(this.selectedSender.Configuration);
     }
 
-    deleteContact(mailConfiguration : ISenderMailConfiguration, index : number) : void {
-        mailConfiguration.Contacts.splice(index, 1);
+    getPropertyType( propertyName : string ) : string {
+        let p = Reflect.get(this.selectedSender.Configuration, propertyName);
+        if(Array.isArray(p)) {
+            return "Array"
+        }
+        else {
+            return typeof(p);
+        }
+    }
+
+    getPropertyValue( propertyName : string ) : string | number | Array<string> {
+        return Reflect.get(this.selectedSender.Configuration, propertyName);
+    }
+
+    setConfigurationProperty( propertyName : string, value : string | number | Array<string> ) {
+        Reflect.set(this.selectedSender.Configuration, propertyName, value);
+    }
+
+    addContact( propertyName : string, value : string ) : void {
+        if (value == "") return;
+        let array = this.getPropertyValue(propertyName);
+        if (!Array.isArray(array)) return;
+        array.push(value);
+        this.setConfigurationProperty(propertyName, array);
+    }
+
+    deleteContact(propertyName : string, index : number) : void {
+        let array = this.getPropertyValue(propertyName);
+        if (!Array.isArray(array)) return
+        array.splice(index, 1);
+        this.setConfigurationProperty(propertyName, array);
     }
 }

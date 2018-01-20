@@ -1,44 +1,30 @@
 <div class="ui-g">
-    <p-dropdown [options]="Senders" [(ngModel)]="selectedSender"></p-dropdown>
-</div>
-<div class="ui-g" *ngIf="selectedSender">
-    <div *ngIf="selectedSender.Name == 'Mail'">
+  <p-dropdown class="ui-g-12" [options]="Senders" [(ngModel)]="selectedSender"></p-dropdown>
+  <div class="ui-g-12" *ngIf="selectedSender">
+    <div class="ui-inputgroup" *ngFor="let property of getConfigurationKeys()">
+      <div class="ui-inputgroup" *ngIf="getPropertyType(property) == 'string'">
+        <span class="ui-inputgroup-addon">{{property}}</span>
+        <input type="text" pInputText [value]="getPropertyValue(property)" (input)="setConfigurationProperty(property, $event.target.value)"
+        />
+      </div>
+      <div class="ui-inputgroup" *ngIf="getPropertyType(property) == 'number'">
+        <span class="ui-inputgroup-addon">{{property}}</span>
+        <input type="text" pInputText [value]="getPropertyValue(property)" (input)="setConfigurationProperty(property, $event.target.value)"
+        />
+      </div>
+      <div  *ngIf="getPropertyType(property) == 'Array'">
         <div class="ui-inputgroup">
-            <span class="ui-inputgroup-addon">Name</span>
-            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.Name" />
+          <span class="ui-inputgroup-addon">{{property}}</span>
+          <input type="text" (keyup.enter)="addContact(property, contact)" [(ngModel)]="contact" pInputText />
+          <button pButton type="button" (click)="addContact(property, contact)" icon="fa-plus"></button>
         </div>
-        <div class="ui-inputgroup">
-            <span class="ui-inputgroup-addon">Email</span>
-            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.Email" />
-        </div>
-        <div class="ui-inputgroup">
-            <span class="ui-inputgroup-addon">SMTP Username</span>
-            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.SmtpUsername" />
-        </div>
-        <div class="ui-inputgroup">
-            <span class="ui-inputgroup-addon">SMTP Password</span>
-            <input type="password" pInputText [(ngModel)]="selectedSender.Configuration.SmtpPassword" />
-        </div>
-        <div class="ui-inputgroup">
-            <span class="ui-inputgroup-addon">SMTP Adress</span>
-            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.SmtpAdress" />
-        </div>
-        <div class="ui-inputgroup">
-            <span class="ui-inputgroup-addon">SMTP Port</span>
-            <input type="text" pInputText [(ngModel)]="selectedSender.Configuration.SmtpPort" />
-        </div>
+        <ul class="ui-g-12">
+          <li *ngFor="let contact of getPropertyValue(property); let i = index">
+            {{contact}}
+            <button pButton type="button" (click)="deleteContact(property, i)" icon="fa-minus"></button>
+          </li>
+        </ul>
+      </div>
     </div>
+  </div>
 </div>
-<div class="ui-g">
-    <div class="ui-inputgroup">
-            <span class="ui-inputgroup-addon">Contacts</span>
-            <input type="text" (keyup.enter)="addContact(selectedSender.Configuration, contact)" [(ngModel)]="contact" pInputText />
-        <button pButton type="button" (click)="addContact(selectedSender.Configuration, contact)" icon="fa-plus"></button>
-    </div>
-</div>
-<ul>
-    <li *ngFor="let contact of selectedSender.Configuration.Contacts; let i = index">
-        {{contact}} 
-        <button pButton type="button" (click)="deleteContact(selectedSender.Configuration, i)" icon="fa-minus"></button>
-    </li>
-</ul>
