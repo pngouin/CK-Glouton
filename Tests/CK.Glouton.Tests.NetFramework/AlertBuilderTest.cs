@@ -3,6 +3,7 @@ using CK.Glouton.Service.Common;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
+using CK.Glouton.Server.Handlers.Common;
 
 namespace CK.Glouton.Tests
 {

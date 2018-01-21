@@ -1,12 +1,12 @@
-﻿using CK.Core;
-using CK.Glouton.Model.Server.Handlers;
-using CK.Monitoring;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using CK.Core;
+using CK.Glouton.Model.Server.Handlers;
+using CK.Monitoring;
 
-namespace CK.Glouton.Service.Common
+namespace CK.Glouton.Server.Handlers.Common
 {
     public static class AlertBuilder
     {
