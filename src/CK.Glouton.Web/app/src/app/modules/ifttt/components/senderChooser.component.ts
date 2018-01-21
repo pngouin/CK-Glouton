@@ -39,7 +39,7 @@ export class SenderChooserComponent implements OnInit {
         }
     }
 
-    getConfigurationKeys ( configuration : object ) : string[] {
+    getKeys () : string[] {
         return Object.keys(this.selectedSender.Configuration);
     }
 
@@ -61,7 +61,7 @@ export class SenderChooserComponent implements OnInit {
         Reflect.set(this.selectedSender.Configuration, propertyName, value);
     }
 
-    addContact( propertyName : string, value : string ) : void {
+    addToArray( propertyName : string, value : string ) : void {
         if (value == "") return;
         let array = this.getPropertyValue(propertyName);
         if (!Array.isArray(array)) return;
@@ -69,7 +69,7 @@ export class SenderChooserComponent implements OnInit {
         this.setConfigurationProperty(propertyName, array);
     }
 
-    deleteContact(propertyName : string, index : number) : void {
+    deleteToArray(propertyName : string, index : number) : void {
         let array = this.getPropertyValue(propertyName);
         if (!Array.isArray(array)) return
         array.splice(index, 1);
