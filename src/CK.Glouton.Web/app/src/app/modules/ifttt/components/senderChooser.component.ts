@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ISender, ISenderMailConfiguration, ISenderData } from 'app/modules/ifttt/models/sender.model';
+import { ISender, MailSender } from 'app/modules/ifttt/models/sender.model';
 import { concat } from 'rxjs/operator/concat';
+import { SelectItem } from 'primeng/api';
 
 @Component({
     selector: 'senderChooser',
@@ -12,29 +13,31 @@ export class SenderChooserComponent implements OnInit {
     constructor() { }
 
     contact : string;
+    selectedSender : ISender;
+    selectedAddSender : string;
+    selectedAddSenderName : string;
 
-    MailConfiguration : ISenderMailConfiguration = {
-        Name : "",
-        Email : "",
-        SmtpUsername : "",
-        SmtpPassword : "",
-        SmtpAdress : "",
-        SmptPort : -1,
-        Contacts : []
-    }
+    senders : SelectItem[] = [] = [
+        {label : "Choose a sender", value : null}
+    ];
 
-    MailSender : ISender = {
-        Name : "Mail",
-        Configuration : this.MailConfiguration
-    }
-
-    selectedSender : ISender = this.MailSender;
-
-    Senders : ISenderData[] = [
-        { label : "Mail", value : this.MailSender }
+    addSenderDropDown : SelectItem[] = [
+        {label : "Choose a sender", value : null},
+        {label : "Mail", value : "Mail"}
     ]
 
     ngOnInit() { }
+
+    addSender ( name : string, senderName : string ) : void {
+        if (senderName == "" || typeof senderName === 'undefined') return;
+        if (name == "Mail") {
+            this.senders.push({
+                label : senderName, value : new MailSender()
+            });
+            this.senders.length
+            this.selectedAddSenderName = "";
+        }
+    }
 
     getConfigurationKeys ( configuration : object ) : string[] {
         return Object.keys(this.selectedSender.Configuration);
