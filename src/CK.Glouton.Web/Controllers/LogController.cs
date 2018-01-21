@@ -1,9 +1,10 @@
-﻿using CK.Glouton.Model.Logs;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using CK.Glouton.Model.Logs;
 using CK.Glouton.Model.Services;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CK.Glouton.Web.Controllers
 {
@@ -15,10 +16,12 @@ namespace CK.Glouton.Web.Controllers
     public class LogController : Controller
     {
         private readonly ILuceneSearcherService _luceneSearcherService;
+        private readonly CultureInfo _cultureInfo;
 
         public LogController( ILuceneSearcherService luceneSearcherService )
         {
             _luceneSearcherService = luceneSearcherService;
+            _cultureInfo = new CultureInfo( "fr-FR" );
         }
 
         /// <summary>
@@ -75,12 +78,35 @@ namespace CK.Glouton.Web.Controllers
             logLevel = logLevel.All( d => d == null ) ? null : logLevel.Where( d => d != null ).ToArray();
             appName = appName.All( d => d == null ) ? null : appName.Where( d => d != null ).ToArray();
 
-            if( !DateTime.TryParse( from, out var fromDate ) )
+            if( !DateTime.TryParse( from, _cultureInfo, DateTimeStyles.None, out var fromDate ) )
                 fromDate = new DateTime();
-            if( !DateTime.TryParse( to, out var toDate ) )
+            if( !DateTime.TryParse( to, _cultureInfo, DateTimeStyles.None, out var toDate ) )
                 toDate = new DateTime();
 
             return _luceneSearcherService.GetLogWithFilters( monitorId, fromDate, toDate, fields, logLevel, keyword, appName, groupDepth );
+        }
+
+        [HttpGet( "before_after" )]
+        public object GetBeforeAndAfter
+        (
+            [FromQuery] string monitorId, [FromQuery] string[] appName,
+            [FromQuery] string dateStamp,
+            [FromQuery] string[] fields, [FromQuery] string keyword,
+            [FromQuery] string[] logLevel, [FromQuery] int groupDepth,
+            [FromQuery] int count
+        )
+        {
+            if( appName == null || appName.Length == 0 )
+                return BadRequest();
+            fields = fields.All( d => d == null ) ? null : fields.Where( d => d != null ).ToArray();
+            logLevel = logLevel.All( d => d == null ) ? null : logLevel.Where( d => d != null ).ToArray();
+            appName = appName.All( d => d == null ) ? null : appName.Where( d => d != null ).ToArray();
+
+            // TODO: Maybe set culture in config
+            if( !DateTime.TryParse( dateStamp, _cultureInfo, DateTimeStyles.None, out var parsedResult ) )
+                parsedResult = new DateTime();
+
+            return _luceneSearcherService.LogsBeforeAndAfter( monitorId, parsedResult, fields, logLevel, keyword, appName, groupDepth, count );
         }
 
         /// <summary>
