@@ -42,9 +42,12 @@ namespace CK.Glouton.Lucene
 
             if( searchConfiguration.ESearchMethod == ESearchMethod.FullText )
             {
-                return Search( searchConfiguration, new MultiFieldQueryParser( LuceneVersion.LUCENE_48,
+                return Search( searchConfiguration, new MultiFieldQueryParser
+                (
+                    LuceneVersion.LUCENE_48,
                     searchConfiguration.Fields,
-                    new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ).Parse( searchConfiguration.Query ) );
+                    new StandardAnalyzer( LuceneVersion.LUCENE_48 )
+                ).Parse( searchConfiguration.Query ) );
             }
 
             return searchConfiguration.WantAll
@@ -59,9 +62,13 @@ namespace CK.Glouton.Lucene
 
             if( luceneSearcherConfiguration.ESearchMethod == ESearchMethod.FullText )
             {
-                return _indexSearcher?.Search( new MultiFieldQueryParser( LuceneVersion.LUCENE_48,
+                return _indexSearcher?.Search( new MultiFieldQueryParser
+                (
+                    LuceneVersion.LUCENE_48,
                     luceneSearcherConfiguration.Fields,
-                    new StandardAnalyzer( LuceneVersion.LUCENE_48 ) ).Parse( luceneSearcherConfiguration.Query ), luceneSearcherConfiguration.MaxResult ).TotalHits ?? -1;
+                    new StandardAnalyzer( LuceneVersion.LUCENE_48 )
+                ).Parse( luceneSearcherConfiguration.Query ), luceneSearcherConfiguration.MaxResult )
+                 .TotalHits ?? -1;
             }
 
             if( luceneSearcherConfiguration.WantAll )
@@ -73,12 +80,14 @@ namespace CK.Glouton.Lucene
         private static Query GetAll( ELuceneWantAll all )
         {
             var query = new BooleanQuery
-            { {
-                all == ELuceneWantAll.Exception
-                    ? new WildcardQuery( new Term( LogField.EXCEPTION, "*" ) )
-                    : new WildcardQuery( new Term( LogField.LOG_LEVEL, "*" ) )
-                , Occur.MUST
-            } };
+            {
+                {
+                    all == ELuceneWantAll.Exception
+                        ? new WildcardQuery( new Term( LogField.EXCEPTION, "*" ) )
+                        : new WildcardQuery( new Term( LogField.LOG_LEVEL, "*" ) ),
+                    Occur.MUST
+                }
+            };
 
             return query;
         }
@@ -113,24 +122,33 @@ namespace CK.Glouton.Lucene
 
         private static Query CreateTimeQuery( ILuceneSearcherConfiguration configuration )
         {
-            return new TermRangeQuery( LogField.LOG_TIME,
-                new BytesRef( DateTools.DateToString( configuration.DateStart, DateTools.Resolution.MILLISECOND ) ),
-                new BytesRef( DateTools.DateToString( configuration.DateEnd, DateTools.Resolution.MILLISECOND ) ),
-                includeLower: true,
-                includeUpper: true );
+            return TermRangeQuery.NewStringRange
+            (
+                LogField.LOG_TIME,
+                BuildDate( configuration.DateStart ),
+                BuildDate( configuration.DateEnd ),
+                true,
+                true
+            );
         }
+
+        private static string BuildDate( DateTime dateTime ) => DateTools.DateToString( dateTime, DateTools.Resolution.MILLISECOND );
 
         private static Query CreateLogLevelQuery( ILuceneSearcherConfiguration configuration )
         {
-            var levelParser = new QueryParser( LuceneVersion.LUCENE_48,
-               LogField.LOG_LEVEL,
-               new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
+            var levelParser = new QueryParser
+            (
+                LuceneVersion.LUCENE_48,
+                LogField.LOG_LEVEL,
+                new StandardAnalyzer( LuceneVersion.LUCENE_48 )
+            );
 
             var bLevelQuery = new BooleanQuery();
             foreach( var level in configuration.LogLevel )
             {
                 bLevelQuery.Add( levelParser.Parse( level ), Occur.SHOULD );
             }
+
             return bLevelQuery;
         }
 
@@ -158,6 +176,7 @@ namespace CK.Glouton.Lucene
                     bFieldQuery.Add( new WildcardQuery( new Term( field, configuration.Query ?? "*" ) ), Occur.SHOULD );
                 }
             }
+
             return bFieldQuery;
         }
 
@@ -229,6 +248,7 @@ namespace CK.Glouton.Lucene
                         throw new ArgumentException( nameof( document ) );
                 }
             }
+
             return result;
         }
     }
