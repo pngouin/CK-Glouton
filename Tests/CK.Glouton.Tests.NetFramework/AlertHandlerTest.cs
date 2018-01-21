@@ -1,13 +1,13 @@
-﻿using CK.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using CK.Core;
 using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using CK.Glouton.Model.Server.Sender;
 
 namespace CK.Glouton.Tests
 {
@@ -133,6 +133,13 @@ namespace CK.Glouton.Tests
         public TestAlertSender()
         {
             Triggered = false;
+        }
+
+        public string SenderType { get; set; } = "Test";
+
+        public bool Match( IAlertSenderConfiguration configuration )
+        {
+            return configuration.SenderType == "Test";
         }
 
         public void Send( AlertEntry logEntry )
