@@ -13,9 +13,10 @@ using System.Text;
 
 namespace CK.Glouton.Tests
 {
+    /// <inheritdoc cref="IGloutonServer" />
     /// <summary>
-    /// Represents a mock glouton server.
-    /// Instead of being sent to lucene, received logs will be put in a list.
+    /// Represents a mock glouton server *with no handlers support*.
+    /// Received logs will be put in a list.
     /// </summary>
     public class GloutonServerMock : IGloutonServer, IDisposable
     {
@@ -93,6 +94,14 @@ namespace CK.Glouton.Tests
         public void Open( IHandlersManagerConfiguration handlersManagerConfiguration = null )
         {
             _controlChannelServer.Open();
+        }
+
+        /// <summary>
+        /// Does nothing.
+        /// </summary>
+        /// <param name="handlersManagerConfiguration"></param>
+        public void ApplyConfiguration( IHandlersManagerConfiguration handlersManagerConfiguration = null )
+        {
         }
 
         #region IDisposable Support

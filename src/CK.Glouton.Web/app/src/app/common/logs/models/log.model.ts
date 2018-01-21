@@ -6,7 +6,7 @@ export enum LogType {
 
 export interface ILogViewModel {
     logType: LogType;
-    logTime: string;
+    logTime: Date;
     text: string;
     tags: string;
     sourceFileName: string;
@@ -19,6 +19,7 @@ export interface ILogViewModel {
     previousLogTime: string;
     appName: string;
     conclusion: string;
+    children: ILogViewModel[];
 }
 
 export interface IInnerExceptionViewModel {

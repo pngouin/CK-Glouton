@@ -1,13 +1,9 @@
-﻿using CK.Core;
-using CK.Glouton.Lucene;
+﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
-using CK.Glouton.Server;
-using CK.Glouton.Server.Handlers;
+using CK.Glouton.Model.Lucene;
 using FluentAssertions;
-using Lucene.Net.Index;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -30,36 +26,11 @@ namespace CK.Glouton.Tests
 #endif
         public void ConstructIndex()
         {
-            using( var server = TestHelper.DefaultGloutonServer() )
-            {
-                server.Open( new HandlersManagerConfiguration
-                {
-                    GloutonHandlers = { LuceneGloutonHandlerConfiguration }
-                } );
-
-                using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
-                {
-                    var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
-                    grandOutputClient.EnsureGrandOutputClient( activityMonitor );
-
-                    activityMonitor.Info( "Hello world" );
-                    activityMonitor.Error( "CriticalError" );
-                    activityMonitor.Fatal( ThrowAggregateException( 3 ) );
-
-                }
-            }
+            LuceneTestIndexBuilder.ConstructIndex();
         }
 
         private const int LuceneMaxSearch = 10;
         private static readonly string LucenePath = Path.Combine( TestHelper.GetTestLogDirectory(), "Lucene" );
-
-        private static readonly LuceneGloutonHandlerConfiguration LuceneGloutonHandlerConfiguration = new LuceneGloutonHandlerConfiguration
-        {
-            MaxSearch = LuceneMaxSearch,
-            Path = LucenePath,
-            OpenMode = OpenMode.CREATE,
-            Directory = ""
-        };
 
         private static readonly LuceneConfiguration LuceneSearcherConfiguration = new LuceneConfiguration
         {
@@ -67,19 +38,6 @@ namespace CK.Glouton.Tests
             Path = LucenePath,
             Directory = Assembly.GetExecutingAssembly().GetName().Name
         };
-
-        public static AggregateException ThrowAggregateException( int numberOfException )
-        {
-            List<Exception> exceptions = new List<Exception>();
-            for( int i = 0 ; i < numberOfException ; i++ )
-            {
-                try
-                { throw new Exception(); }
-                catch( Exception ex ) { exceptions.Add( ex ); }
-            }
-
-            return new AggregateException( "Aggregate exceptions list", exceptions );
-        }
 
         [Test]
         public void log_can_be_indexed_and_searched_with_full_text_search()
@@ -92,7 +50,7 @@ namespace CK.Glouton.Tests
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 Fields = new[] { "LogLevel", "Text" },
-                SearchMethod = SearchMethod.FullText,
+                ESearchMethod = ESearchMethod.FullText,
                 MaxResult = 10,
                 Query = "Text:\"Hello world\""
             };
@@ -127,7 +85,7 @@ namespace CK.Glouton.Tests
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 Fields = new[] { "Text" },
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 Query = "\"Hello world\""
             };
@@ -171,7 +129,7 @@ namespace CK.Glouton.Tests
 
 
 
-            configuration.SearchAll( LuceneWantAll.Log );
+            configuration.SearchAll( ELuceneWantAll.Log );
             result = searcher.Search( configuration );
             result.Count.Should().Be( 8 ); // TODO: If add log to the index change the number or get an alternative technique.
 
@@ -181,7 +139,7 @@ namespace CK.Glouton.Tests
             configuration = new LuceneSearcherConfiguration
             {
                 Fields = new string[ 0 ],
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 DateStart = new DateTime( 2, 01, 01 ),
                 DateEnd = new DateTime( 9999, 01, 01 )
@@ -194,7 +152,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 DateStart = new DateTime( 2, 01, 01 ),
                 DateEnd = new DateTime( 3, 01, 01 )
@@ -214,7 +172,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 MonitorId = Guid.NewGuid().ToString()
             };
@@ -226,7 +184,7 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 LogLevel = new string[] { "Fatal" }
             };
@@ -238,19 +196,19 @@ namespace CK.Glouton.Tests
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 GroupDepth = 1
             };
-            result = searcher.Search(configuration);
-            result.Count.Should().Be(2);
+            result = searcher.Search( configuration );
+            result.All( l => l.GroupDepth == 1 ).Should().BeTrue();
 
             //
             // Search all document with a LogLevel and a monitorId
             //
             configuration = new LuceneSearcherConfiguration
             {
-                SearchMethod = SearchMethod.WithConfigurationObject,
+                ESearchMethod = ESearchMethod.WithConfigurationObject,
                 MaxResult = 10,
                 Fields = new string[] { LogField.MONITOR_ID }
             };
@@ -269,30 +227,32 @@ namespace CK.Glouton.Tests
         [Test]
         public void luceneSearcherManager_return_log_order_by_date()
         {
-            LuceneSearcherManager searcherManager = new LuceneSearcherManager(LuceneSearcherConfiguration);
-            var searcher = searcherManager.GetSearcher(LuceneSearcherConfiguration.Directory);
+            LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
+            var searcher = searcherManager.GetSearcher( LuceneSearcherConfiguration.Directory );
 
             LuceneSearcherConfiguration configuration = new LuceneSearcherConfiguration
             {
                 MaxResult = 20
             };
 
-            configuration.SearchAll(LuceneWantAll.Log);
-            var result = searcher.Search(configuration);
-            result.SequenceEqual(result.OrderBy(l => l.LogTime)).Should().BeTrue();
+            configuration.SearchAll( ELuceneWantAll.Log );
+            var result = searcher.Search( configuration );
+            result.SequenceEqual( result.OrderBy( l => l.LogTime ) ).Should().BeTrue();
         }
 
         [Test]
         public void luceneSearcherManager_return_good_appName()
         {
             LuceneSearcherManager searcherManager = new LuceneSearcherManager( LuceneSearcherConfiguration );
-            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + Guid.NewGuid().ToString();
+            var fakeName = Guid.NewGuid().ToString();
+            string directoryPath = LuceneSearcherConfiguration.Path + "\\" + fakeName;
 
             Directory.CreateDirectory( directoryPath );
 
             var appName = searcherManager.AppName;
-            appName.Count.Should().NotBe(Directory.GetDirectories(LuceneSearcherConfiguration.Path).Length);
-            appName.Contains(LuceneSearcherConfiguration.Directory).Should().BeTrue();
+            appName.Count.Should().NotBe( Directory.GetDirectories( LuceneSearcherConfiguration.Path ).Length );
+            appName.Contains( LuceneSearcherConfiguration.Directory ).Should().BeTrue();
+            appName.Any( a => a == fakeName ).Should().BeFalse();
 
             Directory.Delete( directoryPath );
         }
@@ -321,7 +281,7 @@ namespace CK.Glouton.Tests
             {
                 MaxResult = 10,
             };
-            configuration.SearchAll( LuceneWantAll.Exception );
+            configuration.SearchAll( ELuceneWantAll.Exception );
 
             var result = searcher.Search( configuration );
             result.Should().NotBeNull();
@@ -340,6 +300,20 @@ namespace CK.Glouton.Tests
                 exception.Message.Should().NotBeNullOrEmpty();
                 exception.StackTrace.Should().NotBeNullOrEmpty();
             }
+        }
+
+        [Test]
+        public void lucene_statistic_good_value() //TODO: Get a good name...
+        {
+            LuceneStatistics luceneStatistics = new LuceneStatistics( LuceneSearcherConfiguration );
+            luceneStatistics.AllExceptionCount.Should().BeGreaterThan( 0 );
+            luceneStatistics.AllLogCount.Should().BeGreaterThan( 0 );
+            luceneStatistics.AppNameCount.Should().NotBe( -1 );
+            luceneStatistics.GetAppNames.Count().Should().BeGreaterThan( 0 );
+            luceneStatistics.LogInAppNameCount( "badappaname" ).Should().BeLessThan( 0 );
+            luceneStatistics.LogInAppNameCount( "badappaname" ).Should().Be( -1 );
+            luceneStatistics.ExceptionInAppNameCount( "badappaname" ).Should().BeLessThan( 0 );
+            luceneStatistics.ExceptionInAppNameCount( "badappaname" ).Should().Be( -1 );
         }
     }
 }

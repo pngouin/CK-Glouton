@@ -6,4 +6,5 @@ export interface ISearchParameters {
     fields?: string[];
     keyword?: string;
     logLevel?: string[];
+    groupDepth?: number;
 }

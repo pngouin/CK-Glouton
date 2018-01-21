@@ -1,9 +1,6 @@
 ﻿using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Lucene;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CK.Glouton.Lucene
 {
@@ -16,17 +13,17 @@ namespace CK.Glouton.Lucene
         public string[] LogLevel { get; set; }
         public string Query { get; set; }
         public int MaxResult { get; set; }
-        public SearchMethod SearchMethod { get; set; }
-        internal LuceneWantAll All { get; set; }
+        public ESearchMethod ESearchMethod { get; set; }
+        internal ELuceneWantAll All { get; set; }
         public int? GroupDepth { get; set; }
 
         internal bool WantAll;
 
-        public ILuceneSearcherConfiguration SearchAll( LuceneWantAll all )
+        public ILuceneSearcherConfiguration SearchAll( ELuceneWantAll all )
         {
             All = all;
             WantAll = true;
-            Fields = new string[] { ( all == LuceneWantAll.Exception ) ? LogField.EXCEPTION : LogField.TEXT };
+            Fields = new string[] { ( all == ELuceneWantAll.Exception ) ? LogField.EXCEPTION : LogField.TEXT };
             return this;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace CK.Glouton.Web.Controllers
         [HttpGet( "search/{appName}" )]
         public object Search( [FromRoute] string appName, [FromQuery] string query = "" )
         {
-            return string.IsNullOrEmpty( query ) ? GetAll( appName ) : _luceneSearcherService.Search(query, appName );
+            return string.IsNullOrEmpty( query ) ? GetAll( appName ) : _luceneSearcherService.Search( query, appName );
         }
 
         /// <summary>
@@ -57,23 +58,29 @@ namespace CK.Glouton.Web.Controllers
         /// <param name="fields">Fields to look for. By default: <code>{ "Tags", "FileName", "Text" }</code>.</param>
         /// <param name="keyword">Which keywords to consider. By default: <code>"*"</code>.</param>
         /// <param name="logLevel">Log levels to consider during the search. By default: <code>{ "Debug", "Trace", "Info", "Warn", "Error", "Fatal" }</code>.</param>
+        /// <param name="groupDepth"></param>
         /// <returns></returns>
         [HttpGet( "filter" )]
         public object Filter
         (
             [FromQuery] string monitorId, [FromQuery] string[] appName,
-            [FromQuery] DateTime from, [FromQuery] DateTime to,
+            [FromQuery] string from, [FromQuery] string to,
             [FromQuery] string[] fields, [FromQuery] string keyword,
-            [FromQuery] string[] logLevel
+            [FromQuery] string[] logLevel, [FromQuery] int groupDepth
         )
         {
-            if (appName == null || appName.Length == 0)
+            if( appName == null || appName.Length == 0 )
                 return BadRequest();
-            fields = fields.All(d => d == null) ? null : fields.Where(d => d != null).ToArray();
-            logLevel = logLevel.All(d => d == null) ? null : logLevel.Where(d => d != null).ToArray();
-            appName = appName.All(d => d == null) ? null : appName.Where(d => d != null).ToArray();
+            fields = fields.All( d => d == null ) ? null : fields.Where( d => d != null ).ToArray();
+            logLevel = logLevel.All( d => d == null ) ? null : logLevel.Where( d => d != null ).ToArray();
+            appName = appName.All( d => d == null ) ? null : appName.Where( d => d != null ).ToArray();
 
-            return _luceneSearcherService.GetLogWithFilters(monitorId, from, to, fields, logLevel, keyword, appName);
+            if( !DateTime.TryParse( from, out var fromDate ) )
+                fromDate = new DateTime();
+            if( !DateTime.TryParse( to, out var toDate ) )
+                toDate = new DateTime();
+
+            return _luceneSearcherService.GetLogWithFilters( monitorId, fromDate, toDate, fields, logLevel, keyword, appName, groupDepth );
         }
 
         /// <summary>

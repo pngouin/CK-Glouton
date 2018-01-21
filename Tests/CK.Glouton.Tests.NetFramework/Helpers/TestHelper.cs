@@ -39,7 +39,9 @@ namespace CK.Glouton.Tests
         /// <summary>
         /// Returns a new mock server.
         /// Host will be <see cref="DefaultAuthHandler"/> and Port will be <see cref="DefaultPort"/>.
-        /// Don't use this for test on Lucene. Please use <see cref="DefaultGloutonServer"/> instead.
+        /// <para>Received logs will be stored in <see cref="GloutonServerMock.ListLog"/>.
+        /// This server won't have handlers support.
+        /// To get a server with handlers, please use <see cref="DefaultGloutonServer"/> instead.</para>
         /// </summary>
         /// <param name="authorizationHandler">The authorization handler. If null, <see cref="DefaultAuthHandler"/> will be used.</param>
         /// <param name="userCertificateValidationCallback">The user certification callback. Can be null.</param>
@@ -63,7 +65,6 @@ namespace CK.Glouton.Tests
         /// <summary>
         /// Returns a new Glouton Server.
         /// Host will be <see cref="DefaultHost"/> and port will be <see cref="DefaultPort"/>.
-        /// Take care, this server will be linked to lucene.
         /// </summary>
         /// <param name="activityMonitor"> The activity monitor used by server and its handler. If null, it will instantiate a new one.</param>
         /// <param name="authorizationHandler">The authorization handler. If null, <see cref="DefaultAuthHandler"/> will be used.</param>
