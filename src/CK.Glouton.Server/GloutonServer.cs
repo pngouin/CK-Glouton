@@ -2,8 +2,12 @@
 using CK.ControlChannel.Tcp;
 using CK.Core;
 using CK.Glouton.Model.Server;
+using CK.Glouton.Model.Server.Handlers;
 using System;
+using System.IO;
 using System.Net.Security;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography.X509Certificates;
 
 namespace CK.Glouton.Server
@@ -13,6 +17,8 @@ namespace CK.Glouton.Server
         private readonly ControlChannelServer _controlChannelServer;
         private readonly IActivityMonitor _activityMonitor;
         private readonly HandlersManager _handlersManager;
+        private readonly IFormatter _formatter;
+        private readonly MemoryStream _memoryStream;
 
         public GloutonServer(
             string boundIpAddress,
@@ -32,8 +38,21 @@ namespace CK.Glouton.Server
                 userCertificateValidationCallback
             );
             _controlChannelServer.RegisterChannelHandler( "GrandOutputEventInfo", HandleGrandOutputEventInfo );
+            _controlChannelServer.RegisterChannelHandler("AddAlertSender", AddAlertSender);
             _activityMonitor = activityMonitor;
             _handlersManager = new HandlersManager( _activityMonitor );
+            _memoryStream = new MemoryStream();
+            _formatter = new BinaryFormatter();
+        }
+
+        private void AddAlertSender(IActivityMonitor monitor, byte[] data, IServerClientSession clientSession)
+        {
+            _memoryStream.Seek(0, SeekOrigin.Begin);
+            _memoryStream.Flush();
+            _memoryStream.Write(data, 0, data.Length);
+            IAlertExpressionModel alertExpressionModel = (IAlertExpressionModel)_formatter.Deserialize(_memoryStream);
+
+            // TODO: make some pâté
         }
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientServerSession )
