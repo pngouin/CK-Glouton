@@ -8,5 +8,6 @@ namespace CK.Glouton.Model.Services
         bool SendNewAlert( IAlertExpressionModel alertExpression );
         IMailConfiguration GetMailConfiguration();
         string[] AvailableConfiguration { get; }
+        IHttpConfiguration GetHttpConfiguration();
     }
 }

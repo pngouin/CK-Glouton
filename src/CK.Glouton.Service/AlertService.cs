@@ -17,7 +17,7 @@ namespace CK.Glouton.Service
         private readonly MemoryStream _memoryStream;
 
 
-        public string[] AvailableConfiguration => new[] { "Mail" };
+        public string[] AvailableConfiguration => new[] { "Mail", "Http" };
 
         public AlertService( IOptions<TcpControlChannelConfiguration> configuration )
         {
@@ -57,6 +57,14 @@ namespace CK.Glouton.Service
                 SmtpPassword = "",
                 SmtpUsername = "",
                 SmtpPort = -1
+            };
+        }
+
+        public IHttpConfiguration GetHttpConfiguration()
+        {
+            return new HttpConfiguration
+            {
+                Url = ""
             };
         }
     }
