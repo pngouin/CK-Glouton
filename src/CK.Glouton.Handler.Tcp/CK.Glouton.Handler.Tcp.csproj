@@ -10,4 +10,8 @@
     <PackageReference Include="CK.ControlChannel.Tcp.Common" Version="0.3.0-a02" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
+  </ItemGroup>
+
 </Project>

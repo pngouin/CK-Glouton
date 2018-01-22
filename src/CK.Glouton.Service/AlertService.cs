@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using CK.ControlChannel.Tcp;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Services;
@@ -9,6 +12,8 @@ namespace CK.Glouton.Service
     {
         private readonly ControlChannelClient _controlChannelCLient;
         private readonly TcpControlChannelConfiguration _configuration;
+        private readonly IFormatter _formatter;
+        private readonly MemoryStream _memoryStream;
 
         public AlertService(TcpControlChannelConfiguration configuration)
         {
@@ -19,13 +24,22 @@ namespace CK.Glouton.Service
                 _configuration.BuildAuthData(),
                 _configuration.IsSecure
                 );
+
+            _controlChannelCLient.OpenAsync();
+
+            _memoryStream = new MemoryStream();
+            _formatter = new BinaryFormatter();
         }
 
-        [Obsolete( "Method is deprecated" )]
         public bool SendNewAlert( IAlertExpressionModel alertExpression )
         {
+            _memoryStream.Seek(0, SeekOrigin.Begin);
+            _memoryStream.Flush();
 
-            return false;
+            _formatter.Serialize(_memoryStream, alertExpression);
+            _controlChannelCLient.SendAsync("AddAlertSender", _memoryStream.ToArray()).GetAwaiter().GetResult();
+
+            return true;
         }
     }
 }

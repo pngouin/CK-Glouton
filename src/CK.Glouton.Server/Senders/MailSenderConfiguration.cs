@@ -1,7 +1,9 @@
 ﻿using CK.Glouton.Model.Server.Sender;
+using System;
 
 namespace CK.Glouton.Server.Senders
 {
+    [Serializable]
     public class MailSenderConfiguration : IAlertSenderConfiguration
     {
         // Implementation of IMailConfiguration
