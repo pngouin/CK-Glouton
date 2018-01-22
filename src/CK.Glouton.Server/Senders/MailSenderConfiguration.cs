@@ -4,7 +4,7 @@ using System;
 namespace CK.Glouton.Server.Senders
 {
     [Serializable]
-    public class MailSenderConfiguration : IAlertSenderConfiguration
+    public class MailSenderConfiguration : IAlertSenderConfiguration, IMailConfiguration
     {
         // Implementation of IMailConfiguration
 
@@ -14,7 +14,7 @@ namespace CK.Glouton.Server.Senders
         public string SmtpPassword { get; set; }
         public string SmtpAddress { get; set; }
         public int SmtpPort { get; set; }
-
+        public string[] Contacts { get; set; }
         public bool Validate()
         {
             return !( string.IsNullOrEmpty( Name ) ||

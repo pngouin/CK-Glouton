@@ -23,6 +23,12 @@ namespace CK.Glouton.Server.Senders
                 throw new ArgumentException( nameof( configuration ) );
             _configuration = configuration;
             _from = new MailboxAddress( _configuration.Name, _configuration.Email );
+            
+            foreach(var mail in configuration.Contacts)
+            {
+                _to.Add(new MailboxAddress(mail));
+            }
+
         }
 
         public void AddReceiver( string name, string email )
