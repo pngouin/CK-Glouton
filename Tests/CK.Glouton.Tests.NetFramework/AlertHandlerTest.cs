@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using CK.Core;
+﻿using CK.Core;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using IExpressionModel = CK.Glouton.Model.Server.Handlers.IExpressionModel;
 
 namespace CK.Glouton.Tests
 {
@@ -48,10 +50,10 @@ namespace CK.Glouton.Tests
                     {
                         new AlertHandlerConfiguration
                         {
-                            Alerts = new List<IAlertModel>
+                            Alerts = new List<IAlertExpressionModel>
                             {
-                                new TestAlertModel { Condition = log => (log.LogLevel & LogLevel.Fatal) == LogLevel.Fatal, Senders = new List<IAlertSender> { sender } },
-                                new TestAlertModel { Condition = log => log.Text?.Contains( "Send" ) ?? false, Senders = new List<IAlertSender> { sender } }
+                                new TestAlertExpressionModel( new [] { new [] { "LogLevel", "In", "Fatal" } } ),
+                                new TestAlertExpressionModel( new [] { new [] { "Text", "Contains", "Send" } } )
                             }
                         }
                     }
@@ -103,9 +105,9 @@ namespace CK.Glouton.Tests
                         {
                             new AlertHandlerConfiguration
                             {
-                                Alerts = new List<IAlertModel>
+                                Alerts = new List<IAlertExpressionModel>
                                 {
-                                    new TestAlertModel { Condition = log => log.Text?.Equals("Hello world") ?? false, Senders = new List<IAlertSender> { sender } }
+                                    new TestAlertExpressionModel( new [] { new [] { "Text", "EqualsTo", "Hello world" } } ),
                                 }
                             }
                         }
@@ -120,10 +122,24 @@ namespace CK.Glouton.Tests
         }
     }
 
-    internal class TestAlertModel : IAlertModel
+    internal class TestAlertExpressionModel : IAlertExpressionModel
     {
-        public Func<AlertEntry, bool> Condition { get; set; }
-        public IList<IAlertSender> Senders { get; set; }
+        public IExpressionModel[] Expressions { get; set; }
+        public IAlertSenderConfiguration[] Senders { get; set; }
+
+        public TestAlertExpressionModel( IEnumerable<string[]> expressions )
+        {
+            Expressions = expressions
+                    .Select( expression => new ExpressionModel { Field = expression[ 0 ], Operation = expression[ 1 ], Body = expression[ 2 ] } )
+                    .ToArray();
+        }
+
+        internal class ExpressionModel : IExpressionModel
+        {
+            public string Field { get; set; }
+            public string Operation { get; set; }
+            public string Body { get; set; }
+        }
     }
 
     internal class TestAlertSender : IAlertSender
