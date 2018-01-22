@@ -3,13 +3,12 @@ using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
+using CK.Glouton.Server.Senders;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using IExpressionModel = CK.Glouton.Model.Server.Handlers.IExpressionModel;
 
 namespace CK.Glouton.Tests
 {
@@ -42,20 +41,23 @@ namespace CK.Glouton.Tests
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
-                var sender = new TestAlertSender();
-
                 server.Open( new HandlersManagerConfiguration
                 {
                     GloutonHandlers =
                     {
-                        new AlertHandlerConfiguration
+                        new AlertHandlerConfiguration { Alerts = new List<IAlertExpressionModel>
                         {
-                            Alerts = new List<IAlertExpressionModel>
-                            {
-                                new TestAlertExpressionModel( new [] { new [] { "LogLevel", "In", "Fatal" } } ),
-                                new TestAlertExpressionModel( new [] { new [] { "Text", "Contains", "Send" } } )
-                            }
-                        }
+                            new AlertExpressionModelMock
+                            (
+                                new [] { new [] { "LogLevel", "In", "Fatal" } },
+                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
+                            ),
+                            new AlertExpressionModelMock
+                            (
+                                new [] { new [] { "Text", "Contains", "Send" } },
+                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
+                            )
+                        } }
                     }
                 } );
 
@@ -66,17 +68,17 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeFalse();
+                    // Assert false
 
                     activityMonitor.Fatal( "Fatal Error n°42" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeTrue();
+                    // Assert true
 
-                    sender.Reset();
+                    // Reset
 
                     activityMonitor.Info( "aze Send rty" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeTrue();
+                    // Assert true
                 }
             }
         }
@@ -86,8 +88,6 @@ namespace CK.Glouton.Tests
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
-                var sender = new TestAlertSender();
-
                 server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration() } } );
 
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
@@ -97,75 +97,29 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeFalse();
+                    // Assert false
 
                     server.ApplyConfiguration( new HandlersManagerConfiguration
                     {
                         GloutonHandlers =
                         {
-                            new AlertHandlerConfiguration
+                            new AlertHandlerConfiguration { Alerts = new List<IAlertExpressionModel>
                             {
-                                Alerts = new List<IAlertExpressionModel>
-                                {
-                                    new TestAlertExpressionModel( new [] { new [] { "Text", "EqualsTo", "Hello world" } } ),
-                                }
-                            }
+                                new AlertExpressionModelMock
+                                (
+                                    new [] { new [] { "Text", "EqualsTo", "Hello world" } },
+                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
+                                ),
+                            } }
                         }
                     } );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
 
                     activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeTrue();
+                    // Assert true
                 }
             }
-        }
-    }
-
-    internal class TestAlertExpressionModel : IAlertExpressionModel
-    {
-        public IExpressionModel[] Expressions { get; set; }
-        public IAlertSenderConfiguration[] Senders { get; set; }
-
-        public TestAlertExpressionModel( IEnumerable<string[]> expressions )
-        {
-            Expressions = expressions
-                    .Select( expression => new ExpressionModel { Field = expression[ 0 ], Operation = expression[ 1 ], Body = expression[ 2 ] } )
-                    .ToArray();
-        }
-
-        internal class ExpressionModel : IExpressionModel
-        {
-            public string Field { get; set; }
-            public string Operation { get; set; }
-            public string Body { get; set; }
-        }
-    }
-
-    internal class TestAlertSender : IAlertSender
-    {
-        public bool Triggered { get; private set; }
-
-        public TestAlertSender()
-        {
-            Triggered = false;
-        }
-
-        public string SenderType { get; set; } = "Test";
-
-        public bool Match( IAlertSenderConfiguration configuration )
-        {
-            return configuration.SenderType == "Test";
-        }
-
-        public void Send( AlertEntry logEntry )
-        {
-            Triggered = true;
-        }
-
-        public void Reset()
-        {
-            Triggered = false;
         }
     }
 }
