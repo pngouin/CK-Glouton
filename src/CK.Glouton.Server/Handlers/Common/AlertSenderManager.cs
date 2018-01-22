@@ -21,16 +21,22 @@ namespace CK.Glouton.Server.Handlers.Common
                 if( sender.Match( configuration ) )
                     return sender;
 
-            if( configuration.SenderType == "Mail" )
+            switch( configuration.SenderType )
             {
-                if( !( configuration is MailSenderConfiguration mailSenderConfiguration ) )
-                    throw new ArgumentException( nameof( configuration.SenderType ) );
-                var sender = CreateSender( mailSenderConfiguration );
-                _senders.Add( sender );
-                return sender;
-            }
+                case "Mail":
+                    if( !( configuration is MailSenderConfiguration mailSenderConfiguration ) )
+                        throw new ArgumentException( nameof( configuration.SenderType ) );
+                    var sender = CreateSender( mailSenderConfiguration );
+                    _senders.Add( sender );
+                    return sender;
 
-            throw new ArgumentException( nameof( configuration ) );
+                case "Http":
+
+                    return null;
+
+                default:
+                    throw new ArgumentException( nameof( configuration ) );
+            }
         }
 
         public static Func<IAlertSenderConfiguration, IAlertSender> CreateSender = configuration =>
