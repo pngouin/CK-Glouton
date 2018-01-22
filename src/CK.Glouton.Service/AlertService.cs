@@ -3,6 +3,7 @@ using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Model.Services;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -35,10 +36,25 @@ namespace CK.Glouton.Service
             _formatter = new BinaryFormatter();
         }
 
-        public bool SendNewAlert( IAlertExpressionModel alertExpression )
+        public bool SendNewAlert(AlertExpressionModel alertExpression )
         {
             _memoryStream.Seek( 0, SeekOrigin.Begin );
             _memoryStream.Flush();
+            
+            foreach(var sender in alertExpression.Senders)
+            {
+                switch (sender.SenderType)
+                {
+                    case "Mail":
+                        sender.Configuration = JObject.FromObject(sender.Configuration).ToObject<MailConfiguration>();
+                        break;
+                    case "Http":
+                        sender.Configuration = JObject.FromObject(sender.Configuration).ToObject<HttpConfiguration>();
+                        break;
+                    default: 
+                        return false;
+                }
+            }
 
             _formatter.Serialize( _memoryStream, alertExpression );
             _controlChannelClient.SendAsync( "AddAlertSender", _memoryStream.ToArray() ).GetAwaiter().GetResult();

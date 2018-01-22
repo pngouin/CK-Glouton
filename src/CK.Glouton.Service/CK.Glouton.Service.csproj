@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="CK.ControlChannel.Tcp.Client" Version="0.3.0-a02" />
     <PackageReference Include="CK.ControlChannel.Tcp.Common" Version="0.3.0-a02" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta3" />
   </ItemGroup>
 
   <ItemGroup>
