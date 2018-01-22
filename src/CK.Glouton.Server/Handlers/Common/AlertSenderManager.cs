@@ -17,26 +17,31 @@ namespace CK.Glouton.Server.Handlers.Common
 
         public IAlertSender Parse( IAlertSenderConfiguration configuration )
         {
-            foreach( var sender in _senders )
-                if( sender.Match( configuration ) )
-                    return sender;
+            foreach( var existingSender in _senders )
+                if( existingSender.Match( configuration ) )
+                    return existingSender;
 
+            IAlertSender newSender;
             switch( configuration.SenderType )
             {
                 case "Mail":
                     if( !( configuration is MailSenderConfiguration mailSenderConfiguration ) )
                         throw new ArgumentException( nameof( configuration.SenderType ) );
-                    var sender = CreateSender( mailSenderConfiguration );
-                    _senders.Add( sender );
-                    return sender;
+                    newSender = CreateSender( mailSenderConfiguration );
+                    break;
 
                 case "Http":
-
-                    return null;
+                    if( !( configuration is HttpSenderConfiguration httpSenderConfiguration ) )
+                        throw new ArgumentException( nameof( configuration.SenderType ) );
+                    newSender = CreateSender( httpSenderConfiguration );
+                    break;
 
                 default:
                     throw new ArgumentException( nameof( configuration ) );
             }
+            _senders.Add( newSender );
+            return newSender;
+
         }
 
         public static Func<IAlertSenderConfiguration, IAlertSender> CreateSender = configuration =>

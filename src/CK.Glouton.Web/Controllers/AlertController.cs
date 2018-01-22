@@ -29,6 +29,12 @@ namespace CK.Glouton.Web.Controllers
             return _alertService.GetMailConfiguration();
         }
 
+        [HttpGet("configuration/http")]
+        public IHttpConfiguration GetHttpConfiguration()
+        {
+            return _alertService.GetHttpConfiguration();
+        }
+
         [HttpGet("configuration")]
         public string[] GetAllConfiguration()
         {
