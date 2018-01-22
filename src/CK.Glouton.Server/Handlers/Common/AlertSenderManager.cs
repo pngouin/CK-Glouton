@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CK.Glouton.Model.Server.Sender;
+using CK.Glouton.Server.Senders;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using CK.Glouton.Model.Server.Sender;
-using CK.Glouton.Server.Senders;
 
 namespace CK.Glouton.Server.Handlers.Common
 {
@@ -25,7 +25,7 @@ namespace CK.Glouton.Server.Handlers.Common
             {
                 if( !( configuration is MailSenderConfiguration mailSenderConfiguration ) )
                     throw new ArgumentException( nameof( configuration.SenderType ) );
-                var sender = CreateHandler( mailSenderConfiguration );
+                var sender = CreateSender( mailSenderConfiguration );
                 _senders.Add( sender );
                 return sender;
             }
@@ -33,11 +33,11 @@ namespace CK.Glouton.Server.Handlers.Common
             throw new ArgumentException( nameof( configuration ) );
         }
 
-        public static Func<IAlertSenderConfiguration, IAlertSender> CreateHandler = configuration =>
+        public static Func<IAlertSenderConfiguration, IAlertSender> CreateSender = configuration =>
         {
             var name = configuration.GetType().GetTypeInfo().FullName;
             if( !name.EndsWith( "Configuration" ) )
-                throw new Exception( $"Configuration handler type name must end with 'Configuration': {name}." );
+                throw new Exception( $"Configuration sender type name must end with 'Configuration': {name}." );
             name = configuration.GetType().AssemblyQualifiedName.Replace( "Configuration,", "," );
             var type = Type.GetType( name, true );
             return (IAlertSender)Activator.CreateInstance( type, configuration );
