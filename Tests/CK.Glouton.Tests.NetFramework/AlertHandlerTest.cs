@@ -50,17 +50,18 @@ namespace CK.Glouton.Tests
                             new AlertExpressionModelMock
                             (
                                 new [] { new [] { "LogLevel", "In", "Fatal" } },
-                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
+                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
                             ),
                             new AlertExpressionModelMock
                             (
                                 new [] { new [] { "Text", "Contains", "Send" } },
-                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
+                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
                             )
                         } }
                     }
                 } );
 
+                using( var httpServer = new HttpServerReceiver( HttpServerReceiver.DefaultUrl ) )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
@@ -68,17 +69,17 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert false
+                    httpServer.Alerted.Should().BeFalse();
 
                     activityMonitor.Fatal( "Fatal Error n°42" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert true
+                    httpServer.Alerted.Should().BeTrue();
 
-                    // Reset
+                    httpServer.Reset();
 
                     activityMonitor.Info( "aze Send rty" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert true
+                    httpServer.Alerted.Should().BeTrue();
                 }
             }
         }
@@ -90,6 +91,7 @@ namespace CK.Glouton.Tests
             {
                 server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration() } } );
 
+                using( var httpServer = new HttpServerReceiver( HttpServerReceiver.DefaultUrl ) )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
@@ -97,7 +99,7 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert false
+                    httpServer.Alerted.Should().BeFalse();
 
                     server.ApplyConfiguration( new HandlersManagerConfiguration
                     {
@@ -107,9 +109,9 @@ namespace CK.Glouton.Tests
                             {
                                 new AlertExpressionModelMock
                                 (
-                                    new [] { new [] { "Text", "EqualsTo", "Hello world" } },
-                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
-                                ),
+                                    new [] { new [] { "Text", "EqualTo", "Hello world" } },
+                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                )
                             } }
                         }
                     } );
@@ -117,7 +119,7 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert true
+                    httpServer.Alerted.Should().BeTrue();
                 }
             }
         }

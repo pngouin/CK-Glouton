@@ -65,7 +65,7 @@ namespace CK.Glouton.Server.Senders
                 values.Add( "Conclusions", stringBuilder.ToString() );
             }
 
-            Client.PostAsync( _url, new FormUrlEncodedContent( values ) );
+            Client.PostAsync( _url, new FormUrlEncodedContent( values ) ).GetAwaiter().GetResult();
         }
     }
 }
