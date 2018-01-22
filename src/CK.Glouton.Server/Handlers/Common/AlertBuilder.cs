@@ -116,7 +116,6 @@ namespace CK.Glouton.Server.Handlers.Common
                     case "FileName":
                     case "AppName":
                     case "Text":
-                    // TODO: Fix exceptions
                     case "Exception.Message":
                     case "Exception.StackTrace":
                         constant = Expression.Constant( alertExpression.Body );
@@ -138,9 +137,13 @@ namespace CK.Glouton.Server.Handlers.Common
                     throw new InvalidOperationException
                         ( $"{nameof( alertExpression.Operation )} {alertExpression.Operation} is invalid for field {alertExpression.Field}." );
 
-                expression = expression == null
+                var innerExpression = field != EField.String
                     ? Expressions[ operation ].Invoke( member, constant )
-                    : Expression.And( expression, Expressions[ operation ].Invoke( member, constant ) );
+                    : Expressions[ operation ].Invoke( Expression.Coalesce( member, Expression.Constant( string.Empty ) ), constant );
+
+                expression = expression == null
+                   ? innerExpression
+                   : Expression.And( expression, innerExpression );
             }
 
             return Expression.Lambda<Func<AlertEntry, bool>>( expression, Parameter ).Compile();
