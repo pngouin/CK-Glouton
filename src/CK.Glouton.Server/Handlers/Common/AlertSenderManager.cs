@@ -25,13 +25,13 @@ namespace CK.Glouton.Server.Handlers.Common
             switch( configuration.SenderType )
             {
                 case "Mail":
-                    if( !( configuration is MailSenderConfiguration mailSenderConfiguration ) )
+                    if( !( configuration.Configuration is MailSenderConfiguration mailSenderConfiguration ) )
                         throw new ArgumentException( nameof( configuration.SenderType ) );
                     newSender = CreateSender( mailSenderConfiguration );
                     break;
 
                 case "Http":
-                    if( !( configuration is HttpSenderConfiguration httpSenderConfiguration ) )
+                    if( !( configuration.Configuration is HttpSenderConfiguration httpSenderConfiguration ) )
                         throw new ArgumentException( nameof( configuration.SenderType ) );
                     newSender = CreateSender( httpSenderConfiguration );
                     break;

@@ -3,6 +3,7 @@
     public interface IAlertSenderConfiguration
     {
         string SenderType { get; set; }
+        object Configuration { get; set; }
         IAlertSenderConfiguration Clone();
     }
 }

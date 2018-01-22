@@ -7,6 +7,7 @@ namespace CK.Glouton.Server.Senders
         public string SenderType { get; set; } = "Http";
 
         public string Url { get; set; }
+        public object Configuration { get; set; }
 
         public IAlertSenderConfiguration Clone()
         {

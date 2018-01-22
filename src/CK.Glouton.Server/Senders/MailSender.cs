@@ -19,7 +19,7 @@ namespace CK.Glouton.Server.Senders
 
         public MailSender( MailSenderConfiguration configuration )
         {
-            if( !configuration.Validate() || configuration.SenderType != SenderType )
+            if( !configuration.Validate())
                 throw new ArgumentException( nameof( configuration ) );
             _configuration = configuration;
             _from = new MailboxAddress( _configuration.Name, _configuration.Email );

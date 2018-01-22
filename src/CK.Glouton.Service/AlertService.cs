@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using CK.Glouton.Server.Senders;
 
 namespace CK.Glouton.Service
 {
@@ -53,7 +54,7 @@ namespace CK.Glouton.Service
                 switch (sender.SenderType)
                 {
                     case "Mail":
-                        sender.Configuration = JObject.FromObject(sender.Configuration).ToObject<MailConfiguration>();
+                        sender.Configuration = JObject.FromObject(sender.Configuration).ToObject<MailSenderConfiguration>();
                         break;
                     case "Http":
                         sender.Configuration = JObject.FromObject(sender.Configuration).ToObject<HttpConfiguration>();
