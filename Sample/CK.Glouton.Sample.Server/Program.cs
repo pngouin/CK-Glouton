@@ -1,11 +1,11 @@
-﻿using CK.Core;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using CK.Core;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using CK.Monitoring;
 using CK.Monitoring.Handlers;
-using System;
-using System.IO;
-using System.Reflection;
 
 namespace CK.Glouton.Sample.Server
 {
@@ -39,7 +39,8 @@ namespace CK.Glouton.Sample.Server
                             MaxCountPerFile = 10000,
                             UseGzipCompression = true
                         },
-                        new LuceneGloutonHandlerConfiguration()
+                        new LuceneGloutonHandlerConfiguration(),
+                        new AlertHandlerConfiguration()
                     }
                 } );
 
