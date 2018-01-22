@@ -1,35 +1,16 @@
+import { IExpression } from 'app/modules/ifttt/models/expression.model';
+
 export interface ISender {
     Name : string,
     Configuration : Object
 }
 
-export interface ISenderMailConfiguration {
-    Name : string,
-    Email : string,
-    SmtpUsername : string,
-    SmtpPassword : string,
-    SmtpAdress : string,
-    SmptPort : number,
-    Contacts : string[]
+export interface ISender {
+    SenderType : string,
+    Configuration : Object
 }
 
-export interface ISenderData {
-    label : string,
-    value : ISender
-}
-
-export class SenderMailConfiguration implements ISenderMailConfiguration {
-    Name: string = '';
-    Email: string = '';
-    SmtpUsername: string = '';
-    SmtpPassword: string = '';
-    SmtpAdress: string = '';
-    SmptPort: number= -1;
-    Contacts: string[] = [];
-}
-
-export class MailSender implements ISender {
-    Name: string = "Mail";
-    Configuration =  new SenderMailConfiguration();
-    
+export interface IAlertExpressionModel {
+    Expressions : IExpression[],
+    Senders : object[]
 }

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ISender, MailSender } from 'app/modules/ifttt/models/sender.model';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { ISender } from 'app/modules/ifttt/models/sender.model';
 import { concat } from 'rxjs/operator/concat';
 import { SelectItem } from 'primeng/api';
 import { IftttService } from 'app/_services';
@@ -26,6 +26,8 @@ export class SenderChooserComponent implements OnInit {
         {label : "Choose a sender", value : null}
     ]
 
+    @Output() onSend = new EventEmitter();
+
     ngOnInit() {
         this.iftttService.getAvaibleConfiguration().subscribe(
             d => {
@@ -40,7 +42,7 @@ export class SenderChooserComponent implements OnInit {
     addSender ( name : string, senderName : string ) : void {
         if (senderName == "" || typeof senderName === 'undefined') return;
         this.iftttService.getConfiguration(name).subscribe(
-            d => this.senders.push({ label : senderName, value : {Name : name, Configuration : d}})
+            d => this.senders.push({ label : senderName, value : {SenderType : name, Configuration : d}})
         );
     }
 
@@ -79,5 +81,9 @@ export class SenderChooserComponent implements OnInit {
         if (!Array.isArray(array)) return
         array.splice(index, 1);
         this.setConfigurationProperty(propertyName, array);
+    }
+
+    send() : void {
+        this.onSend.emit();
     }
 }
