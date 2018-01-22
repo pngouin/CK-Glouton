@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ISender, MailSender } from 'app/modules/ifttt/models/sender.model';
 import { concat } from 'rxjs/operator/concat';
 import { SelectItem } from 'primeng/api';
+import { IftttService } from 'app/_services';
 
 @Component({
     selector: 'senderChooser',
@@ -10,7 +11,7 @@ import { SelectItem } from 'primeng/api';
 })
 
 export class SenderChooserComponent implements OnInit {
-    constructor() { }
+    constructor(private iftttService : IftttService) { }
 
     contact : string;
     selectedSender : ISender;
@@ -22,21 +23,25 @@ export class SenderChooserComponent implements OnInit {
     ];
 
     addSenderDropDown : SelectItem[] = [
-        {label : "Choose a sender", value : null},
-        {label : "Mail", value : "Mail"}
+        {label : "Choose a sender", value : null}
     ]
 
-    ngOnInit() { }
+    ngOnInit() {
+        this.iftttService.getAvaibleConfiguration().subscribe(
+            d => {
+                for (let name of d)
+                {
+                    this.addSenderDropDown.push( { label : name, value : name });
+                }
+            }
+        );
+     }
 
     addSender ( name : string, senderName : string ) : void {
         if (senderName == "" || typeof senderName === 'undefined') return;
-        if (name == "Mail") {
-            this.senders.push({
-                label : senderName, value : new MailSender()
-            });
-            this.senders.length
-            this.selectedAddSenderName = "";
-        }
+        this.iftttService.getConfiguration(name).subscribe(
+            d => this.senders.push({ label : senderName, value : {Name : name, Configuration : d}})
+        );
     }
 
     getKeys () : string[] {
