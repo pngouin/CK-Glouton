@@ -5,7 +5,7 @@ using System.Text;
 namespace CK.Glouton.Model.Server.Handlers
 {
     [Serializable]
-    class ExpressionModel : IExpressionModel
+    public class ExpressionModel : IExpressionModel
     {
         public string Field { get; set; }
         public string Operation { get; set; }

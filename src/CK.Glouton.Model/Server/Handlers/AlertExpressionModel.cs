@@ -6,9 +6,9 @@ using CK.Glouton.Model.Server.Sender;
 namespace CK.Glouton.Model.Server.Handlers
 {
     [Serializable]
-    public class AlertExpressionModel : IAlertExpressionModel
+    public class AlertExpressionModel 
     {
-        public IExpressionModel[] Expressions { get; set; }
-        public IAlertSenderConfiguration[] Senders { get; set; }
+        public ExpressionModel[] Expressions { get; set; }
+        public AlertSenderConfiguration[] Senders { get; set; }
     }
 }

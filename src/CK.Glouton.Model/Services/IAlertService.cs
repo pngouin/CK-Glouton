@@ -5,7 +5,7 @@ namespace CK.Glouton.Model.Services
 {
     public interface IAlertService
     {
-        bool SendNewAlert( IAlertExpressionModel alertExpression );
+        bool SendNewAlert(AlertExpressionModel alertExpression );
         IMailConfiguration GetMailConfiguration();
         string[] AvailableConfiguration { get; }
         IHttpConfiguration GetHttpConfiguration();

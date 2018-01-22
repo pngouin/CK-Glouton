@@ -4,6 +4,7 @@ using System.Text;
 
 namespace CK.Glouton.Model.Server.Sender
 {
+    [Serializable]
     public class MailConfiguration : IMailConfiguration
     {
         public string Name { get; set; }
