@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CK.Core;
+using CK.Glouton.Model.Server.Handlers;
+using CK.Monitoring;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using CK.Core;
-using CK.Glouton.Model.Server.Handlers;
-using CK.Monitoring;
 
 namespace CK.Glouton.Server.Handlers.Common
 {
@@ -68,10 +68,9 @@ namespace CK.Glouton.Server.Handlers.Common
             }
         }
 
-        private static Operation ParseOperation( string value )
-        {
-            return Enum.TryParse( value, out Operation operation ) ? operation : throw new ArgumentException( nameof( operation ) );
-        }
+        private static Operation ParseOperation( string value ) => Enum.TryParse( value, out Operation operation )
+            ? operation
+            : throw new ArgumentException( $"{nameof( operation )} {value} is invalid." );
 
         /// <summary>
         /// Build a <see cref="Func{TResult}"/> from a given <see cref="IExpressionModel"/> array.
@@ -83,7 +82,6 @@ namespace CK.Glouton.Server.Handlers.Common
         public static Func<AlertEntry, bool> Build( this IExpressionModel[] @this )
         {
             Expression expression = null;
-
             foreach( var alertExpression in @this )
             {
                 var member = alertExpression.Field.IndexOf( '.' ) == -1
