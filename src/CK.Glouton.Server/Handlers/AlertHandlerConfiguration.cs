@@ -14,5 +14,10 @@ namespace CK.Glouton.Server.Handlers
                 Alerts = Alerts
             };
         }
+
+        public AlertHandlerConfiguration()
+        {
+            Alerts = new List<IAlertExpressionModel>();
+        }
     }
 }
