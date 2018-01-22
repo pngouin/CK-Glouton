@@ -1,4 +1,5 @@
 ﻿using CK.Core;
+using CK.Glouton.Model.Services;
 using CK.Monitoring;
 using System;
 using System.Collections;
@@ -9,7 +10,7 @@ using System.Reflection;
 
 namespace CK.Glouton.Handler.Tcp
 {
-    public class TcpHandlerConfiguration : IHandlerConfiguration
+    public class TcpHandlerConfiguration : IHandlerConfiguration, ITcpControlChannelConfiguration
     {
         /// <summary>
         /// Hostname of the CK.Monitoring.Tcp server
@@ -100,7 +101,7 @@ namespace CK.Glouton.Handler.Tcp
             };
         }
 
-        internal IReadOnlyDictionary<string, string> BuildAuthData()
+        public IReadOnlyDictionary<string, string> BuildAuthData()
         {
             var dictionary = new Dictionary<string, string>();
             if( AdditionalAuthenticationData != null )

@@ -1,5 +1,5 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Lucene;
+using CK.Glouton.Model.Services;
 using CK.Glouton.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,9 +20,15 @@ namespace CK.Glouton.Web
         public void ConfigureServices( IServiceCollection services )
         {
             services.AddOptions();
+
             services.Configure<LuceneConfiguration>( Configuration.GetSection( "Lucene" ) );
+            services.Configure<TcpControlChannelConfiguration>( Configuration.GetSection("TcpControlChannel") );
             services.AddSingleton<ILuceneSearcherService, LuceneSearcherService>();
             services.AddSingleton<ILuceneStatisticsService, LuceneStatisticsService>();
+
+            // TODO: Add configuration for alert (especially sender)
+            services.AddSingleton<IAlertService, AlertService>();
+
             services.AddMvc();
         }
 

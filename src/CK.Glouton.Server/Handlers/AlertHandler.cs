@@ -1,9 +1,13 @@
 ﻿using CK.Core;
 using CK.Glouton.Model.Server;
+using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Sender;
+using CK.Glouton.Server.Handlers.Common;
 using CK.Monitoring;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace CK.Glouton.Server.Handlers
@@ -12,18 +16,17 @@ namespace CK.Glouton.Server.Handlers
     {
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
-
-        private readonly AlertHandlerConfiguration _alertHandlerConfiguration;
+        private readonly AlertSenderManager _alertAlertSenderManager;
 
         private IActivityMonitor _activityMonitor;
+        private List<IAlertModel> _alerts;
 
         public AlertHandler( AlertHandlerConfiguration alertHandlerConfiguration )
         {
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
-            _alertHandlerConfiguration = alertHandlerConfiguration;
-            if( _alertHandlerConfiguration.Alerts == null )
-                _alertHandlerConfiguration.Alerts = new List<(Func<ILogEntry, bool>, IList<IAlertSender>)>();
+            _alertAlertSenderManager = new AlertSenderManager();
+            InitializeAlerts( alertHandlerConfiguration );
         }
 
         public void OnGrandOutputEventInfo( ReceivedData receivedData )
@@ -34,20 +37,22 @@ namespace CK.Glouton.Server.Handlers
             _memoryStream.Write( receivedData.Data.ToArray(), 0, receivedData.Data.Count );
             _memoryStream.Seek( 0, SeekOrigin.Begin );
 
-            var entry = LogEntry.Read( _binaryReader, version, out _ );
+            var logEntry = LogEntry.Read( _binaryReader, version, out _ ) as IMulticastLogEntry;
+            receivedData.ServerClientSession.ClientData.TryGetValue( "AppName", out var appName );
+            var alertEntry = new AlertEntry( logEntry, appName );
 
-            List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)> faulty = null;
+            List<IAlertModel> faulty = null;
 
-            foreach( var alert in _alertHandlerConfiguration.Alerts )
+            foreach( var alert in _alerts )
             {
                 try
                 {
-                    if( !alert.condition( entry ) )
+                    if( !alert.Condition( alertEntry ) )
                         continue;
 
                     _activityMonitor.Info( "An alert has been sent" );
-                    foreach( var sender in alert.senders )
-                        sender.Send( entry );
+                    foreach( var sender in alert.Senders )
+                        sender.Send( alertEntry );
                 }
                 catch( Exception exception )
                 {
@@ -55,7 +60,7 @@ namespace CK.Glouton.Server.Handlers
                     ActivityMonitor.CriticalErrorCollector.Add( exception, message );
                     _activityMonitor.Fatal( message, exception );
                     if( faulty == null )
-                        faulty = new List<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>();
+                        faulty = new List<IAlertModel>();
                     faulty.Add( alert );
                 }
             }
@@ -64,7 +69,7 @@ namespace CK.Glouton.Server.Handlers
                 return;
 
             foreach( var faultyAlert in faulty )
-                _alertHandlerConfiguration.Alerts.Remove( faultyAlert );
+                _alerts.Remove( faultyAlert );
         }
 
         public void OnTimer( IActivityMonitor activityMonitor, TimeSpan timerDuration )
@@ -73,9 +78,45 @@ namespace CK.Glouton.Server.Handlers
 
         public bool ApplyConfiguration( IGloutonHandlerConfiguration configuration )
         {
-            return configuration is AlertHandlerConfiguration alertHandlerConfiguration
-                && new HashSet<(Func<ILogEntry, bool> condition, IList<IAlertSender> senders)>( _alertHandlerConfiguration.Alerts )
-                    .SetEquals( alertHandlerConfiguration.Alerts );
+            if( !( configuration is AlertHandlerConfiguration alertHandlerConfiguration ) )
+                return false;
+
+            return InitializeAlerts( alertHandlerConfiguration );
+        }
+
+        internal bool InitializeAlerts( AlertHandlerConfiguration configuration )
+        {
+            try
+            {
+                var submittedAlerts = new List<IAlertModel>();
+                foreach( var alertExpressionModel in configuration.Alerts )
+                {
+                    var senders = alertExpressionModel.Senders
+                        .Select( alertSenderConfiguration => _alertAlertSenderManager.Parse( alertSenderConfiguration ) )
+                        .ToList();
+                    submittedAlerts.Add( new AlertModel
+                    {
+                        Condition = alertExpressionModel.Expressions.Build(),
+                        Senders = senders
+                    } );
+                }
+
+                _alerts = submittedAlerts;
+                return true;
+            }
+            catch( Exception exception )
+            {
+                const string message = "Alert initialization failed.";
+                ActivityMonitor.CriticalErrorCollector.Add( exception, message );
+                _activityMonitor.Fatal( message, exception );
+                return false;
+            }
+        }
+
+        internal class AlertModel : IAlertModel
+        {
+            public Func<AlertEntry, bool> Condition { get; set; }
+            public IList<IAlertSender> Senders { get; set; }
         }
 
         public void Open( IActivityMonitor activityMonitor )

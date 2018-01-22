@@ -1,5 +1,5 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Lucene;
+using CK.Glouton.Model.Services;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace CK.Glouton.Service
 
         public LuceneStatisticsService( IOptions<LuceneConfiguration> configuration )
         {
-            _stats = new LuceneStatistics(configuration.Value);
+            _stats = new LuceneStatistics( configuration.Value );
         }
 
         public int AllLogCount() => _stats.AllLogCount;
@@ -22,12 +22,12 @@ namespace CK.Glouton.Service
 
         public Dictionary<string, int> GetLogByAppName()
         {
-            return _stats.GetAppNames.ToDictionary(appName => appName, appName => _stats.LogInAppNameCount(appName));
+            return _stats.GetAppNames.ToDictionary( appName => appName, appName => _stats.LogInAppNameCount( appName ) );
         }
 
         public Dictionary<string, int> GetExceptionByAppName()
         {
-            return _stats.GetAppNames.ToDictionary(appName => appName, appName => _stats.ExceptionInAppNameCount(appName));
+            return _stats.GetAppNames.ToDictionary( appName => appName, appName => _stats.ExceptionInAppNameCount( appName ) );
         }
 
     }

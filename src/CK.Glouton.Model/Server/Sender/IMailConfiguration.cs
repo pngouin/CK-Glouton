@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CK.Glouton.Model.Server
+namespace CK.Glouton.Model.Server.Sender
 {
     public interface IMailConfiguration
     {
@@ -10,9 +10,9 @@ namespace CK.Glouton.Model.Server
         string Email { get; set; }
         string SmtpUsername { get; set; }
         string SmtpPassword { get; set; }
-        string SmtpAdress { get; set; }
-        int SmptPort { get; set; }
-
+        string SmtpAddress { get; set; }
+        int SmtpPort { get; set; }
+        string[] Contacts { get; set; }
         bool Validate();
     }
 }
