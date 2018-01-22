@@ -1,16 +1,16 @@
-﻿using CK.ControlChannel.Abstractions;
+﻿using System;
+using System.IO;
+using System.Net.Security;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography.X509Certificates;
+using CK.ControlChannel.Abstractions;
 using CK.ControlChannel.Tcp;
 using CK.Core;
 using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server.Handlers;
-using System;
-using System.IO;
-using System.Net.Security;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography.X509Certificates;
 
 namespace CK.Glouton.Server
 {
@@ -54,7 +54,7 @@ namespace CK.Glouton.Server
             _memoryStream.Seek( 0, SeekOrigin.Begin );
             _memoryStream.Flush();
             _memoryStream.Write( data, 0, data.Length );
-            _memoryStream.Seek(0, SeekOrigin.Begin);
+            _memoryStream.Seek( 0, SeekOrigin.Begin );
 
             var alertExpressionModel = (AlertExpressionModel)_formatter.Deserialize( _memoryStream );
 
@@ -94,7 +94,7 @@ namespace CK.Glouton.Server
             _handlersManagerConfiguration = handlersManagerConfiguration
                 as HandlersManagerConfiguration
                 ?? throw new ArgumentException( nameof( handlersManagerConfiguration ) );
-            _handlersManager.Start( _handlersManagerConfiguration );
+            _handlersManager.ApplyConfiguration( _handlersManagerConfiguration );
         }
 
         public void Close()

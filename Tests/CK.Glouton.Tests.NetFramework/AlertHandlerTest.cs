@@ -1,4 +1,7 @@
-﻿using CK.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using CK.Core;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server;
@@ -6,9 +9,6 @@ using CK.Glouton.Server.Handlers;
 using CK.Glouton.Server.Senders;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace CK.Glouton.Tests
 {
@@ -29,7 +29,7 @@ namespace CK.Glouton.Tests
                 using( var server = TestHelper.DefaultMockServer() )
                 {
                     server.Should().NotBeNull();
-                    server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration { Alerts = null } } } );
+                    server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration() } } );
                 }
             };
 
