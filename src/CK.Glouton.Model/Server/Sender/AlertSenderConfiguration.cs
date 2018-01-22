@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CK.Glouton.Model.Server.Sender
 {
@@ -12,7 +10,11 @@ namespace CK.Glouton.Model.Server.Sender
 
         public IAlertSenderConfiguration Clone()
         {
-            throw new NotImplementedException();
+            return new AlertSenderConfiguration
+            {
+                SenderType = SenderType,
+                Configuration = Configuration
+            };
         }
     }
 }
