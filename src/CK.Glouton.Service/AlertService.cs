@@ -4,7 +4,9 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using CK.ControlChannel.Tcp;
 using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Model.Services;
+using Microsoft.Extensions.Options;
 
 namespace CK.Glouton.Service
 {
@@ -15,9 +17,15 @@ namespace CK.Glouton.Service
         private readonly IFormatter _formatter;
         private readonly MemoryStream _memoryStream;
 
-        public AlertService(TcpControlChannelConfiguration configuration)
+
+        public string[] AvailableConfiguration
         {
-            _configuration = configuration;
+            get => new string[] { "Mail" } ;
+        }
+
+        public AlertService(IOptions<TcpControlChannelConfiguration> configuration)
+        {
+            _configuration = configuration.Value;
             _controlChannelCLient = new ControlChannelClient(
                 _configuration.Host,
                 _configuration.Port,
@@ -40,6 +48,20 @@ namespace CK.Glouton.Service
             _controlChannelCLient.SendAsync("AddAlertSender", _memoryStream.ToArray()).GetAwaiter().GetResult();
 
             return true;
+        }
+
+        public IMailConfiguration GetMailConfiguration()
+        {
+            return new MailConfiguration
+            {
+                Name = "",
+                Email = "",
+                Contacts = new string[] { },
+                SmtpAddress = "",
+                SmtpPassword = "",
+                SmtpUsername = "",
+                SmtpPort = -1
+            };
         }
     }
 }
