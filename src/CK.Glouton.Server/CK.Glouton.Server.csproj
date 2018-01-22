@@ -17,8 +17,4 @@
     <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Senders\" />
-  </ItemGroup>
-
 </Project>
