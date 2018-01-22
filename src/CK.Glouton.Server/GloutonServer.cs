@@ -50,6 +50,7 @@ namespace CK.Glouton.Server
             _memoryStream.Seek(0, SeekOrigin.Begin);
             _memoryStream.Flush();
             _memoryStream.Write(data, 0, data.Length);
+            _memoryStream.Seek(0, SeekOrigin.Begin);
             AlertExpressionModel alertExpressionModel = (AlertExpressionModel)_formatter.Deserialize(_memoryStream);
 
             // TODO: make some pâté
