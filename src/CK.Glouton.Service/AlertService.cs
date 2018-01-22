@@ -22,7 +22,14 @@ namespace CK.Glouton.Service
 
         public AlertService( IOptions<TcpControlChannelConfiguration> configuration )
         {
+
             _configuration = configuration.Value;
+
+            _configuration.AppName = typeof(AlertService).GetType().Assembly.GetName().Name;
+            _configuration.PresentEnvironmentVariables = true;
+            _configuration.PresentMonitoringAssemblyInformation = true;
+            _configuration.HandleSystemActivityMonitorErrors = false;
+
             _controlChannelClient = new ControlChannelClient(
                 _configuration.Host,
                 _configuration.Port,
