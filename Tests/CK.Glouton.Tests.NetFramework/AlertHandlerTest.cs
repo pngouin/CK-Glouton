@@ -67,17 +67,11 @@ namespace CK.Glouton.Tests
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient( activityMonitor );
 
-                    activityMonitor.Info( "Hello world" );
+                    activityMonitor.Info( "send Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
                     httpServer.Alerted.Should().BeFalse();
 
                     activityMonitor.Fatal( "Fatal Error n°42" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    httpServer.Alerted.Should().BeTrue();
-
-                    httpServer.Reset();
-
-                    activityMonitor.Info( "aze Send rty" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
                     httpServer.Alerted.Should().BeTrue();
                 }
