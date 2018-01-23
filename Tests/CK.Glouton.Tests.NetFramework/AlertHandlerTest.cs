@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using CK.Core;
-using CK.Glouton.AlertSender;
 using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
@@ -119,7 +118,7 @@ namespace CK.Glouton.Tests
                     Thread.Sleep( TestHelper.DefaultSleepTime );
 
                     activityMonitor.Info( "Hello world" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
+                    Thread.Sleep( TestHelper.DefaultSleepTime * 10 );
                     httpServer.Alerted.Should().BeTrue();
                 }
             }
