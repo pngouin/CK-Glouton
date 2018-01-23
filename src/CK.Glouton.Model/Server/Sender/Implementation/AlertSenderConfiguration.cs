@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.Glouton.Model.Server.Sender
+namespace CK.Glouton.Model.Server.Sender.Implementation
 {
     [Serializable]
     public class AlertSenderConfiguration : IAlertSenderConfiguration

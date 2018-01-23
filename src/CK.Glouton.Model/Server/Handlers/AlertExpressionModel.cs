@@ -1,5 +1,5 @@
-﻿using CK.Glouton.Model.Server.Sender;
-using System;
+﻿using System;
+using CK.Glouton.Model.Server.Sender.Implementation;
 
 namespace CK.Glouton.Model.Server.Handlers
 {

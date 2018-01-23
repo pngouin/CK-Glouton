@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using CK.Core;
+using CK.Glouton.AlertSender;
+using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
-using CK.Glouton.Server.Senders;
 using FluentAssertions;
 using NUnit.Framework;
 

@@ -1,10 +1,10 @@
-﻿using CK.Glouton.Model.Server.Sender;
-using CK.Glouton.Server.Senders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using CK.Glouton.AlertSender.Sender;
+using CK.Glouton.Model.Server.Sender;
 
-namespace CK.Glouton.Server.Handlers.Common
+namespace CK.Glouton.AlertSender
 {
     public class AlertSenderManager
     {

@@ -1,13 +1,14 @@
-﻿using CK.ControlChannel.Tcp;
+﻿using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using CK.ControlChannel.Tcp;
+using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
+using CK.Glouton.Model.Server.Sender.Implementation;
 using CK.Glouton.Model.Services;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using CK.Glouton.Server.Senders;
 
 namespace CK.Glouton.Service
 {
@@ -26,7 +27,7 @@ namespace CK.Glouton.Service
 
             _configuration = configuration.Value;
 
-            _configuration.AppName = typeof(AlertService).GetType().Assembly.GetName().Name;
+            _configuration.AppName = typeof( AlertService ).GetType().Assembly.GetName().Name;
             _configuration.PresentEnvironmentVariables = true;
             _configuration.PresentMonitoringAssemblyInformation = true;
             _configuration.HandleSystemActivityMonitorErrors = false;
@@ -44,22 +45,22 @@ namespace CK.Glouton.Service
             _formatter = new BinaryFormatter();
         }
 
-        public bool SendNewAlert(AlertExpressionModel alertExpression )
+        public bool SendNewAlert( AlertExpressionModel alertExpression )
         {
             _memoryStream.Seek( 0, SeekOrigin.Begin );
             _memoryStream.Flush();
-            
-            foreach(var sender in alertExpression.Senders)
+
+            foreach( var sender in alertExpression.Senders )
             {
-                switch (sender.SenderType)
+                switch( sender.SenderType )
                 {
                     case "Mail":
-                        sender.Configuration = JObject.FromObject(sender.Configuration).ToObject<MailSenderConfiguration>();
+                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<MailSenderConfiguration>();
                         break;
                     case "Http":
-                        sender.Configuration = JObject.FromObject(sender.Configuration).ToObject<HttpConfiguration>();
+                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpConfiguration>();
                         break;
-                    default: 
+                    default:
                         return false;
                 }
             }

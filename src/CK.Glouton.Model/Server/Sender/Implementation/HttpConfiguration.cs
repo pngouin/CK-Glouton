@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CK.Glouton.Model.Server.Sender
+namespace CK.Glouton.Model.Server.Sender.Implementation
 {
     [Serializable]
     public class HttpConfiguration : IHttpConfiguration

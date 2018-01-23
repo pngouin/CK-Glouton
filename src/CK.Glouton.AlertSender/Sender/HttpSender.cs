@@ -1,11 +1,11 @@
-﻿using CK.Glouton.Model.Server.Handlers;
-using CK.Glouton.Model.Server.Sender;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Sender;
 
-namespace CK.Glouton.Server.Senders
+namespace CK.Glouton.AlertSender.Sender
 {
     public class HttpSender : IAlertSender
     {

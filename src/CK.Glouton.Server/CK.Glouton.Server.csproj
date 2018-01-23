@@ -8,11 +8,10 @@
     <PackageReference Include="CK.ActivityMonitor" Version="9.0.0" />
     <PackageReference Include="CK.ControlChannel.Tcp.Common" Version="0.3.0-a02" />
     <PackageReference Include="CK.ControlChannel.Tcp.Server" Version="0.3.0-a01" />
-    <PackageReference Include="CK.Monitoring" Version="8.2.0" />
-    <PackageReference Include="MailKit" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.AlertSender\CK.Glouton.AlertSender.csproj" />
     <ProjectReference Include="..\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
     <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
   </ItemGroup>

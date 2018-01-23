@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CK.Glouton.Model.Server.Sender
+namespace CK.Glouton.Model.Server.Sender.Implementation
 {
     [Serializable]
     public class MailConfiguration : IMailConfiguration
@@ -17,12 +15,12 @@ namespace CK.Glouton.Model.Server.Sender
 
         public bool Validate()
         {
-            return !(string.IsNullOrEmpty(Name) ||
-                    string.IsNullOrEmpty(Email) ||
-                    string.IsNullOrEmpty(SmtpUsername) ||
-                    string.IsNullOrEmpty(SmtpPassword) ||
-                    string.IsNullOrEmpty(SmtpAddress) ||
-                    SmtpPort <= 0);
+            return !( string.IsNullOrEmpty( Name ) ||
+                    string.IsNullOrEmpty( Email ) ||
+                    string.IsNullOrEmpty( SmtpUsername ) ||
+                    string.IsNullOrEmpty( SmtpPassword ) ||
+                    string.IsNullOrEmpty( SmtpAddress ) ||
+                    SmtpPort <= 0 );
         }
     }
 }
