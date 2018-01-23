@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CK.Glouton.Model.Lucene
+namespace CK.Glouton.Model.Services
 {
     public interface ILuceneStatisticsService
     {

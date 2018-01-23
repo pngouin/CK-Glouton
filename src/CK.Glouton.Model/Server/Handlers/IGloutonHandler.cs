@@ -1,7 +1,7 @@
 ﻿using CK.Core;
 using System;
 
-namespace CK.Glouton.Model.Server
+namespace CK.Glouton.Model.Server.Handlers
 {
     public interface IGloutonHandler : IDisposable
     {

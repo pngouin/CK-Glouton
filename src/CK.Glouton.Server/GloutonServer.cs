@@ -1,10 +1,17 @@
-﻿using CK.ControlChannel.Abstractions;
+﻿using System;
+using System.IO;
+using System.Net.Security;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography.X509Certificates;
+using CK.ControlChannel.Abstractions;
 using CK.ControlChannel.Tcp;
 using CK.Core;
 using CK.Glouton.Model.Server;
-using System;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
+using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Handlers.Implementation;
+using CK.Glouton.Model.Server.Sender;
+using CK.Glouton.Server.Handlers;
 
 namespace CK.Glouton.Server
 {
@@ -13,6 +20,10 @@ namespace CK.Glouton.Server
         private readonly ControlChannelServer _controlChannelServer;
         private readonly IActivityMonitor _activityMonitor;
         private readonly HandlersManager _handlersManager;
+        private readonly IFormatter _formatter;
+        private readonly MemoryStream _memoryStream;
+
+        private HandlersManagerConfiguration _handlersManagerConfiguration;
 
         public GloutonServer(
             string boundIpAddress,
@@ -32,8 +43,30 @@ namespace CK.Glouton.Server
                 userCertificateValidationCallback
             );
             _controlChannelServer.RegisterChannelHandler( "GrandOutputEventInfo", HandleGrandOutputEventInfo );
+            _controlChannelServer.RegisterChannelHandler( "AddAlertSender", AddAlertSender );
             _activityMonitor = activityMonitor;
             _handlersManager = new HandlersManager( _activityMonitor );
+            _memoryStream = new MemoryStream();
+            _formatter = new BinaryFormatter();
+        }
+
+        private void AddAlertSender( IActivityMonitor monitor, byte[] data, IServerClientSession clientSession )
+        {
+            _memoryStream.Seek( 0, SeekOrigin.Begin );
+            _memoryStream.Flush();
+            _memoryStream.Write( data, 0, data.Length );
+            _memoryStream.Seek( 0, SeekOrigin.Begin );
+
+            var alertExpressionModel = (AlertExpressionModel)_formatter.Deserialize( _memoryStream );
+
+            foreach( var gloutonHandler in _handlersManagerConfiguration.GloutonHandlers )
+            {
+                if( !( gloutonHandler is AlertHandlerConfiguration alertHandlerConfiguration ) )
+                    continue;
+                alertHandlerConfiguration.Alerts.Add( new AlertExpression( alertExpressionModel.Expressions, alertExpressionModel.Senders ) );
+                ApplyConfiguration( _handlersManagerConfiguration );
+                return;
+            }
         }
 
         private void HandleGrandOutputEventInfo( IActivityMonitor monitor, byte[] data, IServerClientSession clientServerSession )
@@ -46,16 +79,40 @@ namespace CK.Glouton.Server
             if( handlersManagerConfiguration == null )
                 throw new ArgumentNullException( nameof( handlersManagerConfiguration ) );
 
-            if( !( handlersManagerConfiguration is HandlersManagerConfiguration ) )
-                throw new ArgumentException( nameof( handlersManagerConfiguration ) );
+            _handlersManagerConfiguration = handlersManagerConfiguration
+                as HandlersManagerConfiguration
+                ?? throw new ArgumentException( nameof( handlersManagerConfiguration ) );
 
             _controlChannelServer.Open();
-            _handlersManager.Start( (HandlersManagerConfiguration)handlersManagerConfiguration );
+            _handlersManager.Start( _handlersManagerConfiguration );
+        }
+
+        public void ApplyConfiguration( IHandlersManagerConfiguration handlersManagerConfiguration )
+        {
+            if( handlersManagerConfiguration == null )
+                throw new ArgumentNullException( nameof( handlersManagerConfiguration ) );
+
+            _handlersManagerConfiguration = handlersManagerConfiguration
+                as HandlersManagerConfiguration
+                ?? throw new ArgumentException( nameof( handlersManagerConfiguration ) );
+            _handlersManager.ApplyConfiguration( _handlersManagerConfiguration );
         }
 
         public void Close()
         {
             _controlChannelServer.Close();
+        }
+
+        internal class AlertExpression : IAlertExpressionModel
+        {
+            public IExpressionModel[] Expressions { get; set; }
+            public IAlertSenderConfiguration[] Senders { get; set; }
+
+            public AlertExpression( IExpressionModel[] expressions, IAlertSenderConfiguration[] senders )
+            {
+                Expressions = expressions;
+                Senders = senders;
+            }
         }
 
         #region IDisposable Support

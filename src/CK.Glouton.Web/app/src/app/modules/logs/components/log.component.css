@@ -5,3 +5,7 @@
     margin: 0;
     border-bottom: 1px solid gray;
 }
+
+.textLog {
+    margin: -1em;
+}

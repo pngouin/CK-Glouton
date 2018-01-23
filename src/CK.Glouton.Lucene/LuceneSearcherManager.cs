@@ -61,24 +61,27 @@ namespace CK.Glouton.Lucene
 
         private IndexReader GetReader( string appName )
         {
-            if( _readers.ContainsKey( appName ) )
+            lock (_readers)
             {
-                UpdateReader( appName );
-                return _readers[ appName ];
-            }
+                if( _readers.ContainsKey( appName ) )
+                {
+                    UpdateReader( appName );
+                    return _readers[ appName ];
+                }
 
-            IndexReader reader;
-            try
-            {
-                reader = DirectoryReader.Open( GetDirectory( appName ) );
-            }
-            catch( Exception )
-            {
-                return null;
-            }
+                IndexReader reader;
+                try
+                {
+                    reader = DirectoryReader.Open( GetDirectory( appName ) );
+                }
+                catch( Exception )
+                {
+                    return null;
+                }
 
-            _readers.Add( appName, reader );
-            return reader;
+                _readers.Add( appName, reader );
+                return reader;
+            }
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Server;
-using System;
+using CK.Glouton.Model.Server.Handlers;
 using Lucene.Net.Index;
+using System;
 
 namespace CK.Glouton.Server.Handlers
 {
