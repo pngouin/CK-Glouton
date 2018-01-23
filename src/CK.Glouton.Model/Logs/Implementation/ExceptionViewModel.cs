@@ -1,9 +1,9 @@
-﻿using CK.Glouton.Model.Lucene;
-using Lucene.Net.Documents;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using CK.Glouton.Model.Lucene;
+using Lucene.Net.Documents;
 
-namespace CK.Glouton.Model.Logs
+namespace CK.Glouton.Model.Logs.Implementation
 {
     public class ExceptionViewModel : IExceptionViewModel
     {

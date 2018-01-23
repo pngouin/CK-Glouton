@@ -3,10 +3,11 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using CK.ControlChannel.Tcp;
 using CK.Glouton.AlertSender.Sender;
-using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Model.Server.Sender.Implementation;
 using CK.Glouton.Model.Services;
+using CK.Glouton.Model.Services.Implementation;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 

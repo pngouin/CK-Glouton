@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 
 namespace CK.Glouton.AlertSender.Sender

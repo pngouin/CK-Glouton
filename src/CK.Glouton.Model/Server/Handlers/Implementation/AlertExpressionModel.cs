@@ -1,7 +1,7 @@
 ﻿using System;
 using CK.Glouton.Model.Server.Sender.Implementation;
 
-namespace CK.Glouton.Model.Server.Handlers
+namespace CK.Glouton.Model.Server.Handlers.Implementation
 {
     [Serializable]
     public class AlertExpressionModel

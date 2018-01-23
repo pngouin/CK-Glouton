@@ -1,5 +1,6 @@
 ﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Services;
+using CK.Glouton.Model.Services.Implementation;
 using CK.Glouton.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +23,7 @@ namespace CK.Glouton.Web
             services.AddOptions();
 
             services.Configure<LuceneConfiguration>( Configuration.GetSection( "Lucene" ) );
-            services.Configure<TcpControlChannelConfiguration>( Configuration.GetSection("TcpControlChannel") );
+            services.Configure<TcpControlChannelConfiguration>( Configuration.GetSection( "TcpControlChannel" ) );
             services.AddSingleton<ILuceneSearcherService, LuceneSearcherService>();
             services.AddSingleton<ILuceneStatisticsService, LuceneStatisticsService>();
 

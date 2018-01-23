@@ -9,6 +9,7 @@ using CK.ControlChannel.Tcp;
 using CK.Core;
 using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server.Handlers;
 

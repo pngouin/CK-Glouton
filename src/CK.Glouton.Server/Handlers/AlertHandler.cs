@@ -7,6 +7,7 @@ using CK.Core;
 using CK.Glouton.AlertSender;
 using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server.Handlers.Common;
 using CK.Monitoring;

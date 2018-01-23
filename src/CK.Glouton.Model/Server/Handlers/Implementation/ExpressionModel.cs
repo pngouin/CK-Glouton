@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CK.Glouton.Model.Server.Handlers
+namespace CK.Glouton.Model.Server.Handlers.Implementation
 {
     [Serializable]
     public class ExpressionModel : IExpressionModel

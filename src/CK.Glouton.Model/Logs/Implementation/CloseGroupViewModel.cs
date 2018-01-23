@@ -1,7 +1,7 @@
 ﻿using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
 
-namespace CK.Glouton.Model.Logs
+namespace CK.Glouton.Model.Logs.Implementation
 {
     public class CloseGroupViewModel : ILogViewModel
     {

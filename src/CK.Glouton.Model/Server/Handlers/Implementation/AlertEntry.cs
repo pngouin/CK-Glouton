@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CK.Core;
 using CK.Monitoring;
 
-namespace CK.Glouton.Model.Server.Handlers
+namespace CK.Glouton.Model.Server.Handlers.Implementation
 {
     public class AlertEntry : IAlertEntry
     {
