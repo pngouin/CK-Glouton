@@ -1,17 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Net.Security;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography.X509Certificates;
-using CK.ControlChannel.Abstractions;
+﻿using CK.ControlChannel.Abstractions;
 using CK.ControlChannel.Tcp;
 using CK.Core;
+using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server.Handlers;
+using System;
+using System.IO;
+using System.Net.Security;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CK.Glouton.Server
 {
@@ -63,7 +64,27 @@ namespace CK.Glouton.Server
             {
                 if( !( gloutonHandler is AlertHandlerConfiguration alertHandlerConfiguration ) )
                     continue;
-                alertHandlerConfiguration.Alerts.Add( new AlertExpression( alertExpressionModel.Expressions, alertExpressionModel.Senders ) );
+
+                var senders = new IAlertSenderConfiguration[ alertExpressionModel.Senders.Length ];
+                for( var i = 0 ; i < senders.Length ; i += 1 )
+                {
+                    var sender = alertExpressionModel.Senders[ i ];
+                    switch( sender.SenderType )
+                    {
+                        case "Mail":
+                            senders[ i ] = (MailSenderConfiguration)sender.Configuration;
+                            break;
+
+                        case "Http":
+                            senders[ i ] = (HttpSenderConfiguration)sender.Configuration;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException( sender.SenderType );
+                    }
+                }
+
+                alertHandlerConfiguration.Alerts.Add( new AlertExpression( alertExpressionModel.Expressions, senders ) );
                 ApplyConfiguration( _handlersManagerConfiguration );
                 return;
             }
