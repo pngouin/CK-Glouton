@@ -59,7 +59,7 @@ namespace CK.Glouton.Service
                         sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<MailSenderConfiguration>();
                         break;
                     case "Http":
-                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpConfiguration>();
+                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpSenderConfiguration>();
                         break;
                     default:
                         return false;

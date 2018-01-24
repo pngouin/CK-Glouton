@@ -1,7 +1,9 @@
 ﻿using CK.Glouton.Model.Server.Sender;
+using System;
 
 namespace CK.Glouton.AlertSender.Sender
 {
+    [Serializable]
     public class HttpSenderConfiguration : IAlertSenderConfiguration
     {
         public string SenderType { get; set; } = "Http";
@@ -11,7 +13,11 @@ namespace CK.Glouton.AlertSender.Sender
 
         public IAlertSenderConfiguration Clone()
         {
-            return new HttpSenderConfiguration { Url = Url };
+            return new HttpSenderConfiguration {
+                Url = Url,
+                SenderType = SenderType,
+                Configuration = Configuration
+            };
         }
     }
 }

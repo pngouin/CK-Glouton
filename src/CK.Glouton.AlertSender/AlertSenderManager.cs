@@ -31,7 +31,7 @@ namespace CK.Glouton.AlertSender
                     break;
 
                 case "Http":
-                    if( !( configuration is HttpSenderConfiguration httpSenderConfiguration ) )
+                    if( !( configuration.Configuration is HttpSenderConfiguration httpSenderConfiguration ) )
                         throw new ArgumentException( nameof( configuration.SenderType ) );
                     newSender = CreateSender( httpSenderConfiguration );
                     break;
