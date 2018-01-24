@@ -3,6 +3,8 @@ import { ISender } from 'app/modules/ifttt/models/sender.model';
 import { concat } from 'rxjs/operator/concat';
 import { SelectItem } from 'primeng/api';
 import { IftttService } from 'app/_services';
+import { MessageService } from 'primeng/components/common/messageservice';
+import {Message} from 'primeng/components/common/api';
 
 @Component({
     selector: 'senderChooser',
@@ -11,7 +13,7 @@ import { IftttService } from 'app/_services';
 })
 
 export class SenderChooserComponent implements OnInit {
-    constructor(private iftttService : IftttService) { }
+    constructor(private iftttService : IftttService, private messageService : MessageService) { }
 
     cache : string;
     selectedSender : ISender;
@@ -35,12 +37,28 @@ export class SenderChooserComponent implements OnInit {
                 {
                     this.addSenderDropDown.push( { label : name, value : name });
                 }
-            }
+            },
+            error => this.messageService.add({
+                severity : 'error', summary : 'Error', detail : 'The configuration recovery fail.'
+            })
         );
      }
 
     addSender ( name : string, senderName : string ) : void {
-        if (senderName == "" || typeof senderName === 'undefined') return;
+        if (senderName == "" || typeof senderName === 'undefined') {
+            this.messageService.add( {
+                severity : 'warn', summary : 'Warning', detail : 'The sender configuration need a name.'
+            })
+            return;
+        }
+
+        if ( name == undefined || name == null || name == '') {
+            this.messageService.add( {
+                severity : 'warn', summary : 'Warning', detail : 'You must select a sender.'
+            })
+            return;
+        }
+
         this.iftttService.getConfiguration(name).subscribe(
             d => this.senders.push({ label : senderName, value : {SenderType : name, Configuration : d}})
         );
@@ -103,7 +121,7 @@ export class SenderChooserComponent implements OnInit {
                         }
                         return false;
                     case 'string' :
-                        if (value != undefined && value != "") {
+                        if (value != undefined && value != '') {
                             continue;
                         }
                         return false;

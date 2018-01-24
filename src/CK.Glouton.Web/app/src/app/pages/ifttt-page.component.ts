@@ -3,6 +3,7 @@ import { ViewChild } from '@angular/core';
 import { IftttComponent, SenderChooserComponent } from 'app/modules/ifttt/components';
 import { IAlertExpressionModel, ISender } from 'app/modules/ifttt/models/sender.model';
 import { IftttService } from 'app/_services';
+import {MessageService} from 'primeng/components/common/messageservice';
 
 @Component({
   selector: 'ifttt-page',
@@ -18,7 +19,7 @@ import { IftttService } from 'app/_services';
 })
 export class IftttPageComponent {
 
-  constructor (private iftttService : IftttService) { }
+  constructor (private iftttService : IftttService, private messageService: MessageService) { }
 
   @ViewChild(IftttComponent)
   private iftttComponent : IftttComponent;
@@ -28,6 +29,7 @@ export class IftttPageComponent {
 
   send() {
     if (!this.iftttComponent.validate() || !this.senderChooserComponent.validate()) {
+      this.messageService.add({severity : 'warn', summary : 'Warning', detail: 'One or more fields are empty.'});
       return;
     }
 
@@ -46,7 +48,11 @@ export class IftttPageComponent {
       Senders : senders
     };
 
-    this.iftttService.sendAlert(data).subscribe(d => console.log(d));
+    this.iftttService.sendAlert(data).subscribe(d => this.messageService.add(
+      {
+        severity : 'success', summary : 'Sucess ! ', detail : 'Your alert has been correctly created.'
+      }
+    ));
   }
 
 }
