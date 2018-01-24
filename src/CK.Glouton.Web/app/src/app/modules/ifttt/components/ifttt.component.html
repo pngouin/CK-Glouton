@@ -1,0 +1,41 @@
+<div class="ui-g" *ngFor="let expression of expressions; let i = index">
+    <p-dropdown (onChange)="resetSelected(expression)" [options]="fields" [(ngModel)]="expression.Field" [style]="{'width':'150px'}" filter="true">
+        <ng-template let-field pTemplate="item">
+            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                <div style="font-size:14px;float:left;margin-top:4px">{{field.value}}</div>
+            </div>
+        </ng-template>
+    </p-dropdown>
+    <p-dropdown [options]="getParticularOperation(expression)" [(ngModel)]="expression.Operation" [style]="{'width':'150px'}" filter="true">
+        <ng-template let-operation pTemplate="item">
+            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                <div style="font-size:14px;float:left;margin-top:4px">{{operation.value}}</div>
+            </div>
+        </ng-template>
+    </p-dropdown>
+    <div *ngIf="IsParticular(expression)">
+        <div *ngIf="expression.Field == 'LogType'">
+            <p-dropdown [options]="logTypes" [(ngModel)]="expression.Body" [style]="{'width':'150px'}" filter="true">
+                <ng-template let-logType pTemplate="item">
+                    <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                        <div style="font-size:14px;float:left;margin-top:4px">{{logType.value}}</div>
+                    </div>
+                </ng-template>
+            </p-dropdown>
+        </div>
+        <div *ngIf="expression.Field == 'LogLevel'">
+            <p-dropdown [options]="logLevels" [(ngModel)]="expression.Body" [style]="{'width':'150px'}" filter="true">
+                <ng-template let-logLevel pTemplate="item">
+                    <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                        <div style="font-size:14px;float:left;margin-top:4px">{{logLevel.value}}</div>
+                    </div>
+                </ng-template>
+            </p-dropdown>
+        </div>
+    </div>
+    <div *ngIf="!IsParticular(expression)" >
+        <input type="text" pInputText [(ngModel)]="expression.Body"/>
+    </div>
+    <button pButton type="button" (click)="addExpression(i)" icon="fa-plus"></button>
+    <button pButton type="button" (click)="deleteExpression(i)" icon="fa-minus"></button>
+</div>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using CK.Core;
+using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server;
@@ -28,7 +29,7 @@ namespace CK.Glouton.Tests
                 using( var server = TestHelper.DefaultMockServer() )
                 {
                     server.Should().NotBeNull();
-                    server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration { Alerts = null } } } );
+                    server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration() } } );
                 }
             };
 
@@ -40,41 +41,39 @@ namespace CK.Glouton.Tests
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
-                var sender = new TestAlertSender();
-
                 server.Open( new HandlersManagerConfiguration
                 {
                     GloutonHandlers =
                     {
-                        new AlertHandlerConfiguration
+                        new AlertHandlerConfiguration { Alerts = new List<IAlertExpressionModel>
                         {
-                            Alerts = new List<IAlertModel>
-                            {
-                                new TestAlertModel { Condition = log => (log.LogLevel & LogLevel.Fatal) == LogLevel.Fatal, Senders = new List<IAlertSender> { sender } },
-                                new TestAlertModel { Condition = log => log.Text?.Contains( "Send" ) ?? false, Senders = new List<IAlertSender> { sender } }
-                            }
-                        }
+                            new AlertExpressionModelMock
+                            (
+                                new [] { new [] { "LogLevel", "In", "Fatal" } },
+                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                            ),
+                            new AlertExpressionModelMock
+                            (
+                                new [] { new [] { "Text", "Contains", "Send" } },
+                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                            )
+                        } }
                     }
                 } );
 
+                using( var httpServer = new HttpServerReceiver( HttpServerReceiver.DefaultUrl ) )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient( activityMonitor );
 
-                    activityMonitor.Info( "Hello world" );
+                    activityMonitor.Info( "send Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeFalse();
+                    httpServer.Alerted.Should().BeFalse();
 
                     activityMonitor.Fatal( "Fatal Error n°42" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeTrue();
-
-                    sender.Reset();
-
-                    activityMonitor.Info( "aze Send rty" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeTrue();
+                    httpServer.Alerted.Should().BeTrue();
                 }
             }
         }
@@ -84,10 +83,9 @@ namespace CK.Glouton.Tests
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
-                var sender = new TestAlertSender();
-
                 server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration() } } );
 
+                using( var httpServer = new HttpServerReceiver( HttpServerReceiver.DefaultUrl ) )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
@@ -95,61 +93,29 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeFalse();
+                    httpServer.Alerted.Should().BeFalse();
 
                     server.ApplyConfiguration( new HandlersManagerConfiguration
                     {
                         GloutonHandlers =
                         {
-                            new AlertHandlerConfiguration
+                            new AlertHandlerConfiguration { Alerts = new List<IAlertExpressionModel>
                             {
-                                Alerts = new List<IAlertModel>
-                                {
-                                    new TestAlertModel { Condition = log => log.Text?.Equals("Hello world") ?? false, Senders = new List<IAlertSender> { sender } }
-                                }
-                            }
+                                new AlertExpressionModelMock
+                                (
+                                    new [] { new [] { "Text", "EqualTo", "Hello world" } },
+                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                )
+                            } }
                         }
                     } );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
 
                     activityMonitor.Info( "Hello world" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    sender.Triggered.Should().BeTrue();
+                    Thread.Sleep( TestHelper.DefaultSleepTime * 10 );
+                    httpServer.Alerted.Should().BeTrue();
                 }
             }
-        }
-    }
-
-    internal class TestAlertModel : IAlertModel
-    {
-        public Func<AlertEntry, bool> Condition { get; set; }
-        public IList<IAlertSender> Senders { get; set; }
-    }
-
-    internal class TestAlertSender : IAlertSender
-    {
-        public bool Triggered { get; private set; }
-
-        public TestAlertSender()
-        {
-            Triggered = false;
-        }
-
-        public string SenderType { get; set; } = "Test";
-
-        public bool Match( IAlertSenderConfiguration configuration )
-        {
-            return configuration.SenderType == "Test";
-        }
-
-        public void Send( AlertEntry logEntry )
-        {
-            Triggered = true;
-        }
-
-        public void Reset()
-        {
-            Triggered = false;
         }
     }
 }

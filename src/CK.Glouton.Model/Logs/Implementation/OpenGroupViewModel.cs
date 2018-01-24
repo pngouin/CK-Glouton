@@ -1,8 +1,8 @@
-﻿using CK.Glouton.Model.Lucene;
+﻿using System.Collections.Generic;
+using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
-using System.Collections.Generic;
 
-namespace CK.Glouton.Model.Logs
+namespace CK.Glouton.Model.Logs.Implementation
 {
     public class OpenGroupViewModel : ILogViewModel
     {

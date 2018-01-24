@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using CK.Glouton.Model.Server.Handlers;
+﻿using CK.Glouton.Model.Server.Handlers;
+using System.Collections.Generic;
 
 namespace CK.Glouton.Server.Handlers
 {
     public class AlertHandlerConfiguration : IGloutonHandlerConfiguration
     {
-        public List<IAlertModel> Alerts { get; set; }
+        public List<IAlertExpressionModel> Alerts { get; set; }
 
         public IGloutonHandlerConfiguration Clone()
         {
@@ -13,6 +13,11 @@ namespace CK.Glouton.Server.Handlers
             {
                 Alerts = Alerts
             };
+        }
+
+        public AlertHandlerConfiguration()
+        {
+            Alerts = new List<IAlertExpressionModel>();
         }
     }
 }

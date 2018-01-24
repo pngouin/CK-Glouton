@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Logs.Implementation;
 using CK.Glouton.Model.Lucene;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;

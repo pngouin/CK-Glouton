@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using CK.Glouton.Model.Logs.Implementation;
 
 namespace CK.Glouton.Tests
 {

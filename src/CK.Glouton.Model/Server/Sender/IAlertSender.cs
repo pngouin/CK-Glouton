@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Model.Server.Handlers;
+﻿using CK.Glouton.Model.Server.Handlers.Implementation;
 
 namespace CK.Glouton.Model.Server.Sender
 {

@@ -1,4 +1,4 @@
-﻿namespace CK.Glouton.Service.Common
+﻿namespace CK.Glouton.Server.Handlers.Common
 {
     [System.Flags]
     public enum Operation
