@@ -16,9 +16,6 @@ import { LogViewerComponent } from 'app/modules/logs/components';
       </div>
       <div class="ui-g-9">
         <div class="ui-g-12">
-          <timeSpanNavigator [configuration]="timeSpanNavigatorConfiguration"></timeSpanNavigator>
-        </div>
-        <div class="ui-g-12">
           <logViewer></logViewer>
         </div>
       </div>
