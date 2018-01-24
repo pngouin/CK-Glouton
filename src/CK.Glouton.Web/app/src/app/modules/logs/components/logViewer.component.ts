@@ -8,6 +8,7 @@ import { ILogViewModel } from 'app/common/logs/models';
 import { LogService, QueryParametersSnapshotService } from 'app/_services';
 import { EffectDispatcher } from '@ck/rx';
 import { ITimeSpanNavigatorState } from 'app/modules/timeSpanNavigator/state/timeSpanNavigator.state';
+import { MessageService } from 'primeng/components/common/messageservice';
 
 @Component({
     selector: 'logViewer',
@@ -32,7 +33,8 @@ export class LogViewerComponent {
     constructor(
         private logService: LogService,
         private store: Store<IAppState>,
-        private queryParamertersSnapshotService: QueryParametersSnapshotService
+        private queryParamertersSnapshotService: QueryParametersSnapshotService,
+        private messageService : MessageService
     ) {
         this._subscriptions = [];
         this._loading = false;
@@ -63,7 +65,10 @@ export class LogViewerComponent {
             ).subscribe(l => {
                 this._logs = l;
                 this._loading = false;
-            });
+            },
+            error => this.messageService.add({
+                severity : 'error', summary : 'Error', detail : 'Error while trying to get the log' 
+            }));
     }
 
     public getMarginLeft (log : ILogViewModel): number {

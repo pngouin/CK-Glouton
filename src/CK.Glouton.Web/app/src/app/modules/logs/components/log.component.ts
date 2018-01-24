@@ -7,6 +7,7 @@ import { DialogModule } from 'primeng/primeng';
 import { LogService } from 'app/_services';
 import { LogType } from 'app/common/logs/models';
 import { QueryParametersSnapshotService } from '../services';
+import { MessageService } from 'primeng/components/common/messageservice';
 
 @Component({
     selector: 'log',
@@ -17,14 +18,15 @@ import { QueryParametersSnapshotService } from '../services';
 export class LogComponent {
 
     @Input('data')
-    log : ILogViewModel;
+    log: ILogViewModel;
 
-    private display : boolean = false;
-    private displayChildren : boolean = false;
+    private display: boolean = false;
+    private displayChildren: boolean = false;
 
     constructor(
         private logService: LogService,
-        private queryParamertersSnapshotService: QueryParametersSnapshotService
+        private queryParamertersSnapshotService: QueryParametersSnapshotService,
+        private messageService : MessageService
     ) {
     }
 
@@ -32,7 +34,7 @@ export class LogComponent {
         return this.log.groupDepth * 15;
     }
 
-    getColor (): string {
+    getColor(): string {
         if (this.log.logLevel.indexOf('Fatal') >= 0) { return '#2d2e30'; }
         if (this.log.logLevel.indexOf('Warn') >= 0) { return '#f0ad4e'; }
         if (this.log.logLevel.indexOf('Info') >= 0) { return '#5bc0de'; }
@@ -42,9 +44,9 @@ export class LogComponent {
     }
 
     getText(): string {
-        const maxLength:number = 80 - this.log.groupDepth * 3;
+        const maxLength: number = 80 - this.log.groupDepth * 3;
         if (!this.log.text) { return ''; }
-        if (this.log.text.length > maxLength) { return this.log.text.substr( 0, maxLength ) + ' [...]'; }
+        if (this.log.text.length > maxLength) { return this.log.text.substr(0, maxLength) + ' [...]'; }
         return this.log.text;
     }
 
@@ -57,8 +59,8 @@ export class LogComponent {
     }
 
     onLogClick(log: ILogViewModel): void {
-        this.displayChildren = !this.displayChildren; 
-        if(log.children !== undefined) { return; }
+        this.displayChildren = !this.displayChildren;
+        if (log.children !== undefined) { return; }
         this.logService.filter(
             {
                 appName: this.queryParamertersSnapshotService.appNames,
@@ -70,6 +72,9 @@ export class LogComponent {
             }
         ).subscribe(l => {
             log.children = l;
-        });
+        },
+        error => this.messageService.add({
+            severity : 'error', summary : 'Error', detail : 'Error while trying to get the log' 
+        }));
     }
 }
