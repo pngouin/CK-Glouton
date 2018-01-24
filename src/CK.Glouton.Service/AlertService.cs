@@ -53,10 +53,10 @@ namespace CK.Glouton.Service
                 switch( sender.SenderType )
                 {
                     case "Mail":
-                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<MailSenderSenderConfiguration>();
+                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<MailSenderConfiguration>();
                         break;
                     case "Http":
-                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpSenderSenderConfiguration>();
+                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpSenderConfiguration>();
                         break;
                     default:
                         return false;
@@ -69,8 +69,8 @@ namespace CK.Glouton.Service
             return true;
         }
 
-        private static MailSenderSenderConfiguration _defaultMailSenderConfiguration;
-        private static HttpSenderSenderConfiguration _defaultHttpSenderConfiguration;
+        private static MailSenderConfiguration _defaultMailSenderConfiguration;
+        private static HttpSenderConfiguration _defaultHttpSenderConfiguration;
         public bool TryGetConfiguration( string key, out IAlertSenderConfiguration configuration )
         {
             configuration = null;
@@ -78,12 +78,12 @@ namespace CK.Glouton.Service
             {
                 case "Mail":
                     configuration = _defaultMailSenderConfiguration
-                        ?? ( _defaultMailSenderConfiguration = (MailSenderSenderConfiguration)new MailSenderSenderConfiguration().Default() );
+                        ?? ( _defaultMailSenderConfiguration = (MailSenderConfiguration)new MailSenderConfiguration().Default() );
                     return true;
 
                 case "Http":
                     configuration = _defaultHttpSenderConfiguration
-                        ?? ( _defaultHttpSenderConfiguration = (HttpSenderSenderConfiguration)new HttpSenderSenderConfiguration().Default() );
+                        ?? ( _defaultHttpSenderConfiguration = (HttpSenderConfiguration)new HttpSenderConfiguration().Default() );
                     return true;
 
                 default:

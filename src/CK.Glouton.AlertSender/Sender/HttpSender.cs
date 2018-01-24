@@ -15,7 +15,7 @@ namespace CK.Glouton.AlertSender.Sender
 
         public string SenderType { get; set; } = "Http";
 
-        public HttpSender( HttpSenderSenderConfiguration httpSenderConfiguration )
+        public HttpSender( HttpSenderConfiguration httpSenderConfiguration )
         {
             if( httpSenderConfiguration.SenderType != SenderType )
                 throw new ArgumentException( nameof( httpSenderConfiguration ) );
@@ -25,7 +25,7 @@ namespace CK.Glouton.AlertSender.Sender
 
         public bool Match( IAlertSenderConfiguration configuration )
         {
-            return configuration is HttpSenderSenderConfiguration httpSenderConfiguration
+            return configuration is HttpSenderConfiguration httpSenderConfiguration
                 && httpSenderConfiguration.Url.Equals( _url );
         }
 

@@ -50,12 +50,12 @@ namespace CK.Glouton.Tests
                             new AlertExpressionModelMock
                             (
                                 new [] { new [] { "LogLevel", "In", "Fatal" } },
-                                new IAlertSenderConfiguration[] { new HttpSenderSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
                             ),
                             new AlertExpressionModelMock
                             (
                                 new [] { new [] { "Text", "Contains", "Send" } },
-                                new IAlertSenderConfiguration[] { new HttpSenderSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
                             )
                         } }
                     }
@@ -104,7 +104,7 @@ namespace CK.Glouton.Tests
                                 new AlertExpressionModelMock
                                 (
                                     new [] { new [] { "Text", "EqualTo", "Hello world" } },
-                                    new IAlertSenderConfiguration[] { new HttpSenderSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
                                 )
                             } }
                         }

@@ -4,7 +4,7 @@ using System;
 namespace CK.Glouton.AlertSender.Sender
 {
     [Serializable]
-    public class MailSenderSenderConfiguration : IAlertSenderConfiguration, IMailSenderConfiguration
+    public class MailSenderConfiguration : IAlertSenderConfiguration, IMailSenderConfiguration
     {
         // Implementation of IMailSenderConfiguration
 
@@ -25,7 +25,7 @@ namespace CK.Glouton.AlertSender.Sender
                     SmtpPort <= 0 );
         }
 
-        public bool Equals( MailSenderSenderConfiguration configuration )
+        public bool Equals( MailSenderConfiguration configuration )
         {
             return Name == configuration.Name
                 && Email == configuration.Email
@@ -39,11 +39,10 @@ namespace CK.Glouton.AlertSender.Sender
         // Implementation of IAlertSenderConfiguration
 
         public string SenderType { get; set; }
-        public object Configuration { get; set; }
 
         public IAlertSenderConfiguration Clone()
         {
-            return new MailSenderSenderConfiguration
+            return new MailSenderConfiguration
             {
                 Name = Name,
                 Email = Email,
@@ -58,7 +57,7 @@ namespace CK.Glouton.AlertSender.Sender
         public IAlertSenderConfiguration Default()
         {
             return _defaultConfiguration
-                   ?? ( _defaultConfiguration = new MailSenderSenderConfiguration
+                   ?? ( _defaultConfiguration = new MailSenderConfiguration
                    {
                        Name = "",
                        Email = "",

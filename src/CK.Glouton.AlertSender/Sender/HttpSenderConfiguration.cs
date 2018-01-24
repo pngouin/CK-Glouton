@@ -4,20 +4,18 @@ using System;
 namespace CK.Glouton.AlertSender.Sender
 {
     [Serializable]
-    public class HttpSenderSenderConfiguration : IAlertSenderConfiguration, IHttpSenderConfiguration
+    public class HttpSenderConfiguration : IAlertSenderConfiguration, IHttpSenderConfiguration
     {
         public string SenderType { get; set; } = "Http";
 
         public string Url { get; set; }
-        public object Configuration { get; set; }
 
         public IAlertSenderConfiguration Clone()
         {
-            return new HttpSenderSenderConfiguration
+            return new HttpSenderConfiguration
             {
                 Url = Url,
-                SenderType = SenderType,
-                Configuration = Configuration
+                SenderType = SenderType
             };
         }
 
@@ -26,7 +24,7 @@ namespace CK.Glouton.AlertSender.Sender
         public IAlertSenderConfiguration Default()
         {
             return _defaultConfiguration
-                   ?? ( _defaultConfiguration = new HttpSenderSenderConfiguration
+                   ?? ( _defaultConfiguration = new HttpSenderConfiguration
                    {
                        Url = ""
                    } );

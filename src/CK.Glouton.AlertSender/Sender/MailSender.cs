@@ -13,11 +13,11 @@ namespace CK.Glouton.AlertSender.Sender
     {
         private readonly MailboxAddress _from;
         private readonly List<MailboxAddress> _to = new List<MailboxAddress>();
-        private readonly MailSenderSenderConfiguration _configuration;
+        private readonly MailSenderConfiguration _configuration;
 
         public string SenderType { get; set; } = "Mail";
 
-        public MailSender( MailSenderSenderConfiguration configuration )
+        public MailSender( MailSenderConfiguration configuration )
         {
             if( !configuration.Validate() )
                 throw new ArgumentException( nameof( configuration ) );

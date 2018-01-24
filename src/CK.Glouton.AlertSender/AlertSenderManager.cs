@@ -25,13 +25,13 @@ namespace CK.Glouton.AlertSender
             switch( configuration.SenderType )
             {
                 case "Mail":
-                    if( !( configuration.Configuration is MailSenderSenderConfiguration mailSenderConfiguration ) )
+                    if( !( configuration is MailSenderConfiguration mailSenderConfiguration ) )
                         throw new ArgumentException( nameof( configuration.SenderType ) );
                     newSender = CreateSender( mailSenderConfiguration );
                     break;
 
                 case "Http":
-                    if( !( configuration.Configuration is HttpSenderSenderConfiguration httpSenderConfiguration ) )
+                    if( !( configuration is HttpSenderConfiguration httpSenderConfiguration ) )
                         throw new ArgumentException( nameof( configuration.SenderType ) );
                     newSender = CreateSender( httpSenderConfiguration );
                     break;
