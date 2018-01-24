@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using CK.ControlChannel.Tcp;
+﻿using CK.ControlChannel.Tcp;
 using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
@@ -10,6 +7,9 @@ using CK.Glouton.Model.Services;
 using CK.Glouton.Model.Services.Implementation;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace CK.Glouton.Service
 {
@@ -25,10 +25,8 @@ namespace CK.Glouton.Service
 
         public AlertService( IOptions<TcpControlChannelConfiguration> configuration )
         {
-
             _configuration = configuration.Value;
-
-            _configuration.AppName = typeof( AlertService ).GetType().Assembly.GetName().Name;
+            _configuration.AppName = typeof( AlertService ).Assembly.GetName().Name;
             _configuration.PresentEnvironmentVariables = true;
             _configuration.PresentMonitoringAssemblyInformation = true;
             _configuration.HandleSystemActivityMonitorErrors = false;
@@ -46,7 +44,7 @@ namespace CK.Glouton.Service
             _formatter = new BinaryFormatter();
         }
 
-        public bool SendNewAlert( AlertExpressionModel alertExpression )
+        public bool NewAlertRequest( AlertExpressionModel alertExpression )
         {
             _memoryStream.Seek( 0, SeekOrigin.Begin );
             _memoryStream.Flush();
