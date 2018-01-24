@@ -102,6 +102,7 @@ export class IftttComponent implements OnInit {
     }
 
     private addExpression (index : number) : void {
+        if (this.expressions[index].Body == "") return;
         this.expressions.splice( index+1, 0, {
             Field : "", Operation : "", Body : ""
         } );
@@ -112,7 +113,8 @@ export class IftttComponent implements OnInit {
     }
 
     private deleteExpression (index : number) : void {
-        this.expressions.splice(index, 1);
+        if (index == 0) return;
+         this.expressions.splice(index, 1);
     }
 
     constructor() { }
