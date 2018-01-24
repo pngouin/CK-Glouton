@@ -13,7 +13,7 @@ import { IftttService } from 'app/_services';
 export class SenderChooserComponent implements OnInit {
     constructor(private iftttService : IftttService) { }
 
-    contact : string;
+    cache : string;
     selectedSender : ISender;
     selectedAddSender : string;
     selectedAddSenderName : string;
@@ -74,6 +74,7 @@ export class SenderChooserComponent implements OnInit {
         if (!Array.isArray(array)) return;
         array.push(value);
         this.setConfigurationProperty(propertyName, array);
+        this.cache = "";
     }
 
     deleteToArray(propertyName : string, index : number) : void {
