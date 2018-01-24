@@ -27,6 +27,10 @@ export class IftttPageComponent {
   private senderChooserComponent : SenderChooserComponent;
 
   send() {
+    if (!this.iftttComponent.validate() || !this.senderChooserComponent.validate()) {
+      return;
+    }
+
     this.iftttComponent.expressions;
     this.senderChooserComponent.senders;
 

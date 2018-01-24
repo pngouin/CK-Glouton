@@ -120,4 +120,19 @@ export class IftttComponent implements OnInit {
     constructor() { }
 
     ngOnInit() { }
+
+    validate() : boolean {
+        for (let property of this.expressions) {
+            if (property.Body != undefined &&
+                property.Body != "" &&
+                property.Field != undefined &&
+                property.Field != "" &&
+                property.Operation != undefined &&
+                property.Operation != "") {
+                    continue;
+                }
+            return false;
+        }
+        return true;
+    }
 }

@@ -18,7 +18,7 @@ export class SenderChooserComponent implements OnInit {
     selectedAddSender : string;
     selectedAddSenderName : string;
 
-    senders : SelectItem[] = [] = [
+    senders : SelectItem[] = [
         {label : "Choose a sender", value : null}
     ];
 
@@ -86,5 +86,37 @@ export class SenderChooserComponent implements OnInit {
 
     send() : void {
         this.onSend.emit();
+    }
+
+    validate() : boolean {
+        for (let sender of this.senders) {
+            if (sender.label == this.senders[0].label) {
+                continue;
+            }
+            let value : any;
+            for(let property of Object.keys(sender)) {
+                value = this.getPropertyValue(property);
+                switch(this.getPropertyType(property)) {
+                    case 'array' :
+                        if (value != undefined && value.length > 0) {
+                            continue;
+                        }
+                        return false;
+                    case 'string' :
+                        if (value != undefined && value != "") {
+                            continue;
+                        }
+                        return false;
+                    case 'number' : 
+                        if (value != undefined && value > 0) {
+                            continue;
+                        }
+                        return false;
+                    default : 
+                        return false;
+                }
+            }
+            return true;
+        }
     }
 }
