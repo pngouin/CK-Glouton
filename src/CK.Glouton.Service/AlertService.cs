@@ -2,7 +2,6 @@
 using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
-using CK.Glouton.Model.Server.Sender.Implementation;
 using CK.Glouton.Model.Services;
 using CK.Glouton.Model.Services.Implementation;
 using Microsoft.Extensions.Options;
@@ -54,10 +53,10 @@ namespace CK.Glouton.Service
                 switch( sender.SenderType )
                 {
                     case "Mail":
-                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<MailSenderConfiguration>();
+                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<MailSenderSenderConfiguration>();
                         break;
                     case "Http":
-                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpSenderConfiguration>();
+                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpSenderSenderConfiguration>();
                         break;
                     default:
                         return false;
@@ -70,26 +69,26 @@ namespace CK.Glouton.Service
             return true;
         }
 
-        public IMailConfiguration GetMailConfiguration()
+        private static MailSenderSenderConfiguration _defaultMailSenderConfiguration;
+        private static HttpSenderSenderConfiguration _defaultHttpSenderConfiguration;
+        public bool TryGetConfiguration( string key, out IAlertSenderConfiguration configuration )
         {
-            return new MailConfiguration
+            configuration = null;
+            switch( key )
             {
-                Name = "",
-                Email = "",
-                Contacts = new string[] { },
-                SmtpAddress = "",
-                SmtpPassword = "",
-                SmtpUsername = "",
-                SmtpPort = -1
-            };
-        }
+                case "Mail":
+                    configuration = _defaultMailSenderConfiguration
+                        ?? ( _defaultMailSenderConfiguration = (MailSenderSenderConfiguration)new MailSenderSenderConfiguration().Default() );
+                    return true;
 
-        public IHttpConfiguration GetHttpConfiguration()
-        {
-            return new HttpConfiguration
-            {
-                Url = ""
-            };
+                case "Http":
+                    configuration = _defaultHttpSenderConfiguration
+                        ?? ( _defaultHttpSenderConfiguration = (HttpSenderSenderConfiguration)new HttpSenderSenderConfiguration().Default() );
+                    return true;
+
+                default:
+                    return false;
+            }
         }
     }
 }

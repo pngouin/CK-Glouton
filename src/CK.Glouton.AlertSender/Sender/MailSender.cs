@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CK.Glouton.Model.Server.Handlers.Implementation;
+﻿using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace CK.Glouton.AlertSender.Sender
 {
@@ -13,11 +13,11 @@ namespace CK.Glouton.AlertSender.Sender
     {
         private readonly MailboxAddress _from;
         private readonly List<MailboxAddress> _to = new List<MailboxAddress>();
-        private readonly MailSenderConfiguration _configuration;
+        private readonly MailSenderSenderConfiguration _configuration;
 
         public string SenderType { get; set; } = "Mail";
 
-        public MailSender( MailSenderConfiguration configuration )
+        public MailSender( MailSenderSenderConfiguration configuration )
         {
             if( !configuration.Validate() )
                 throw new ArgumentException( nameof( configuration ) );

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CK.Glouton.Model.Server.Sender
 {
-    public interface IMailConfiguration
+    public interface IMailSenderConfiguration
     {
         string Name { get; set; }
         string Email { get; set; }

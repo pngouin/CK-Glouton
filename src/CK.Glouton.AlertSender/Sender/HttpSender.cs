@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CK.Glouton.Model.Server.Handlers.Implementation;
+using CK.Glouton.Model.Server.Sender;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using CK.Glouton.Model.Server.Handlers.Implementation;
-using CK.Glouton.Model.Server.Sender;
 
 namespace CK.Glouton.AlertSender.Sender
 {
@@ -15,7 +15,7 @@ namespace CK.Glouton.AlertSender.Sender
 
         public string SenderType { get; set; } = "Http";
 
-        public HttpSender( HttpSenderConfiguration httpSenderConfiguration )
+        public HttpSender( HttpSenderSenderConfiguration httpSenderConfiguration )
         {
             if( httpSenderConfiguration.SenderType != SenderType )
                 throw new ArgumentException( nameof( httpSenderConfiguration ) );
@@ -25,7 +25,7 @@ namespace CK.Glouton.AlertSender.Sender
 
         public bool Match( IAlertSenderConfiguration configuration )
         {
-            return configuration is HttpSenderConfiguration httpSenderConfiguration
+            return configuration is HttpSenderSenderConfiguration httpSenderConfiguration
                 && httpSenderConfiguration.Url.Equals( _url );
         }
 

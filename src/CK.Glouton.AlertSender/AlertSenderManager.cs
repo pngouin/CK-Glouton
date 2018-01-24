@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CK.Glouton.AlertSender.Sender;
+using CK.Glouton.Model.Server.Sender;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using CK.Glouton.AlertSender.Sender;
-using CK.Glouton.Model.Server.Sender;
 
 namespace CK.Glouton.AlertSender
 {
@@ -25,13 +25,13 @@ namespace CK.Glouton.AlertSender
             switch( configuration.SenderType )
             {
                 case "Mail":
-                    if( !( configuration.Configuration is MailSenderConfiguration mailSenderConfiguration ) )
+                    if( !( configuration.Configuration is MailSenderSenderConfiguration mailSenderConfiguration ) )
                         throw new ArgumentException( nameof( configuration.SenderType ) );
                     newSender = CreateSender( mailSenderConfiguration );
                     break;
 
                 case "Http":
-                    if( !( configuration.Configuration is HttpSenderConfiguration httpSenderConfiguration ) )
+                    if( !( configuration.Configuration is HttpSenderSenderConfiguration httpSenderConfiguration ) )
                         throw new ArgumentException( nameof( configuration.SenderType ) );
                     newSender = CreateSender( httpSenderConfiguration );
                     break;
