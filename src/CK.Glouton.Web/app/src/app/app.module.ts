@@ -12,6 +12,8 @@ import { StoreModule } from '@ngrx/store';
 import { reducer } from './app.reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MessageService} from 'primeng/components/common/messageservice';
+import {GrowlModule} from 'primeng/growl';
 
 import * as components from './_components';
 import * as modules from './_modules';
@@ -31,6 +33,7 @@ const stateStorageKey: string = 'hln_glouton/state';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    GrowlModule,
     BrowserAnimationsModule,
     ...Object.values(modules),
     StoreModule.provideStore(reducer),
@@ -43,6 +46,7 @@ const stateStorageKey: string = 'hln_glouton/state';
   ],
   providers: [
     EffectDispatcher,
+    MessageService,
     ...Object.values(services),
     // ...Object.values(guards),
   ],

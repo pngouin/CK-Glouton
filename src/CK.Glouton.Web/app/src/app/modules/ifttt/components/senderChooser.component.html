@@ -25,8 +25,8 @@
         <div *ngIf="getPropertyType(property) == 'Array'">
           <div class="ui-inputgroup config-input">
             <span class="ui-inputgroup-addon">{{property}}</span>
-            <input type="text" (keyup.enter)="addToArray(property, contact)" [(ngModel)]="contact" pInputText />
-            <button pButton type="button" (click)="addToArray(property, contact)" icon="fa-plus"></button>
+            <input type="text" (keyup.enter)="addToArray(property, cache)" [(ngModel)]="cache" pInputText />
+            <button pButton type="button" (click)="addToArray(property, cache)" icon="fa-plus"></button>
           </div>
           <ul class="ui-g-12">
             <li *ngFor="let contact of getPropertyValue(property); let i = index">
@@ -38,5 +38,5 @@
       </div>
     </div>
   </div>
-  <button pButton type="button" (click)="send()" label="Send" ></button>
+  <button *ngIf="senders.length > 1" pButton type="button" (click)="send()" label="Send" ></button>
 </div>

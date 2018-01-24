@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { StatisticsService } from 'app/_services';
 import * as palette from './../../../common/js/palette.js';
 import { StatisticsData, IChartData } from 'app/common/statistics/models/statistics.model';
+import { error } from 'util';
+import { MessageService } from 'primeng/components/common/messageservice';
 
 @Component({
     selector: 'statistics',
@@ -14,7 +16,7 @@ export class StatisticsComponent implements OnInit {
 
     dataChart: IChartData[];
 
-    constructor(private statisticService: StatisticsService) {
+    constructor(private statisticService: StatisticsService, private messageService : MessageService) {
         this.statisticsData = new StatisticsData();
         this.dataChart = new Array<IChartData>();
     }
@@ -53,17 +55,45 @@ export class StatisticsComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.statisticService.getAppNameCount().subscribe(d => this.statisticsData.totalAppNameCount = d);
-        this.statisticService.getAppNames().subscribe(d => this.statisticsData.appNames = d);
-        this.statisticService.getTotalExceptionCount().subscribe(d => this.statisticsData.totalExceptionCount = d);
-        this.statisticService.getTotalLogCount().subscribe(d => this.statisticsData.totalLogCount = d);
+        this.statisticService.getAppNameCount().subscribe(
+            d => this.statisticsData.totalAppNameCount = d,
+            error => this.messageService.add({
+                severity : 'error', summary : 'Error', detail : 'Error while trying to get App Name count' 
+            })
+        );
+        this.statisticService.getAppNames().subscribe(
+            d => this.statisticsData.appNames = d,
+            error => this.messageService.add({
+                severity : 'error', summary : 'Error', detail : 'Error while trying to get App Name' 
+            })
+        );
+        this.statisticService.getTotalExceptionCount().subscribe(
+            d => this.statisticsData.totalExceptionCount = d,
+            error => this.messageService.add({
+                severity : 'error', summary : 'Error', detail : 'Error while trying to get total exception count' 
+            })
+        );
+        this.statisticService.getTotalLogCount().subscribe(
+            d => this.statisticsData.totalLogCount = d,
+            error => this.messageService.add({
+                severity : 'error', summary : 'Error', detail : 'Error while trying to get total log count' 
+            })
+        );
         this.statisticService.getExceptionCountByAppName().subscribe(d => {
-            this.statisticsData.exceptionCountByAppName = d;
-            this.dataChart.push(this.constructDataPieChart(this.statisticsData.exceptionCountByAppName, "Exception by AppName"));
-        });
+                this.statisticsData.exceptionCountByAppName = d;
+                this.dataChart.push(this.constructDataPieChart(this.statisticsData.exceptionCountByAppName, "Exception by AppName"));
+            },
+            error => this.messageService.add({
+                severity : 'error', summary : 'Error', detail : 'Error while trying to get exception count by app name' 
+            })
+        );
         this.statisticService.getLogCountByAppName().subscribe(d => {
-            this.statisticsData.logCountByAppName = d;
-            this.dataChart.push(this.constructDataPieChart(this.statisticsData.logCountByAppName, "Log by AppName"));
-        });
+                this.statisticsData.logCountByAppName = d;
+                this.dataChart.push(this.constructDataPieChart(this.statisticsData.logCountByAppName, "Log by AppName"));
+            },
+            error => this.messageService.add({
+                severity : 'error', summary : 'Error', detail : 'Error while trying to get log count by app name' 
+            })
+        );
     }
 }

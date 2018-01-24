@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { IData } from '../models/logField.model';
 import { IExpression } from 'app/modules/ifttt/models/expression.model';
 import { Input } from '@angular/core';
+import { MessageService } from 'primeng/components/common/messageservice';
+import {Message} from 'primeng/components/common/api';
+
 
 @Component({
     selector: 'ifttt',
@@ -18,6 +21,8 @@ export class IftttComponent implements OnInit {
     @Input() expressions : IExpression[] = [
         {Field : "", Operation : "", Body : "" }
     ]
+
+    constructor(private messageService : MessageService) { }
 
     fields: IData[] = [
         { label: "LogType", value: "LogType" },
@@ -102,6 +107,12 @@ export class IftttComponent implements OnInit {
     }
 
     private addExpression (index : number) : void {
+        if (this.expressions[index].Body == ""){
+            this.messageService.add( {
+                severity : 'warn', summary : 'Warn', detail : "The expression need a body."
+            });
+            return;
+        }
         this.expressions.splice( index+1, 0, {
             Field : "", Operation : "", Body : ""
         } );
@@ -112,10 +123,29 @@ export class IftttComponent implements OnInit {
     }
 
     private deleteExpression (index : number) : void {
-        this.expressions.splice(index, 1);
+        if (index == 0) {
+            this.messageService.add( {
+                severity : 'error', summary : 'Error', detail : "You can't delete the first expression."
+            });
+            return;
+        }
+         this.expressions.splice(index, 1);
     }
 
-    constructor() { }
-
     ngOnInit() { }
+
+    validate() : boolean {
+        for (let property of this.expressions) {
+            if (property.Body != undefined &&
+                property.Body != "" &&
+                property.Field != undefined &&
+                property.Field != "" &&
+                property.Operation != undefined &&
+                property.Operation != "") {
+                    continue;
+                }
+            return false;
+        }
+        return true;
+    }
 }
