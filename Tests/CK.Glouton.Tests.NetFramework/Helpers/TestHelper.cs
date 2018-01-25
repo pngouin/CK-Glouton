@@ -57,7 +57,7 @@ namespace CK.Glouton.Tests
                 DefaultHost,
                 DefaultPort,
                 authorizationHandler ?? DefaultAuthHandler,
-                null, // Todo: Add test certificate
+                null,
                 userCertificateValidationCallback
             );
         }
@@ -82,7 +82,7 @@ namespace CK.Glouton.Tests
                 DefaultPort,
                 activityMonitor ?? new ActivityMonitor(),
                 authorizationHandler ?? DefaultAuthHandler,
-                null, // Todo: Same as above
+                null,
                 userCertificateValidationCallback
             );
         }
