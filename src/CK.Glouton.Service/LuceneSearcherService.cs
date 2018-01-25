@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CK.Glouton.Lucene;
+﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
 using CK.Glouton.Model.Lucene;
 using CK.Glouton.Model.Services;
 using CK.Glouton.Service.Common;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CK.Glouton.Service
 {
@@ -113,10 +113,10 @@ namespace CK.Glouton.Service
             int groupDepth,
             int count )
         {
-            var before = GetLogsBefore( monitorId, dateTime, fields, logLevel, query, appNames, groupDepth, count );
-            var after = GetLogWithFilters( monitorId, dateTime, DateTime.Now, fields, logLevel, query, appNames, groupDepth, count );
+            var beforeInclusive = GetLogsBefore( monitorId, dateTime, fields, logLevel, query, appNames, groupDepth, count );
+            var afterInclusive = GetLogWithFilters( monitorId, dateTime, DateTime.Now, fields, logLevel, query, appNames, groupDepth, count );
 
-            return new[] { before, after.GetRange( 1, after.Count - 1 ) };
+            return new[] { beforeInclusive.GetRange( 0, beforeInclusive.Count - 1 ), afterInclusive.GetRange( 1, afterInclusive.Count - 1 ) };
         }
 
         private List<ILogViewModel> GetLogsBefore
@@ -130,25 +130,27 @@ namespace CK.Glouton.Service
             int groupDepth,
             int count )
         {
-            var before = new List<ILogViewModel>();
-            var found = false;
-            float timeBefore = 1;
-            var sDateTime = dateTime.ToString("dd/MM/yyyy hh:mm:ss.fff");
 
+            var timeReference = dateTime.ToString( "dd/MM/yyyy hh:mm:ss.fff" );
+            List<ILogViewModel> logsBefore;
+            float currentTimeWindow = 1;
+
+            var found = false;
             do
             {
-                if (timeBefore >= 604800) throw new Exception("Logs not found in the week preceding this log");
-                before = GetLogWithFilters( monitorId, dateTime.AddSeconds(-timeBefore), dateTime, fields, logLevel, query, appNames, groupDepth, count );
-                var test = before.ElementAt(count).LogTime;
-                if ( test == sDateTime )
+                if( currentTimeWindow >= 604800 )
+                    throw new Exception( "Logs not found in the week preceding this log." );
+                logsBefore = GetLogWithFilters( monitorId, dateTime.AddSeconds( -currentTimeWindow ), dateTime, fields, logLevel, query, appNames, groupDepth, count );
+                var lastLogTime = logsBefore.ElementAt( count ).LogTime;
+                if( lastLogTime == timeReference )
                     found = true;
-                else if( before.Count < count+1 )
-                    timeBefore = (timeBefore + timeBefore * 2) / 2;
+                else if( logsBefore.Count < count + 1 )
+                    currentTimeWindow *= 1.5f;
                 else
-                    timeBefore /= 2;
+                    currentTimeWindow /= 2;
             } while( !found );
 
-            return before;
+            return logsBefore;
         }
 
         public List<string> GetMonitorIdList()
