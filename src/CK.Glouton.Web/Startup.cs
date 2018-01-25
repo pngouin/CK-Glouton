@@ -27,7 +27,6 @@ namespace CK.Glouton.Web
             services.AddSingleton<ILuceneSearcherService, LuceneSearcherService>();
             services.AddSingleton<ILuceneStatisticsService, LuceneStatisticsService>();
 
-            // TODO: Add configuration for alert (especially sender)
             services.AddSingleton<IAlertService, AlertService>();
 
             services.AddMvc();
