@@ -6,9 +6,11 @@ using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
+using CK.Glouton.Model.Server.Sender.Implementation;
 using CK.Glouton.Server.Handlers;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Security;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -65,28 +67,27 @@ namespace CK.Glouton.Server
                 if( !( gloutonHandler is AlertHandlerConfiguration alertHandlerConfiguration ) )
                     continue;
 
-                var senders = new IAlertSenderConfiguration[ alertExpressionModel.Senders.Length ];
-                for( var i = 0 ; i < senders.Length ; i += 1 )
-                {
-                    var sender = alertExpressionModel.Senders[ i ];
-                    switch( sender.SenderType )
-                    {
-                        case "Mail":
-                            senders[ i ] = (MailSenderConfiguration)sender.Configuration;
-                            break;
-
-                        case "Http":
-                            senders[ i ] = (HttpSenderConfiguration)sender.Configuration;
-                            break;
-
-                        default:
-                            throw new InvalidOperationException( sender.SenderType );
-                    }
-                }
-
-                alertHandlerConfiguration.Alerts.Add( new AlertExpression( alertExpressionModel.Expressions, senders ) );
+                alertHandlerConfiguration.Alerts.Add( new AlertExpression(
+                    alertExpressionModel.Expressions,
+                    alertExpressionModel.Senders.Select( ParseSenderConfiguration ).ToArray()
+                ) );
                 ApplyConfiguration( _handlersManagerConfiguration );
                 return;
+            }
+        }
+
+        private static IAlertSenderConfiguration ParseSenderConfiguration( AlertSenderConfiguration configuration )
+        {
+            switch( configuration.SenderType )
+            {
+                case "Mail":
+                    return (MailSenderConfiguration)configuration.Configuration;
+
+                case "Http":
+                    return (HttpSenderConfiguration)configuration.Configuration;
+
+                default:
+                    throw new InvalidOperationException( configuration.SenderType );
             }
         }
 
