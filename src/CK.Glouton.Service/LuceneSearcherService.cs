@@ -113,10 +113,42 @@ namespace CK.Glouton.Service
             int groupDepth,
             int count )
         {
-            List<ILogViewModel> before = null; // TODO: Retrieve log
+            var before = GetLogsBefore( monitorId, dateTime, fields, logLevel, query, appNames, groupDepth, count );
             var after = GetLogWithFilters( monitorId, dateTime, DateTime.Now, fields, logLevel, query, appNames, groupDepth, count );
 
             return new[] { before, after.GetRange( 1, after.Count - 1 ) };
+        }
+
+        private List<ILogViewModel> GetLogsBefore
+        (
+            string monitorId,
+            DateTime dateTime,
+            string[] fields,
+            string[] logLevel,
+            string query,
+            string[] appNames,
+            int groupDepth,
+            int count )
+        {
+            var before = new List<ILogViewModel>();
+            var found = false;
+            float timeBefore = 1;
+            var sDateTime = dateTime.ToString("dd/MM/yyyy hh:mm:ss.fff");
+
+            do
+            {
+                if (timeBefore >= 604800) throw new Exception("Logs not found in the week preceding this log");
+                before = GetLogWithFilters( monitorId, dateTime.AddSeconds(-timeBefore), dateTime, fields, logLevel, query, appNames, groupDepth, count );
+                var test = before.ElementAt(count).LogTime;
+                if ( test == sDateTime )
+                    found = true;
+                else if( before.Count < count+1 )
+                    timeBefore = (timeBefore + timeBefore * 2) / 2;
+                else
+                    timeBefore /= 2;
+            } while( !found );
+
+            return before;
         }
 
         public List<string> GetMonitorIdList()
