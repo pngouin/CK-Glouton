@@ -7,12 +7,15 @@ import { LogViewerComponent } from 'app/modules/logs/components';
   template: `
     <div class="ui-g">
       <div class="ui-g-3">
-        <querySearchbar (searchEmitter)="searchEvent($event)"></querySearchbar>
+        <div class="layout-wrapper layout-menu-container">
+        <div class="ui-g-12" >
+          <querySearchbar (searchEmitter)="searchEvent($event)"></querySearchbar>
+        </div>
         <h3>Criticity Level</h3>
         <criticitySelector></criticitySelector>
-
         <h3>Current AppNames</h3>
         <applicationNameSelector></applicationNameSelector>
+        </div>
       </div>
       <div class="ui-g-9">
         <div class="ui-g-12">
