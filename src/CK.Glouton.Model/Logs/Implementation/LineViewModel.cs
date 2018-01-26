@@ -27,7 +27,7 @@ namespace CK.Glouton.Model.Logs.Implementation
                 MonitorId = document.Get( LogField.MONITOR_ID ),
                 GroupDepth = Int32.Parse( document.Get( LogField.GROUP_DEPTH ) ),
                 PreviousEntryType = document.Get( LogField.PREVIOUS_ENTRY_TYPE ),
-                PreviousLogTime = document.Get( LogField.PREVIOUS_LOG_TIME ),
+                PreviousLogTime = DateTools.StringToDate(document.Get(LogField.PREVIOUS_LOG_TIME)).ToString("dd/MM/yyyy HH:mm:ss.fff"),
                 LogLevel = document.Get( LogField.LOG_LEVEL ),
                 Text = document.Get( LogField.TEXT ),
                 Tags = document.Get( LogField.TAGS ),
