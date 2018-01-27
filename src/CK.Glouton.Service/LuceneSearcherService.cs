@@ -138,8 +138,6 @@ namespace CK.Glouton.Service
             var found = false;
             do
             {
-                if( currentTimeWindow >= 604800 )
-                    throw new Exception( "Logs not found in the week preceding this log." );
                 logsBefore = GetLogWithFilters( monitorId, dateTime.AddSeconds( -currentTimeWindow ), dateTime, fields, logLevel, query, appNames, groupDepth, count );
                 var lastLogTime = logsBefore.ElementAt( count ).LogTime;
                 if( lastLogTime == timeReference )
@@ -148,6 +146,9 @@ namespace CK.Glouton.Service
                     currentTimeWindow *= 1.5f;
                 else
                     currentTimeWindow /= 2;
+
+                if( currentTimeWindow >= 604800 )
+                    return logsBefore;
             } while( !found );
 
             return logsBefore;
