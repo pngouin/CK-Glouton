@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using CK.Core;
+﻿using CK.Core;
 using CK.Glouton.AlertSender;
 using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
@@ -11,6 +6,11 @@ using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server.Handlers.Common;
 using CK.Monitoring;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace CK.Glouton.Server.Handlers
 {
@@ -59,7 +59,6 @@ namespace CK.Glouton.Server.Handlers
                 catch( Exception exception )
                 {
                     const string message = "Alert crashed.";
-                    ActivityMonitor.CriticalErrorCollector.Add( exception, message );
                     _activityMonitor.Fatal( message, exception );
                     if( faulty == null )
                         faulty = new List<IAlertModel>();
@@ -109,7 +108,6 @@ namespace CK.Glouton.Server.Handlers
             catch( Exception exception )
             {
                 const string message = "Alert initialization failed.";
-                ActivityMonitor.CriticalErrorCollector.Add( exception, message );
                 _activityMonitor.Fatal( message, exception );
                 return false;
             }
