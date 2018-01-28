@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Handler.Tcp", "src\CK.Glouton.Handler.Tcp\CK.Glouton.Handler.Tcp.csproj", "{131EB284-0872-4D5C-92B2-2C1567EFA357}"
 EndProject
@@ -40,7 +40,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Service", "src\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ck.Glouton.Ckmon.Indexer", "Sample\Ck.Glouton.Ckmon.Indexer\Ck.Glouton.Ckmon.Indexer.csproj", "{7F5C022A-19F9-4F5A-9A42-1DE84E17372B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.AlertSender", "src\CK.Glouton.AlertSender\CK.Glouton.AlertSender.csproj", "{FC2A4209-BCC3-4522-A36A-280966100AD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.AlertSender", "src\CK.Glouton.AlertSender\CK.Glouton.AlertSender.csproj", "{FC2A4209-BCC3-4522-A36A-280966100AD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Database", "src\CK.Glouton.Database\CK.Glouton.Database.csproj", "{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,6 +102,10 @@ Global
 		{FC2A4209-BCC3-4522-A36A-280966100AD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC2A4209-BCC3-4522-A36A-280966100AD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC2A4209-BCC3-4522-A36A-280966100AD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

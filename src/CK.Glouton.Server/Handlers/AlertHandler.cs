@@ -1,5 +1,6 @@
 ﻿using CK.Core;
 using CK.Glouton.AlertSender;
+using CK.Glouton.Database;
 using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Handlers.Implementation;
@@ -19,6 +20,7 @@ namespace CK.Glouton.Server.Handlers
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
         private readonly AlertSenderManager _alertAlertSenderManager;
+        private readonly AlertTableMock _alertTableMock;
 
         private IActivityMonitor _activityMonitor;
         private List<IAlertModel> _alerts;
@@ -28,6 +30,7 @@ namespace CK.Glouton.Server.Handlers
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
             _alertAlertSenderManager = new AlertSenderManager();
+            _alertTableMock = new AlertTableMock( alertHandlerConfiguration.DatabasePath );
             InitializeAlerts( alertHandlerConfiguration );
         }
 
@@ -82,7 +85,11 @@ namespace CK.Glouton.Server.Handlers
             if( !( configuration is AlertHandlerConfiguration alertHandlerConfiguration ) )
                 return false;
 
-            return InitializeAlerts( alertHandlerConfiguration );
+            if( !InitializeAlerts( alertHandlerConfiguration ) )
+                return false;
+
+            _alertTableMock.Create( alertHandlerConfiguration.Alerts );
+            return true;
         }
 
         internal bool InitializeAlerts( AlertHandlerConfiguration configuration )
