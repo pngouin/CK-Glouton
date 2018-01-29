@@ -20,17 +20,13 @@ export class IftttComponent implements OnInit {
     selectedOperation: string = '';
     selectedInfo: string = '';
 
-    expressions : IExpression[] = [
-        {Field : '', Operation : '', Body : '' }
-    ];
-
     constructor(private messageService : MessageService) { }
 
     fields: IData[] = [
+        { label: 'FileName', value: 'FileName' },
         { label: 'LogType', value: 'LogType' },
         { label: 'LogLevel', value: 'LogLevel' },
         { label: 'GroupDepth', value: 'GroupDepth' },
-        { label: 'FileName', value: 'FileName' },
         { label: 'LineNumber', value: 'LineNumber' },
         { label: 'AppName', value: 'AppName' },
         { label: 'Text', value: 'Text' },
@@ -70,6 +66,10 @@ export class IftttComponent implements OnInit {
         { label: 'Error', value: 'Error' },
         { label: 'Fatal', value: 'Fatal' },
         { label: 'IsFiltered', value: 'IsFiltered' },
+    ];
+
+    expressions : IExpression[] = [
+        {Field : this.fields[0].value, Operation : this.operations[0].value, Body : '' }
     ];
 
     private IsParticular( expression : IExpression ): boolean {
@@ -115,9 +115,9 @@ export class IftttComponent implements OnInit {
             });
             return;
         }
-        this.expressions.splice( index+1, 0, {
-            Field : '', Operation : '', Body : ''
-        } );
+        this.expressions.splice( index+1, 0,
+            {Field : this.fields[0].value, Operation : this.operations[0].value, Body : '' }
+        );
     }
 
     private isNumberOperation ( operation : string): boolean {
@@ -152,7 +152,7 @@ export class IftttComponent implements OnInit {
 
     clear(): void {
         this.expressions = [
-            {Field : '', Operation : '', Body : '' }
+            {Field : this.fields[0].value, Operation : this.operations[0].value, Body : '' }
         ];
     }
 }
