@@ -27,3 +27,7 @@ li a.active {
     color: white;
     background-color: #55A2B4;
 }
+
+i {
+    margin-right: 7px;
+}
