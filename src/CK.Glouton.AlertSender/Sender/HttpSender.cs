@@ -1,11 +1,11 @@
-﻿using CK.Glouton.Model.Server.Handlers;
+﻿using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 
-namespace CK.Glouton.Server.Senders
+namespace CK.Glouton.AlertSender.Sender
 {
     public class HttpSender : IAlertSender
     {
@@ -65,7 +65,7 @@ namespace CK.Glouton.Server.Senders
                 values.Add( "Conclusions", stringBuilder.ToString() );
             }
 
-            Client.PostAsync( _url, new FormUrlEncodedContent( values ) );
+            Client.PostAsync( _url, new FormUrlEncodedContent( values ) ).GetAwaiter().GetResult();
         }
     }
 }

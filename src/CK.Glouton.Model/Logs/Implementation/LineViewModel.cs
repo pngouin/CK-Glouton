@@ -1,8 +1,8 @@
-﻿using CK.Glouton.Model.Lucene;
+﻿using System;
+using CK.Glouton.Model.Lucene;
 using Lucene.Net.Documents;
-using System;
 
-namespace CK.Glouton.Model.Logs
+namespace CK.Glouton.Model.Logs.Implementation
 {
     public class LineViewModel : ILogViewModel
     {
@@ -20,14 +20,14 @@ namespace CK.Glouton.Model.Logs
         public string PreviousLogTime { get; set; }
         public string AppName { get; set; }
 
-        public static LineViewModel Get ( ILuceneSearcher luceneSearcher, Document document )
+        public static LineViewModel Get( ILuceneSearcher luceneSearcher, Document document )
         {
             return new LineViewModel
             {
                 MonitorId = document.Get( LogField.MONITOR_ID ),
-                GroupDepth = Int32.Parse(document.Get(LogField.GROUP_DEPTH)),
+                GroupDepth = Int32.Parse( document.Get( LogField.GROUP_DEPTH ) ),
                 PreviousEntryType = document.Get( LogField.PREVIOUS_ENTRY_TYPE ),
-                PreviousLogTime = document.Get( LogField.PREVIOUS_LOG_TIME ),
+                PreviousLogTime = DateTools.StringToDate(document.Get(LogField.PREVIOUS_LOG_TIME)).ToString("dd/MM/yyyy HH:mm:ss.fff"),
                 LogLevel = document.Get( LogField.LOG_LEVEL ),
                 Text = document.Get( LogField.TEXT ),
                 Tags = document.Get( LogField.TAGS ),

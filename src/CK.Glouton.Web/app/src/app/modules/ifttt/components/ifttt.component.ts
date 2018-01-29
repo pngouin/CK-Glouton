@@ -89,8 +89,8 @@ export class IftttComponent implements OnInit {
             return [{ label: "EqualTo", value: "EqualTo" }];
         }
         if (expression.Field == "LogLevel") {
-            expression.Operation = "Contains";
-            return [{ label: "Contains", value: "Contains" }]
+            expression.Operation = "In";
+            return [{ label: "In", value: "In" }]
         }
         if (this.IsNumber(expression)) {
             return this.numberOperations;

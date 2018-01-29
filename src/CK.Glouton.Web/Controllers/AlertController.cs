@@ -1,5 +1,4 @@
-﻿using CK.Glouton.Model.Server.Handlers;
-using CK.Glouton.Model.Server.Sender;
+﻿using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,29 +15,32 @@ namespace CK.Glouton.Web.Controllers
         }
 
         [HttpPost( "add" )]
-        public object AddAlert( [FromBody] IAlertExpressionModel alertExpressionModel )
+        public object AddAlert( [FromBody] AlertExpressionModel alertExpressionModel )
         {
-            if( _alertService.SendNewAlert( alertExpressionModel ) )
+            if( _alertService.NewAlertRequest( alertExpressionModel ) )
                 return Ok();
             return BadRequest();
         }
 
-        [HttpGet("configuration/mail")]
-        public IMailConfiguration GetMailConfiguration ()
+        [HttpGet( "configuration/{key}" )]
+        public object GetConfiguration( string key )
         {
-            return _alertService.GetMailConfiguration();
+            if( _alertService.TryGetConfiguration( key, out var configuration ) )
+                return configuration;
+            return BadRequest();
+
         }
 
-        [HttpGet("configuration/http")]
-        public IHttpConfiguration GetHttpConfiguration()
-        {
-            return _alertService.GetHttpConfiguration();
-        }
-
-        [HttpGet("configuration")]
+        [HttpGet( "configuration" )]
         public string[] GetAllConfiguration()
         {
             return _alertService.AvailableConfiguration;
+        }
+
+        [HttpGet( "all" )]
+        public object GetAllAlerts()
+        {
+            return _alertService.GetAllAlerts();
         }
     }
 }

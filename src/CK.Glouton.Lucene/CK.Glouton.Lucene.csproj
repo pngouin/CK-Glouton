@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.Common\CK.Glouton.Common.csproj" />
     <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
   </ItemGroup>
 

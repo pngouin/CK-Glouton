@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CK.Glouton.Service.Common
+namespace CK.Glouton.Common
 {
-    internal static class Extensions
+    public static class ListExtensions
     {
-        public static List<T> RemoveAndGetRange<T>( this List<T> @this, int index, int count )
-        {
-            var range = @this.GetRange( index, count );
-            @this.RemoveRange( index, count );
-            return range;
-        }
-
         public static IEnumerable<T> TakeWhileInclusive<T>( this IEnumerable<T> enumerable, Func<T, bool> predicate )
         {
             foreach( var item in enumerable )

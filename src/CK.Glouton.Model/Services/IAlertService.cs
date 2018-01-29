@@ -1,13 +1,15 @@
 ﻿using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
+using System.Collections.Generic;
 
 namespace CK.Glouton.Model.Services
 {
     public interface IAlertService
     {
-        bool SendNewAlert( IAlertExpressionModel alertExpression );
-        IMailConfiguration GetMailConfiguration();
+        bool NewAlertRequest( AlertExpressionModel alertExpression );
         string[] AvailableConfiguration { get; }
-        IHttpConfiguration GetHttpConfiguration();
+        bool TryGetConfiguration( string key, out IAlertSenderConfiguration configuration );
+        IList<IAlertExpressionModel> GetAllAlerts();
     }
 }

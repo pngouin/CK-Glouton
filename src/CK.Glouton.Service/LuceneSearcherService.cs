@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CK.Glouton.Common;
 using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
 using CK.Glouton.Model.Lucene;
 using CK.Glouton.Model.Services;
-using CK.Glouton.Service.Common;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CK.Glouton.Service
 {
@@ -113,10 +113,45 @@ namespace CK.Glouton.Service
             int groupDepth,
             int count )
         {
-            List<ILogViewModel> before = null; // TODO: Retrieve log
-            var after = GetLogWithFilters( monitorId, dateTime, DateTime.Now, fields, logLevel, query, appNames, groupDepth, count );
+            var beforeInclusive = GetLogsBefore( monitorId, dateTime, fields, logLevel, query, appNames, groupDepth, count );
+            var afterInclusive = GetLogWithFilters( monitorId, dateTime, DateTime.Now, fields, logLevel, query, appNames, groupDepth, count );
 
-            return new[] { before, after.GetRange( 1, after.Count - 1 ) };
+            return new[] { beforeInclusive.GetRange( 0, beforeInclusive.Count - 1 ), afterInclusive.GetRange( 1, afterInclusive.Count - 1 ) };
+        }
+
+        private List<ILogViewModel> GetLogsBefore
+        (
+            string monitorId,
+            DateTime dateTime,
+            string[] fields,
+            string[] logLevel,
+            string query,
+            string[] appNames,
+            int groupDepth,
+            int count )
+        {
+
+            var timeReference = dateTime.ToString( "dd/MM/yyyy hh:mm:ss.fff" );
+            List<ILogViewModel> logsBefore;
+            float currentTimeWindow = 1;
+
+            var found = false;
+            do
+            {
+                logsBefore = GetLogWithFilters( monitorId, dateTime.AddSeconds( -currentTimeWindow ), dateTime, fields, logLevel, query, appNames, groupDepth, count );
+                var lastLogTime = logsBefore.ElementAt( count ).LogTime;
+                if( lastLogTime == timeReference )
+                    found = true;
+                else if( logsBefore.Count < count + 1 )
+                    currentTimeWindow *= 1.5f;
+                else
+                    currentTimeWindow /= 2;
+
+                if( currentTimeWindow >= 604800 )
+                    return logsBefore;
+            } while( !found );
+
+            return logsBefore;
         }
 
         public List<string> GetMonitorIdList()

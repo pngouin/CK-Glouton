@@ -1,9 +1,10 @@
 ﻿using CK.Core;
+using CK.Glouton.AlertSender.Sender;
+using CK.Glouton.Common;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
-using CK.Glouton.Server.Senders;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -29,7 +30,13 @@ namespace CK.Glouton.Tests
                 using( var server = TestHelper.DefaultMockServer() )
                 {
                     server.Should().NotBeNull();
-                    server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration { Alerts = null } } } );
+                    server.Open( new HandlersManagerConfiguration
+                    {
+                        GloutonHandlers =
+                        {
+                            new AlertHandlerConfiguration { DatabasePath = @"%localappdata%/Glouton/Alerts".GetPathWithSpecialFolders() }
+                        }
+                    } );
                 }
             };
 
@@ -45,40 +52,38 @@ namespace CK.Glouton.Tests
                 {
                     GloutonHandlers =
                     {
-                        new AlertHandlerConfiguration { Alerts = new List<IAlertExpressionModel>
-                        {
-                            new AlertExpressionModelMock
-                            (
-                                new [] { new [] { "LogLevel", "In", "Fatal" } },
-                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
-                            ),
-                            new AlertExpressionModelMock
-                            (
-                                new [] { new [] { "Text", "Contains", "Send" } },
-                                new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
-                            )
-                        } }
+                        new AlertHandlerConfiguration {
+                            DatabasePath = @"%localappdata%/Glouton/Alerts".GetPathWithSpecialFolders(),
+                            Alerts = new List<IAlertExpressionModel>
+                            {
+                                new AlertExpressionModelMock
+                                (
+                                    new [] { new [] { "LogLevel", "In", "Fatal" } },
+                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                ),
+                                new AlertExpressionModelMock
+                                (
+                                    new [] { new [] { "Text", "Contains", "Send" } },
+                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                )
+                            }
+                        }
                     }
                 } );
 
+                using( var httpServer = new HttpServerReceiver( HttpServerReceiver.DefaultUrl ) )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient( activityMonitor );
 
-                    activityMonitor.Info( "Hello world" );
+                    activityMonitor.Info( "send Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert false
+                    httpServer.Alerted.Should().BeFalse();
 
                     activityMonitor.Fatal( "Fatal Error n°42" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert true
-
-                    // Reset
-
-                    activityMonitor.Info( "aze Send rty" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert true
+                    httpServer.Alerted.Should().BeTrue();
                 }
             }
         }
@@ -88,8 +93,15 @@ namespace CK.Glouton.Tests
         {
             using( var server = TestHelper.DefaultGloutonServer() )
             {
-                server.Open( new HandlersManagerConfiguration { GloutonHandlers = { new AlertHandlerConfiguration() } } );
+                server.Open( new HandlersManagerConfiguration
+                {
+                    GloutonHandlers =
+                    {
+                        new AlertHandlerConfiguration { DatabasePath = @"%localappdata%/Glouton/Alerts".GetPathWithSpecialFolders() }
+                    }
+                } );
 
+                using( var httpServer = new HttpServerReceiver( HttpServerReceiver.DefaultUrl ) )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
@@ -97,27 +109,30 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert false
+                    httpServer.Alerted.Should().BeFalse();
 
                     server.ApplyConfiguration( new HandlersManagerConfiguration
                     {
                         GloutonHandlers =
                         {
-                            new AlertHandlerConfiguration { Alerts = new List<IAlertExpressionModel>
-                            {
-                                new AlertExpressionModelMock
-                                (
-                                    new [] { new [] { "Text", "EqualsTo", "Hello world" } },
-                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = "debug" } }
-                                ),
-                            } }
+                            new AlertHandlerConfiguration {
+                                DatabasePath = @"%localappdata%/Glouton/Alerts".GetPathWithSpecialFolders(),
+                                Alerts = new List<IAlertExpressionModel>
+                                {
+                                    new AlertExpressionModelMock
+                                    (
+                                        new [] { new [] { "Text", "EqualTo", "Hello world" } },
+                                        new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                    )
+                                }
+                            }
                         }
                     } );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
 
                     activityMonitor.Info( "Hello world" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    // Assert true
+                    Thread.Sleep( TestHelper.DefaultSleepTime * 10 );
+                    httpServer.Alerted.Should().BeTrue();
                 }
             }
         }

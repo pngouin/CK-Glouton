@@ -1,14 +1,10 @@
-﻿using CK.Core;
-using CK.Monitoring;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Security;
 using System.Reflection;
-using System.Text;
 
-namespace CK.Glouton.Model.Services
+namespace CK.Glouton.Model.Services.Implementation
 {
     public class TcpControlChannelConfiguration : ITcpControlChannelConfiguration
     {
@@ -67,31 +63,31 @@ namespace CK.Glouton.Model.Services
         public IReadOnlyDictionary<string, string> BuildAuthData()
         {
             var dictionary = new Dictionary<string, string>();
-            if (AdditionalAuthenticationData != null)
-                foreach (var kvp in AdditionalAuthenticationData)
-                    dictionary.Add(kvp.Key, kvp.Value);
+            if( AdditionalAuthenticationData != null )
+                foreach( var kvp in AdditionalAuthenticationData )
+                    dictionary.Add( kvp.Key, kvp.Value );
 
-            dictionary["AppName"] = AppName;
-            dictionary["ClientName"] = ClientName;
+            dictionary[ "AppName" ] = AppName;
+            dictionary[ "ClientName" ] = ClientName;
 
-            if (PresentMonitoringAssemblyInformation)
+            if( PresentMonitoringAssemblyInformation )
             {
-                AddAssemblyInformation(dictionary, typeof(TcpControlChannelConfiguration));
+                AddAssemblyInformation( dictionary, typeof( TcpControlChannelConfiguration ) );
             }
 
-            if (!PresentEnvironmentVariables)
+            if( !PresentEnvironmentVariables )
                 return dictionary;
 
-            foreach (DictionaryEntry e in Environment.GetEnvironmentVariables())
-                dictionary[$"ENV:{e.Key}"] = e.Value.ToString();
+            foreach( DictionaryEntry e in Environment.GetEnvironmentVariables() )
+                dictionary[ $"ENV:{e.Key}" ] = e.Value.ToString();
 
             return dictionary;
         }
 
-        private static void AddAssemblyInformation(IDictionary<string, string> dictionary, Type type)
+        private static void AddAssemblyInformation( IDictionary<string, string> dictionary, Type type )
         {
             var assemblyName = type.GetTypeInfo().Assembly.GetName();
-            dictionary[$"ASSEMBLY:{assemblyName.Name}"] = assemblyName.FullName;
+            dictionary[ $"ASSEMBLY:{assemblyName.Name}" ] = assemblyName.FullName;
         }
     }
 }

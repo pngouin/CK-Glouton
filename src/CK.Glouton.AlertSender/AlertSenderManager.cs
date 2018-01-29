@@ -1,10 +1,9 @@
 ﻿using CK.Glouton.Model.Server.Sender;
-using CK.Glouton.Server.Senders;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace CK.Glouton.Server.Handlers.Common
+namespace CK.Glouton.AlertSender
 {
     public class AlertSenderManager
     {
@@ -21,24 +20,7 @@ namespace CK.Glouton.Server.Handlers.Common
                 if( existingSender.Match( configuration ) )
                     return existingSender;
 
-            IAlertSender newSender;
-            switch( configuration.SenderType )
-            {
-                case "Mail":
-                    if( !( configuration is MailSenderConfiguration mailSenderConfiguration ) )
-                        throw new ArgumentException( nameof( configuration.SenderType ) );
-                    newSender = CreateSender( mailSenderConfiguration );
-                    break;
-
-                case "Http":
-                    if( !( configuration is HttpSenderConfiguration httpSenderConfiguration ) )
-                        throw new ArgumentException( nameof( configuration.SenderType ) );
-                    newSender = CreateSender( httpSenderConfiguration );
-                    break;
-
-                default:
-                    throw new ArgumentException( nameof( configuration ) );
-            }
+            var newSender = CreateSender( configuration );
             _senders.Add( newSender );
             return newSender;
 

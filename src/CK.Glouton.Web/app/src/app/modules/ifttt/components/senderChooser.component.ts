@@ -108,7 +108,7 @@ export class SenderChooserComponent implements OnInit {
 
     validate() : boolean {
         for (let sender of this.senders) {
-            if (sender.label == this.senders[0].label) {
+            if (sender.label === this.senders[0].label) {
                 continue;
             }
             let value : any;
@@ -117,21 +117,21 @@ export class SenderChooserComponent implements OnInit {
                 value = this.getPropertyValue(property);
                 switch(this.getPropertyType(property)) {
                     case 'Array' :
-                        if (value != undefined && value.length > 0) {
+                        if (value !== undefined && value.length > 0) {
                             continue;
                         }
                         return false;
                     case 'string' :
-                        if (value != undefined && value != '') {
+                        if (value !== undefined && value !== '') {
                             continue;
                         }
                         return false;
-                    case 'number' : 
-                        if (value != undefined && value > 0) {
+                    case 'number' :
+                        if (value !== undefined && value > 0) {
                             continue;
                         }
                         return false;
-                    default : 
+                    default :
                         return false;
                 }
             }

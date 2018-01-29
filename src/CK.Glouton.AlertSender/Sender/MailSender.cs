@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Model.Server.Handlers;
+﻿using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CK.Glouton.Server.Senders
+namespace CK.Glouton.AlertSender.Sender
 {
     public class MailSender : IAlertSender
     {
@@ -19,14 +19,14 @@ namespace CK.Glouton.Server.Senders
 
         public MailSender( MailSenderConfiguration configuration )
         {
-            if( !configuration.Validate() || configuration.SenderType != SenderType )
+            if( !configuration.Validate() )
                 throw new ArgumentException( nameof( configuration ) );
             _configuration = configuration;
             _from = new MailboxAddress( _configuration.Name, _configuration.Email );
-            
-            foreach(var mail in configuration.Contacts)
+
+            foreach( var mail in configuration.Contacts )
             {
-                _to.Add(new MailboxAddress(mail));
+                _to.Add( new MailboxAddress( mail ) );
             }
 
         }

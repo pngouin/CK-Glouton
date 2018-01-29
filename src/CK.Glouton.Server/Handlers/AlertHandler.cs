@@ -1,6 +1,9 @@
 ﻿using CK.Core;
+using CK.Glouton.AlertSender;
+using CK.Glouton.Database;
 using CK.Glouton.Model.Server;
 using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Server.Handlers.Common;
 using CK.Monitoring;
@@ -17,6 +20,7 @@ namespace CK.Glouton.Server.Handlers
         private readonly MemoryStream _memoryStream;
         private readonly CKBinaryReader _binaryReader;
         private readonly AlertSenderManager _alertAlertSenderManager;
+        private readonly AlertTableMock _alertTableMock;
 
         private IActivityMonitor _activityMonitor;
         private List<IAlertModel> _alerts;
@@ -26,6 +30,7 @@ namespace CK.Glouton.Server.Handlers
             _memoryStream = new MemoryStream();
             _binaryReader = new CKBinaryReader( _memoryStream, Encoding.UTF8, true );
             _alertAlertSenderManager = new AlertSenderManager();
+            _alertTableMock = new AlertTableMock( alertHandlerConfiguration.DatabasePath );
             InitializeAlerts( alertHandlerConfiguration );
         }
 
@@ -57,7 +62,6 @@ namespace CK.Glouton.Server.Handlers
                 catch( Exception exception )
                 {
                     const string message = "Alert crashed.";
-                    ActivityMonitor.CriticalErrorCollector.Add( exception, message );
                     _activityMonitor.Fatal( message, exception );
                     if( faulty == null )
                         faulty = new List<IAlertModel>();
@@ -101,13 +105,13 @@ namespace CK.Glouton.Server.Handlers
                     } );
                 }
 
+                _alertTableMock.Create( configuration.Alerts );
                 _alerts = submittedAlerts;
                 return true;
             }
             catch( Exception exception )
             {
                 const string message = "Alert initialization failed.";
-                ActivityMonitor.CriticalErrorCollector.Add( exception, message );
                 _activityMonitor.Fatal( message, exception );
                 return false;
             }

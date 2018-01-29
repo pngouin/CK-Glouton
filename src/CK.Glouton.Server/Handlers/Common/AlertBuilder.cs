@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using CK.Core;
 using CK.Glouton.Model.Server.Handlers;
+using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Monitoring;
 
 namespace CK.Glouton.Server.Handlers.Common
@@ -68,10 +69,9 @@ namespace CK.Glouton.Server.Handlers.Common
             }
         }
 
-        private static Operation ParseOperation( string value )
-        {
-            return Enum.TryParse( value, out Operation operation ) ? operation : throw new ArgumentException( nameof( operation ) );
-        }
+        private static Operation ParseOperation( string value ) => Enum.TryParse( value, out Operation operation )
+            ? operation
+            : throw new ArgumentException( $"{nameof( operation )} {value} is invalid." );
 
         /// <summary>
         /// Build a <see cref="Func{TResult}"/> from a given <see cref="IExpressionModel"/> array.
@@ -83,7 +83,6 @@ namespace CK.Glouton.Server.Handlers.Common
         public static Func<AlertEntry, bool> Build( this IExpressionModel[] @this )
         {
             Expression expression = null;
-
             foreach( var alertExpression in @this )
             {
                 var member = alertExpression.Field.IndexOf( '.' ) == -1
@@ -118,7 +117,6 @@ namespace CK.Glouton.Server.Handlers.Common
                     case "FileName":
                     case "AppName":
                     case "Text":
-                    // TODO: Fix exceptions
                     case "Exception.Message":
                     case "Exception.StackTrace":
                         constant = Expression.Constant( alertExpression.Body );
@@ -140,9 +138,13 @@ namespace CK.Glouton.Server.Handlers.Common
                     throw new InvalidOperationException
                         ( $"{nameof( alertExpression.Operation )} {alertExpression.Operation} is invalid for field {alertExpression.Field}." );
 
-                expression = expression == null
+                var innerExpression = field != EField.String
                     ? Expressions[ operation ].Invoke( member, constant )
-                    : Expression.And( expression, Expressions[ operation ].Invoke( member, constant ) );
+                    : Expressions[ operation ].Invoke( Expression.Coalesce( member, Expression.Constant( string.Empty ) ), constant );
+
+                expression = expression == null
+                   ? innerExpression
+                   : Expression.And( expression, innerExpression );
             }
 
             return Expression.Lambda<Func<AlertEntry, bool>>( expression, Parameter ).Compile();

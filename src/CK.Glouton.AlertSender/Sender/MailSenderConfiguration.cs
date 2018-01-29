@@ -1,12 +1,12 @@
 ﻿using CK.Glouton.Model.Server.Sender;
 using System;
 
-namespace CK.Glouton.Server.Senders
+namespace CK.Glouton.AlertSender.Sender
 {
     [Serializable]
-    public class MailSenderConfiguration : IAlertSenderConfiguration, IMailConfiguration
+    public class MailSenderConfiguration : IAlertSenderConfiguration, IMailSenderConfiguration
     {
-        // Implementation of IMailConfiguration
+        // Implementation of IMailSenderConfiguration
 
         public string Name { get; set; }
         public string Email { get; set; }
@@ -51,6 +51,23 @@ namespace CK.Glouton.Server.Senders
                 SmtpAddress = SmtpAddress,
                 SmtpPort = SmtpPort
             };
+        }
+
+        private static IAlertSenderConfiguration _defaultConfiguration;
+        public IAlertSenderConfiguration Default()
+        {
+            return _defaultConfiguration
+                   ?? ( _defaultConfiguration = new MailSenderConfiguration
+                   {
+                       SenderType = "Mail",
+                       Name = "",
+                       Email = "",
+                       Contacts = new string[] { },
+                       SmtpAddress = "",
+                       SmtpPassword = "",
+                       SmtpUsername = "",
+                       SmtpPort = -1
+                   } );
         }
     }
 }
