@@ -142,4 +142,8 @@ export class SenderChooserComponent implements OnInit {
             return true;
         }
     }
+
+    deleteSender(): void {
+        this.senders.splice(this.senders.findIndex(d => d === this.selectedSender), 1 );
+    }
 }
