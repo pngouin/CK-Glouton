@@ -32,13 +32,13 @@ namespace CK.Glouton.Database
 
             foreach( var alertExpressionModel in alertExpressionModels )
             {
-                var filePath = Path.Combine( _path, new Guid().ToString(), ".txt" );
+                var filePath = Path.Combine( _path, Guid.NewGuid().ToString() );
                 using( var streamWriter = new StreamWriter( filePath ) )
                 {
                     streamWriter.WriteLine( "Expressions:" );
                     foreach( var expression in alertExpressionModel.Expressions )
                         streamWriter.WriteLine( $"Log.{expression.Field} {expression.Operation} {expression.Body}" );
-                    streamWriter.WriteLine( "Sender" );
+                    streamWriter.WriteLine( "Senders:" );
                     foreach( var sender in alertExpressionModel.Senders )
                         streamWriter.WriteLine( $"{sender.SenderType}" );
                 }

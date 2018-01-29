@@ -59,6 +59,7 @@ namespace CK.Glouton.AlertSender.Sender
             return _defaultConfiguration
                    ?? ( _defaultConfiguration = new MailSenderConfiguration
                    {
+                       SenderType = "Mail",
                        Name = "",
                        Email = "",
                        Contacts = new string[] { },

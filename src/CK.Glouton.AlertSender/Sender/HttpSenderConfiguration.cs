@@ -26,6 +26,7 @@ namespace CK.Glouton.AlertSender.Sender
             return _defaultConfiguration
                    ?? ( _defaultConfiguration = new HttpSenderConfiguration
                    {
+                       SenderType = "Http",
                        Url = ""
                    } );
         }
