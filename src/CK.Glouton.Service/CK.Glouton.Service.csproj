@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CK.Glouton.AlertSender\CK.Glouton.AlertSender.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Common\CK.Glouton.Common.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Database\CK.Glouton.Database.csproj" />
     <ProjectReference Include="..\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
     <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
   </ItemGroup>
