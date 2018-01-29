@@ -10,9 +10,10 @@ namespace CK.Glouton.Handler.Tcp
     public class TcpHandler : IGrandOutputHandler
     {
         private readonly TcpHandlerConfiguration _configuration;
+        private readonly MemoryStream _memoryStream;
+        private readonly CKBinaryWriter _binaryWriter;
+
         private ControlChannelClient _controlChannelClient;
-        private MemoryStream _memoryStream;
-        private CKBinaryWriter _binaryWriter;
 
         public TcpHandler( TcpHandlerConfiguration configuration )
         {
