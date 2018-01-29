@@ -57,3 +57,7 @@ card h1:first-child {
     display: inline-block;
     min-width: 200px;
 }
+
+.ui-dropdown {
+    margin-right: 3px;
+}

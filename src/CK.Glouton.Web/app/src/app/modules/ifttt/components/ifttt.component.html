@@ -40,7 +40,9 @@
         <div *ngIf="!IsParticular(expression)">
             <input type="text" pInputText [(ngModel)]="expression.Body" />
         </div>
-        <button pButton type="button" (click)="addExpression(i)" icon="fa-plus"></button>
-        <button pButton type="button" (click)="deleteExpression(i)" icon="fa-minus"></button>
+        <div class="ui-inputgroup space">
+            <button pButton type="button" (click)="addExpression(i)" icon="fa-plus"></button>
+            <button pButton type="button" (click)="deleteExpression(i)" icon="fa-minus"></button>
+        </div>
     </div>
 </div>
