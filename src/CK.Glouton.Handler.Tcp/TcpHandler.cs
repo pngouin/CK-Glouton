@@ -1,9 +1,9 @@
-﻿using CK.ControlChannel.Tcp;
-using CK.Core;
-using CK.Monitoring;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
+using CK.ControlChannel.Tcp;
+using CK.Core;
+using CK.Monitoring;
 
 namespace CK.Glouton.Handler.Tcp
 {
@@ -23,6 +23,8 @@ namespace CK.Glouton.Handler.Tcp
 
         public bool Activate( IActivityMonitor activityMonitor )
         {
+            activityMonitor.Info( $"Initializing Tcp handler (Host = {_configuration.Host}, Port = {_configuration.Port})." );
+
             if( _controlChannelClient == null )
                 _controlChannelClient = new ControlChannelClient
                 (
