@@ -85,11 +85,7 @@ namespace CK.Glouton.Server.Handlers
             if( !( configuration is AlertHandlerConfiguration alertHandlerConfiguration ) )
                 return false;
 
-            if( !InitializeAlerts( alertHandlerConfiguration ) )
-                return false;
-
-            _alertTableMock.Create( alertHandlerConfiguration.Alerts );
-            return true;
+            return InitializeAlerts( alertHandlerConfiguration );
         }
 
         internal bool InitializeAlerts( AlertHandlerConfiguration configuration )
@@ -109,6 +105,7 @@ namespace CK.Glouton.Server.Handlers
                     } );
                 }
 
+                _alertTableMock.Create( configuration.Alerts );
                 _alerts = submittedAlerts;
                 return true;
             }

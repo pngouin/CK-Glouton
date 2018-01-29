@@ -1,11 +1,15 @@
 ﻿using CK.ControlChannel.Tcp;
 using CK.Glouton.AlertSender.Sender;
+using CK.Glouton.Common;
+using CK.Glouton.Database;
+using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using CK.Glouton.Model.Services;
 using CK.Glouton.Model.Services.Implementation;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -15,32 +19,36 @@ namespace CK.Glouton.Service
     public class AlertService : IAlertService
     {
         private readonly ControlChannelClient _controlChannelClient;
-        private readonly TcpControlChannelConfiguration _configuration;
+        private readonly TcpControlChannelConfiguration _tcpConfiguration;
+        private readonly DatabaseConfiguration _databaseConfiguration;
         private readonly IFormatter _formatter;
         private readonly MemoryStream _memoryStream;
-
+        private readonly AlertTableMock _alertTableMock;
 
         public string[] AvailableConfiguration => new[] { "Mail", "Http" };
 
-        public AlertService( IOptions<TcpControlChannelConfiguration> configuration )
+        public AlertService( IOptions<TcpControlChannelConfiguration> tcpConfiguration, IOptions<DatabaseConfiguration> databaseConfiguration )
         {
-            _configuration = configuration.Value;
-            _configuration.AppName = typeof( AlertService ).Assembly.GetName().Name;
-            _configuration.PresentEnvironmentVariables = true;
-            _configuration.PresentMonitoringAssemblyInformation = true;
-            _configuration.HandleSystemActivityMonitorErrors = false;
+            _tcpConfiguration = tcpConfiguration.Value;
+            _tcpConfiguration.AppName = typeof( AlertService ).Assembly.GetName().Name;
+            _tcpConfiguration.PresentEnvironmentVariables = true;
+            _tcpConfiguration.PresentMonitoringAssemblyInformation = true;
+            _tcpConfiguration.HandleSystemActivityMonitorErrors = false;
 
             _controlChannelClient = new ControlChannelClient(
-                _configuration.Host,
-                _configuration.Port,
-                _configuration.BuildAuthData(),
-                _configuration.IsSecure
+                _tcpConfiguration.Host,
+                _tcpConfiguration.Port,
+                _tcpConfiguration.BuildAuthData(),
+                _tcpConfiguration.IsSecure
                 );
 
             _controlChannelClient.OpenAsync().GetAwaiter().GetResult();
 
             _memoryStream = new MemoryStream();
             _formatter = new BinaryFormatter();
+
+            _databaseConfiguration = databaseConfiguration.Value;
+            _alertTableMock = new AlertTableMock( _databaseConfiguration.Path.GetPathWithSpecialFolders() );
         }
 
         public bool NewAlertRequest( AlertExpressionModel alertExpression )
@@ -89,6 +97,11 @@ namespace CK.Glouton.Service
                 default:
                     return false;
             }
+        }
+
+        public IList<IAlertExpressionModel> GetAllAlerts()
+        {
+            return _alertTableMock.GetAll();
         }
     }
 }

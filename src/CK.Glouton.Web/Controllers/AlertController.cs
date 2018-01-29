@@ -36,5 +36,11 @@ namespace CK.Glouton.Web.Controllers
         {
             return _alertService.AvailableConfiguration;
         }
+
+        [HttpGet( "all" )]
+        public object GetAllAlerts()
+        {
+            return _alertService.GetAllAlerts();
+        }
     }
 }
