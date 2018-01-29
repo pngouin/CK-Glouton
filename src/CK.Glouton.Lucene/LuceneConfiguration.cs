@@ -1,15 +1,12 @@
 ﻿using CK.Glouton.Common;
 using Lucene.Net.Index;
 using System;
-using System.Text.RegularExpressions;
 
 namespace CK.Glouton.Lucene
 {
     public class LuceneConfiguration : ILuceneConfiguration
     {
         private string _path;
-
-        private static readonly Regex EnvironmentRegex = new Regex( @"%[A-Za-z0-9\(\)]*%" );
 
         public int MaxSearch { get; set; }
         public string Path
