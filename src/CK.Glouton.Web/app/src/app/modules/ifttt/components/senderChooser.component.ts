@@ -21,20 +21,19 @@ export class SenderChooserComponent implements OnInit {
     selectedAddSenderName : string;
 
     senders : SelectItem[] = [
-        {label : "Choose a sender", value : null}
+        {label : 'Choose a sender', value : null}
     ];
 
     addSenderDropDown : SelectItem[] = [
-        {label : "Choose a sender", value : null}
-    ]
+        {label : 'Choose a sender', value : null}
+    ];
 
     @Output() onSend = new EventEmitter();
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.iftttService.getAvaibleConfiguration().subscribe(
             d => {
-                for (let name of d)
-                {
+                for (let name of d) {
                     this.addSenderDropDown.push( { label : name, value : name });
                 }
             },
@@ -44,18 +43,18 @@ export class SenderChooserComponent implements OnInit {
         );
      }
 
-    addSender ( name : string, senderName : string ) : void {
-        if (senderName == "" || typeof senderName === 'undefined') {
+    addSender ( name : string, senderName : string ): void {
+        if (senderName === '' || typeof senderName === 'undefined') {
             this.messageService.add( {
                 severity : 'warn', summary : 'Warning', detail : 'The sender configuration need a name.'
-            })
+            });
             return;
         }
 
-        if ( name == undefined || name == null || name == '') {
+        if ( name === undefined || name == null || name === '') {
             this.messageService.add( {
                 severity : 'warn', summary : 'Warning', detail : 'You must select a sender.'
-            })
+            });
             return;
         }
 
@@ -64,49 +63,54 @@ export class SenderChooserComponent implements OnInit {
         );
     }
 
-    getKeys () : string[] {
+    getKeys (): string[] {
         return Object.keys(this.selectedSender.Configuration);
     }
 
-    getPropertyType( propertyName : string ) : string {
-        let p = Reflect.get(this.selectedSender.Configuration, propertyName);
+    getPropertyType( propertyName : string ): string {
+        let p : any = Reflect.get(this.selectedSender.Configuration, propertyName);
         if(Array.isArray(p)) {
-            return "Array"
-        }
-        else {
+            return 'Array';
+        } else {
             return typeof(p);
         }
     }
 
-    getPropertyValue( propertyName : string ) : string | number | Array<string> {
+    getPropertyValue( propertyName : string ): string | number | Array<string> {
         return Reflect.get(this.selectedSender.Configuration, propertyName);
     }
 
-    setConfigurationProperty( propertyName : string, value : string | number | Array<string> ) {
+    setConfigurationProperty( propertyName : string, value : string | number | Array<string> ): void {
         Reflect.set(this.selectedSender.Configuration, propertyName, value);
     }
 
-    addToArray( propertyName : string, value : string ) : void {
-        if (value == "") return;
-        let array = this.getPropertyValue(propertyName);
-        if (!Array.isArray(array)) return;
+    addToArray( propertyName : string, value : string ): void {
+        if (value === '') {
+            return;
+        }
+        let array : any = this.getPropertyValue(propertyName);
+        if (!Array.isArray(array)) {
+            return;
+        }
         array.push(value);
         this.setConfigurationProperty(propertyName, array);
-        this.cache = "";
+        this.cache = '';
     }
 
-    deleteToArray(propertyName : string, index : number) : void {
-        let array = this.getPropertyValue(propertyName);
-        if (!Array.isArray(array)) return
+    deleteToArray(propertyName : string, index : number): void {
+        let array : any = this.getPropertyValue(propertyName);
+        if (!Array.isArray(array)) {
+            return;
+        }
         array.splice(index, 1);
         this.setConfigurationProperty(propertyName, array);
     }
 
-    send() : void {
+    send(): void {
         this.onSend.emit();
     }
 
-    validate() : boolean {
+    validate(): boolean {
         for (let sender of this.senders) {
             if (sender.label === this.senders[0].label) {
                 continue;
