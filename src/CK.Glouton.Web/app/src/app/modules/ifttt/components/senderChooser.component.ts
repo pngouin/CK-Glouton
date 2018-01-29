@@ -59,7 +59,10 @@ export class SenderChooserComponent implements OnInit {
         }
 
         this.iftttService.getConfiguration(name).subscribe(
-            d => this.senders.push({ label : senderName, value : {SenderType : name, Configuration : d}})
+            d => {
+                this.senders.push({ label : senderName, value : {SenderType : name, Configuration : d}});
+                delete this.selectedAddSenderName;
+            }
         );
     }
 
@@ -145,5 +148,6 @@ export class SenderChooserComponent implements OnInit {
 
     deleteSender(): void {
         this.senders.splice(this.senders.findIndex(d => d === this.selectedSender), 1 );
+        delete this.selectedSender;
     }
 }
