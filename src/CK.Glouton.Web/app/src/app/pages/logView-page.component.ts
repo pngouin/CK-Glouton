@@ -4,26 +4,7 @@ import { LogViewerComponent } from 'app/modules/logs/components';
 
 @Component({
   selector: 'home',
-  template: `
-    <div class="ui-g">
-      <div class="ui-g-3">
-        <div class="layout-wrapper layout-menu-container">
-        <div class="ui-g-12" >
-          <querySearchbar (searchEmitter)="searchEvent($event)"></querySearchbar>
-        </div>
-        <h3>Criticity Level</h3>
-        <criticitySelector></criticitySelector>
-        <h3>Current AppNames</h3>
-        <applicationNameSelector></applicationNameSelector>
-        </div>
-      </div>
-      <div class="ui-g-9">
-        <div class="ui-g-12">
-          <logViewer></logViewer>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: 'logView-page.component.html'
 })
 export class LogViewPageComponent {
   @ViewChild(LogViewerComponent) private logViewer: LogViewerComponent;
