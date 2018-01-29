@@ -27,19 +27,19 @@ export class IftttPageComponent {
   @ViewChild(SenderChooserComponent)
   private senderChooserComponent: SenderChooserComponent;
 
-  send() {
+  send(): void {
     if (!this.iftttComponent.validate() || !this.senderChooserComponent.validate()) {
       this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'One or more fields are empty.' });
       return;
     }
 
-    this.iftttComponent.expressions;
-    this.senderChooserComponent.senders;
 
     let senders: ISender[] = [];
 
     for (let sender of this.senderChooserComponent.senders) {
-      if (sender.value == null || typeof sender.value == 'undefined') continue;
+      if (sender.value === null || typeof sender.value === 'undefined') {
+        continue;
+      }
       senders.push(sender.value);
     }
 
@@ -52,8 +52,8 @@ export class IftttPageComponent {
       this.messageService.add(
         {
           severity: 'success', summary: 'Success !', detail: 'Your alert has been correctly created.'
-        })
-      this.iftttComponent.clear();  
+        });
+      this.iftttComponent.clear();
     },
     error => this.messageService.add(
       {

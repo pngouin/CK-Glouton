@@ -3,15 +3,14 @@ import { MenuItem } from 'primeng/primeng';
 
 @Component({
     selector: 'navbar',
-    templateUrl: 'navbar.component.html'
+    templateUrl: 'navbar.component.html',
+    styleUrls: ['navbar.component.css']
 })
 
 export class NavbarComponent implements OnInit {
-    constructor() { }
-
     items: MenuItem[];
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.items = [
             {
                 label : 'Logs',
