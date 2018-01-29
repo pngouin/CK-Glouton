@@ -26,7 +26,7 @@ export class StatisticsComponent implements OnInit {
         let value: number[] = [];
 
         for (var key in data) {
-            keys.push(key);
+            keys.push(`${key} (${data[key]})`);
             value.push(data[key]);
         }
 

@@ -16,7 +16,7 @@ export interface ILogViewModel {
     monitorId: string;
     groupDepth: number;
     previousEntryType: string;
-    previousLogTime: string;
+    previousLogTime: Date;
     appName: string;
     conclusion: string;
     children: ILogViewModel[];

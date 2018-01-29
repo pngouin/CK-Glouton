@@ -6,3 +6,11 @@
 .config-input {
     margin-top: 5px;
 }
+
+h1 {
+    font-weight: 400;
+    margin: 24px 0;
+    font-size: 25px;
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+    color: #292B2C;
+}

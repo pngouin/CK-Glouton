@@ -18,7 +18,7 @@ export class IftttComponent implements OnInit {
     selectedOperation: string = "";
     selectedInfo: string = "";
 
-    @Input() expressions : IExpression[] = [
+    expressions : IExpression[] = [
         {Field : "", Operation : "", Body : "" }
     ]
 
@@ -147,5 +147,11 @@ export class IftttComponent implements OnInit {
             return false;
         }
         return true;
+    }
+
+    clear() : void {
+        this.expressions = [
+            {Field : "", Operation : "", Body : "" }
+        ];
     }
 }

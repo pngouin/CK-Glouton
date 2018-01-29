@@ -112,10 +112,11 @@ export class SenderChooserComponent implements OnInit {
                 continue;
             }
             let value : any;
-            for(let property of Object.keys(sender)) {
+            let configuration : any = sender.value.Configuration;
+            for(let property of Object.keys(configuration)) {
                 value = this.getPropertyValue(property);
                 switch(this.getPropertyType(property)) {
-                    case 'array' :
+                    case 'Array' :
                         if (value !== undefined && value.length > 0) {
                             continue;
                         }
