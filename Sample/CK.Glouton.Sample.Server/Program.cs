@@ -1,4 +1,5 @@
 ﻿using CK.Core;
+using CK.Glouton.Common;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using CK.Monitoring;
@@ -40,7 +41,7 @@ namespace CK.Glouton.Sample.Server
                             UseGzipCompression = true
                         },
                         new LuceneGloutonHandlerConfiguration(),
-                        new AlertHandlerConfiguration { DatabasePath = @"C:\Intech\CK-Glouton\Private\Database" }
+                        new AlertHandlerConfiguration { DatabasePath = @"%localappdata%/Glouton/Alerts".GetPathWithSpecialFolders() }
                     }
                 } );
 
