@@ -108,15 +108,8 @@ namespace CodeCake
                     Cake.CleanDirectories(releasesDir);
                 });
 
-            Task("Restore-NuGet-Packages-With-Version")
-               .IsDependentOn("Clean")
-               .Does(() =>
-               {
-                   // https://docs.microsoft.com/en-us/nuget/schema/msbuild-targets
-                   Cake.DotNetCoreRestore(new DotNetCoreRestoreSettings().AddVersionArguments(gitInfo));
-               });
+
             Task("Restore-NPM-Package")
-               .IsDependentOn("Restore-NuGet-Packages-With-Version")
                .IsDependentOn("Clean")
                .Does(() =>
                {
@@ -145,24 +138,25 @@ namespace CodeCake
             Task("Build-With-Version")
                 .IsDependentOn("Check-Repository")
                 .IsDependentOn("Clean")
-                .IsDependentOn("Restore-NuGet-Packages-With-Version")
                 .IsDependentOn("Restore-NPM-package")
                 .IsDependentOn("NPM-Build")
                 .Does(() =>
                 {
-                    Cake.DotNetCoreBuild(solutionFileName,
-                        new DotNetCoreBuildSettings().AddVersionArguments(gitInfo, s =>
-                        {
-                            s.Configuration = configuration;
-                        }));
+                    using (var tempSln = Cake.CreateTemporarySolutionFile(solutionName))
+                    {
+                        tempSln.ExcludeProjectsFromBuild("CodeCakeBuilder");
+                        Cake.DotNetCoreBuild(tempSln.FullPath.FullPath,
+                            new DotNetCoreBuildSettings().AddVersionArguments(gitInfo, s =>
+                            {
+                                s.Configuration = configuration;
+                            }));
+                    }
                 });
 
             Task("Unit-Testing")
                 .IsDependentOn("Build-With-Version")
                 .Does(() =>
                 {
-                    Cake.DotNetCoreRestore();
-
                     var testProjects = projects.Where(p => p.Path.Segments.Contains("Tests"));
 
                     var testNetFrameworkDlls = testProjects
