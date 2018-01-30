@@ -1,0 +1,41 @@
+<div *ngIf="log.sourceFileName && log.lineNumber">
+    <code>{{log.sourceFileName}} : {{log.lineNumber}}</code>
+</div>
+<div *ngIf="log.appName">
+    <p>App Name: <code>{{log.appName}}</code></p> 
+</div>
+<div *ngIf="log.logTime">
+    <p>Log Time: <code>{{log.logTime}}</code></p> 
+</div>
+<div *ngIf="log.logType">
+    <p>Log Type: <code>{{getLogTypeString()}}</code></p> 
+</div>
+<div *ngIf="log.logLevel">
+    <p>Log Level:  <code>{{log.logLevel}}</code></p> 
+</div>
+<div *ngIf="log.groupDepth">
+    <p>Group Depth: <code>{{log.groupDepth}}</code></p> 
+</div>  
+<div *ngIf="log.monitorId">
+    <p>Monitor ID: <code>{{log.monitorId}}</code></p> 
+</div>
+<div *ngIf="log.tags">
+    <p>Tags: <code>{{log.tags}}</code></p> 
+</div> 
+
+<div *ngIf="log.text" class="dialogSize">
+    <p>Text : </p>
+    <code>
+        {{log.text}}
+    </code>
+</div>
+
+<div *ngIf="log.exception" class="exception-border">
+    <exception [data]="log.exception"></exception>
+</div>
+
+<div *ngIf="log.previousLogTime && log.previousEntryType">
+    <h2>Previous Log Info</h2>
+    <p>At {{log.previousLogTime}} was an {{log.previousEntryType}}</p>
+</div>
+

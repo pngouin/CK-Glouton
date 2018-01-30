@@ -1,0 +1,24 @@
+# Basic appveyor configuration : CodeCakeBuilder does the job.
+version: build{build}
+branches:
+  only:
+  - master
+  - develop
+environment:
+  MYGET_PREVIEW_API_KEY:
+    secure: Nv4GSsLfg6rlnrNN/d5f0mUiE9x/LFmeT/vuY+JkT7rIoSVMnw8BNy1hdRqMzJHq
+  MYGET_CI_API_KEY:
+    secure: +XJ4LTAkcGevClWSYf0MsWpZfOGBLFSC6wJMyXC3sdnp5JZCzckPx1qvfoi8vP4d
+  REGISTRY_AUTH_TOKEN:
+    secure: eVOVWzwhTnv2FFAZNrzvLljWqB27u/XNB+WyvknPicmwVTPDOg/yACqd0CxnKcXd6/a3n4yhoRRk0ExzznqQNuFYEuc4La0zMuOlZeyrT0k2ECUu92lVqsbDhQATqrB28QRCpKfMFiLBVTSJdnW6ZmI6um4Br0auo+eQyt2tD4fiydPOZfdArj8w2+Izx7sNtpEwZ1lezkols+m6+8ZbUZ1UXQCIpvS0Nz0z5ce09GQm3AkbDR2xw+9+fDHOGoVmi69moQAeQTuxs+QV1EWW/2c8s7Adl5FicWDqM4v/HQsb9HP6RAGuWKKHbphBbuEmcTnHIqfKJfK0rpIo/n6Pmw4qCmw19BVJiaK0dHPwgLTf9GGNxpO9BDILOjEdExeIYZFX+F2GLZxL14Vsesb77jyYQwWb8UP1VPrHHUnScL9GJ0+vhdWmTEsj7eHc6mIyS8IG8smuWHQU4Vvb/PFksc8ao3WEK66LfkOKwiPgSZTMIbRg5AFbn/ActzJTW5ya+Es8ppmcWgVy2CtYLHEKB2uOR7tCEljVqow80rtFcL9ehJCyD7Yovz0KmXy5LAyB1uNIRjD4brb+FqzsqOaytyDHfFR2IhMul/78cUE5OKvfr+LFYSMwe2OW5P75iYojN5Gga17W0RS3zrL5QP+a+51GD+JenAHrpiBDzjO2s84kDF0QhrtQ/0Dqi6zOu70uEMfVLpWrDnRa3heqRbiYJlea9hnsCnWvrZIObbxu2dZc2tp/n+5gcKN8i+/72MtWPye2e9egoQAr56Bd7DRMy3YM+3rRjx1L4UrVy2NCYXy6BFeD6NSI2dngPKz/77HqvOTQkhioWkucWmlrJ6rlmNaYRFzL6jetwSqIycRof2+OXTp6PiHXf/wOIrS+IPEAt8M8cItbcdfJvqY1+jsNIJHqIdOxcrknQDZSa4Pqt6RvASGOw0EVqxpNZkdgHhJ82z7NDhx6Rd8AVqU/MLLRmoOeQsiNsZTupBCQ/e/F7n46GgK1SlR2mYkWkRKdYF/VuT/B5Y3kC4g2j969JXRa0swAPQmNaSlJYteLOl1sKZPMhNNplq7HeFYiOOfUnmH2xFuBg08u584cOJwpUYJ9btgIpKG3mIPUpoexcHFBr3cJN9VLwq7w3s/JakXOqhTIPZtbRFV2O6zQkMbH33ykaA==
+
+
+init:
+- git config --global core.autocrlf true
+install:
+  - ps: Install-Product node ''
+  - ps: CodeCakeBuilder\Bootstrap.ps1
+  - ps: CodeCakeBuilder\AddNpmrc.ps1
+build_script:
+- CodeCakeBuilder\bin\Release\net461\CodeCakeBuilder.exe -nointeraction
+test: off

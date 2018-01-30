@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CK.Monitoring" Version="8.2.0" />
+    <PackageReference Include="CK.ControlChannel.Tcp.Client" Version="0.3.0-a02" />
+    <PackageReference Include="CK.ControlChannel.Tcp.Common" Version="0.3.0-a02" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.Model.Handler\CK.Glouton.Model.Handler.csproj" />
+  </ItemGroup>
+
+</Project>

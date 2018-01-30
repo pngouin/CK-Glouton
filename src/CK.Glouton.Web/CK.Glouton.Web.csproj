@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="app\**" />
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="app\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="app\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="app\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="appsettings.template.json" />
+    <Content Remove="Properties\launchSettings.template.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CK.Monitoring" Version="8.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.Model.Handler\CK.Glouton.Model.Handler.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Model.Web\CK.Glouton.Model.Web.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Service\CK.Glouton.Service.csproj" />
+  </ItemGroup>
+
+</Project>

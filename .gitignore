@@ -1,15 +1,23 @@
 packages/
 .vs
 .vscode
-src/**/bin/
-src/**/obj/
-src/**/app/node_modules
+**/bin/
+**/obj/
+**/app/node_modules
 
 src/**/app/dll/
 
-src/Glouton.Web/wwwroot/
+src/CK.Glouton.Web/wwwroot/
 
 src/**/*.user
 Private/
 
-Logs
+Tests/**/Logs
+**/TestResult.xml
+
+*.user
+*.ckmon
+*.ckmon.tmp
+
+src/CK.Glouton.Web/appsettings.json
+src/CK.Glouton.Web/Properties/launchSettings.json

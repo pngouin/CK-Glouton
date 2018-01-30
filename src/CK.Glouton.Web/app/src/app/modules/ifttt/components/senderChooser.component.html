@@ -1,0 +1,44 @@
+<div class="card card-w-tittle">
+  <h1>Choose a sender</h1>
+  <div class="ui-g">
+      <p-dropdown [options]="addSenderDropDown" [(ngModel)]="selectedAddSender"></p-dropdown>
+      <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">Sender Name</span>
+          <input type="text" (keyup.enter)="addSender(selectedAddSender, selectedAddSenderName)" [(ngModel)]="selectedAddSenderName"
+          pInputText />
+        <button type="button" pButton icon="fa-plus" (click)="addSender(selectedAddSender, selectedAddSenderName)"></button>
+      </div>
+  </div>
+  <div class="ui-g-12" *ngIf="senders.length > 1">
+    <p-dropdown [options]="senders" (onChange)="contact=''" [(ngModel)]="selectedSender"></p-dropdown>
+    <div class="ui-g-12" *ngIf="selectedSender">
+      <div class="ui-inputgroup config-input" *ngFor="let property of getKeys()">
+        <div class="ui-inputgroup" *ngIf="getPropertyType(property) == 'string' && property !== 'senderType'">
+          <span class="ui-inputgroup-addon">{{property}}</span>
+          <input type="text" pInputText [value]="getPropertyValue(property)" (input)="setConfigurationProperty(property, $event.target.value)"
+          />
+        </div>
+        <div class="ui-inputgroup config-input" *ngIf="getPropertyType(property) == 'number'">
+          <span class="ui-inputgroup-addon">{{property}}</span>
+          <input type="number" pInputText [value]="getPropertyValue(property)" (input)="setConfigurationProperty(property, $event.target.value)"
+          />
+        </div>
+        <div *ngIf="getPropertyType(property) == 'Array'">
+          <div class="ui-inputgroup config-input">
+            <span class="ui-inputgroup-addon">{{property}}</span>
+            <input type="text" (keyup.enter)="addToArray(property, cache)" [(ngModel)]="cache" pInputText />
+            <button pButton type="button" (click)="addToArray(property, cache)" icon="fa-plus"></button>
+          </div>
+          <ul class="ui-g-12">
+            <li *ngFor="let contact of getPropertyValue(property); let i = index">
+              {{contact}}
+              <button pButton type="button" (click)="deleteToArray(property, i)" icon="fa-minus"></button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button *ngIf="senders.length > 1" pButton type="button" (click)="send()" label="Send" ></button>
+  <button *ngIf="senders.length > 1" pButton type="button" (click)="deleteSender()" label="Delete sender" ></button>
+</div>

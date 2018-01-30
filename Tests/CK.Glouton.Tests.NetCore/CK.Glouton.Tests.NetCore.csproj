@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <OriginProjectName>CK.Glouton.Tests.NetFramework</OriginProjectName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CK.Monitoring" Version="8.2.0" />
+    <PackageReference Include="FluentAssertions" Version="4.19.3" />
+    <PackageReference Include="NUnitLite" Version="3.8.1" />
+    <PackageReference Include="NUnit" Version="3.8.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\$(OriginProjectName)\**\*.cs" Exclude="..\$(OriginProjectName)\obj\**">
+      <Link>Include\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>true</Visible>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CK.Glouton.AlertSender\CK.Glouton.AlertSender.csproj" />
+    <ProjectReference Include="..\..\src\CK.Glouton.Handler.Tcp\CK.Glouton.Handler.Tcp.csproj" />
+    <ProjectReference Include="..\..\src\CK.Glouton.Server\CK.Glouton.Server.csproj" />
+    <ProjectReference Include="..\..\src\CK.Glouton.Service\CK.Glouton.Service.csproj" />
+  </ItemGroup>
+
+</Project>

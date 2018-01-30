@@ -1,0 +1,22 @@
+<h1>Welcome to your Glouton server statistics</h1>
+
+<div class="ui-g" *ngIf="dataChart.length > 0">
+    <div class="ui-g-6" *ngFor="let chart of dataChart">
+        <div class="card card-w-tittle">
+            <h1>{{chart.option.title.text}}</h1>
+            <p-chart type="doughnut" [data]="chart.data" [options]="chart.option"></p-chart>
+        </div>
+    </div>
+</div>
+<div class="card card-w-tittle ui-g-3" *ngIf="statisticsData.totalLogCount">
+    <h2>Log indexed</h2>
+    {{statisticsData.totalLogCount}}
+</div>
+<div class="card card-w-tittle ui-g-3 ui-g-offset-1" *ngIf="statisticsData.totalExceptionCount">
+    <h2>Exception indexed </h2>
+    {{statisticsData.totalExceptionCount}}
+</div>
+<div class="card card-w-tittle ui-g-3 ui-g-offset-1" *ngIf="statisticsData.appNames">
+    <h2>Number of application</h2>
+    {{statisticsData.appNames.length}}
+</div>

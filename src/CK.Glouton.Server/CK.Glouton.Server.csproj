@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CK.ActivityMonitor" Version="9.0.0" />
+    <PackageReference Include="CK.ControlChannel.Tcp.Common" Version="0.3.0-a02" />
+    <PackageReference Include="CK.ControlChannel.Tcp.Server" Version="0.3.0-a01" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.AlertSender\CK.Glouton.AlertSender.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Database\CK.Glouton.Database.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Model.Server\CK.Glouton.Model.Server.csproj" />
+  </ItemGroup>
+
+</Project>
