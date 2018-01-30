@@ -4,6 +4,10 @@
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="CK.Monitoring" Version="8.2.0" />
     <PackageReference Include="FluentAssertions" Version="4.19.3" />
