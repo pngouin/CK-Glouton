@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace CK.Glouton.Tests
 {
-    public class HttpServerReceiver : IDisposable
+    public class SingleHttpReceiver : IDisposable
     {
         public static string DefaultUrl => "http://localhost:4242/alert/";
 
@@ -12,7 +12,7 @@ namespace CK.Glouton.Tests
 
         public bool Alerted { get; set; }
 
-        public HttpServerReceiver( string prefix )
+        public SingleHttpReceiver( string prefix )
         {
             _httpListener = new HttpListener();
             _httpListener.Prefixes.Add( prefix );
@@ -22,9 +22,16 @@ namespace CK.Glouton.Tests
 
         public async Task Listen()
         {
-            while( true )
+            try
             {
                 await _httpListener.GetContextAsync();
+            }
+            catch( Exception exception )
+            {
+                Console.WriteLine( $"{exception.Message}\n{exception.StackTrace}" );
+            }
+            finally
+            {
                 Alerted = true;
             }
         }
