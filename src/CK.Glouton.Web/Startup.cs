@@ -1,6 +1,7 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Services;
-using CK.Glouton.Model.Services.Implementation;
+using CK.Glouton.Model.Handler.Implementation;
+using CK.Glouton.Model.Web.Services;
+using CK.Glouton.Model.Web.Services.Implementation;
 using CK.Glouton.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,11 +24,11 @@ namespace CK.Glouton.Web
             services.AddOptions();
 
             services.Configure<LuceneConfiguration>( Configuration.GetSection( "Lucene" ) );
-            services.Configure<TcpControlChannelConfiguration>( Configuration.GetSection( "TcpControlChannel" ) );
             services.AddSingleton<ILuceneSearcherService, LuceneSearcherService>();
             services.AddSingleton<ILuceneStatisticsService, LuceneStatisticsService>();
 
-            // TODO: Add configuration for alert (especially sender)
+            services.Configure<TcpControlChannelConfiguration>( Configuration.GetSection( "TcpControlChannel" ) );
+            services.Configure<DatabaseConfiguration>( Configuration.GetSection( "Database" ) );
             services.AddSingleton<IAlertService, AlertService>();
 
             services.AddMvc();

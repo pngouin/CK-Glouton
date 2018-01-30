@@ -88,9 +88,7 @@ namespace CK.Glouton.Server
                         }
                         catch( Exception exception )
                         {
-                            var message = $"{handler.GetType().FullName}.Handle() crashed.";
-                            ActivityMonitor.CriticalErrorCollector.Add( exception, message );
-                            _activityMonitor.Fatal( message, exception );
+                            _activityMonitor.Fatal( $"{handler.GetType().FullName}.Handle() crashed.", exception );
                             if( faulty == null )
                                 faulty = new List<IGloutonHandler>();
                             faulty.Add( handler );
@@ -109,9 +107,7 @@ namespace CK.Glouton.Server
                         }
                         catch( Exception exception )
                         {
-                            var message = $"{handler.GetType().FullName}.OnTimer() crashed.";
-                            ActivityMonitor.CriticalErrorCollector.Add( exception, message );
-                            _activityMonitor.Fatal( message, exception );
+                            _activityMonitor.Fatal( $"{handler.GetType().FullName}.OnTimer() crashed.", exception );
                             if( faulty == null )
                                 faulty = new List<IGloutonHandler>();
                             faulty.Add( handler );
@@ -163,9 +159,7 @@ namespace CK.Glouton.Server
                     catch( Exception exception )
                     {
                         var handler = _gloutonHandlers[ iHandler ];
-                        var message = $"Existing {handler.GetType().FullName} crashed with the configuration {configuration.GloutonHandlers[ iConfiguration ].GetType().FullName}.";
-                        ActivityMonitor.CriticalErrorCollector.Add( exception, message );
-                        _activityMonitor.Fatal( message, exception );
+                        _activityMonitor.Fatal( $"Existing {handler.GetType().FullName} crashed with the configuration {configuration.GloutonHandlers[ iConfiguration ].GetType().FullName}.", exception );
                         _gloutonHandlers.RemoveAt( iHandler-- );
                         SafeActivateOrDeactivate( handler, false );
                     }
@@ -187,9 +181,7 @@ namespace CK.Glouton.Server
                 }
                 catch( Exception exception )
                 {
-                    var message = $"While creating handler for {configuration.GetType().FullName}.";
-                    ActivityMonitor.CriticalErrorCollector.Add( exception, message );
-                    _activityMonitor.Fatal( message, exception );
+                    _activityMonitor.Fatal( $"While creating handler for {configuration.GetType().FullName}.", exception );
                 }
             }
 
@@ -208,9 +200,7 @@ namespace CK.Glouton.Server
             }
             catch( Exception exception )
             {
-                var message = $"Handler {handler.GetType().FullName} crashed during {( activate ? "activation" : "de-activation" )}.";
-                ActivityMonitor.CriticalErrorCollector.Add( exception, message );
-                _activityMonitor.Fatal( message, exception );
+                _activityMonitor.Fatal( $"Handler {handler.GetType().FullName} crashed during {( activate ? "activation" : "de-activation" )}.", exception );
                 return false;
             }
             return true;

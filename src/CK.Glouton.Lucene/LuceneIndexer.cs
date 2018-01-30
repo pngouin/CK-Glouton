@@ -1,5 +1,5 @@
 ﻿using CK.Core;
-using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Lucene.Logs;
 using CK.Monitoring;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;

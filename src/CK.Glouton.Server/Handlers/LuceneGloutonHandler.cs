@@ -51,10 +51,11 @@ namespace CK.Glouton.Server.Handlers
 
             if( !_indexerDictionary.TryGetValue( appName, out var indexer ) )
             {
-                // Todo: Check for actual path related issues
                 var luceneConfiguration = new LuceneConfiguration
                 {
-                    MaxSearch = _configuration.MaxSearch <= 0 ? 10 : _configuration.MaxSearch, // Todo: Improve the way which defines the default value
+                    MaxSearch = _configuration.MaxSearch > 0
+                        ? _configuration.MaxSearch
+                        : throw new ArgumentOutOfRangeException( nameof( _configuration.MaxSearch ) ),
                     Path = _configuration.ActualPath,
                     OpenMode = _configuration.OpenMode,
                     Directory = appName

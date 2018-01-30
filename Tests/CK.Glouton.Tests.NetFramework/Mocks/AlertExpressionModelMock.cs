@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CK.Glouton.Model.Server.Handlers;
+﻿using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Sender;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CK.Glouton.Tests
 {

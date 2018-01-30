@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Handler.Tcp", "src\CK.Glouton.Handler.Tcp\CK.Glouton.Handler.Tcp.csproj", "{131EB284-0872-4D5C-92B2-2C1567EFA357}"
 EndProject
@@ -34,13 +34,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Server", "src\CK
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Web", "src\CK.Glouton.Web\CK.Glouton.Web.csproj", "{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Model", "src\CK.Glouton.Model\CK.Glouton.Model.csproj", "{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Service", "src\CK.Glouton.Service\CK.Glouton.Service.csproj", "{80944FEF-F201-44E6-87D5-968547ABAE12}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ck.Glouton.Ckmon.Indexer", "Sample\Ck.Glouton.Ckmon.Indexer\Ck.Glouton.Ckmon.Indexer.csproj", "{7F5C022A-19F9-4F5A-9A42-1DE84E17372B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.AlertSender", "src\CK.Glouton.AlertSender\CK.Glouton.AlertSender.csproj", "{FC2A4209-BCC3-4522-A36A-280966100AD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.AlertSender", "src\CK.Glouton.AlertSender\CK.Glouton.AlertSender.csproj", "{FC2A4209-BCC3-4522-A36A-280966100AD9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Database", "src\CK.Glouton.Database\CK.Glouton.Database.csproj", "{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Common", "src\CK.Glouton.Common\CK.Glouton.Common.csproj", "{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Model.Server", "src\CK.Glouton.Model.Server\CK.Glouton.Model.Server.csproj", "{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Model.Lucene", "src\CK.Glouton.Model.Lucene\CK.Glouton.Model.Lucene.csproj", "{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Model.Web", "src\CK.Glouton.Model.Web\CK.Glouton.Model.Web.csproj", "{99475759-0A31-4936-9888-7646B01EBB89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Model.Handler", "src\CK.Glouton.Model.Handler\CK.Glouton.Model.Handler.csproj", "{EDA67B62-17E4-4FC0-8756-443D77180297}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,10 +94,6 @@ Global
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D90A3F1-1AD3-40B8-BE1F-7D3A7F40FFB0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{749CF5B8-4CF0-4DBF-AD49-4D641A36C7AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80944FEF-F201-44E6-87D5-968547ABAE12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{80944FEF-F201-44E6-87D5-968547ABAE12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80944FEF-F201-44E6-87D5-968547ABAE12}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -100,6 +106,30 @@ Global
 		{FC2A4209-BCC3-4522-A36A-280966100AD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC2A4209-BCC3-4522-A36A-280966100AD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC2A4209-BCC3-4522-A36A-280966100AD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99475759-0A31-4936-9888-7646B01EBB89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99475759-0A31-4936-9888-7646B01EBB89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99475759-0A31-4936-9888-7646B01EBB89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99475759-0A31-4936-9888-7646B01EBB89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDA67B62-17E4-4FC0-8756-443D77180297}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDA67B62-17E4-4FC0-8756-443D77180297}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDA67B62-17E4-4FC0-8756-443D77180297}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDA67B62-17E4-4FC0-8756-443D77180297}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

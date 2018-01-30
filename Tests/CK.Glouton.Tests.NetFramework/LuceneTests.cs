@@ -1,13 +1,13 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Logs;
-using CK.Glouton.Model.Lucene;
+using CK.Glouton.Model.Lucene.Logs;
+using CK.Glouton.Model.Lucene.Logs.Implementation;
+using CK.Glouton.Model.Lucene.Searcher;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using CK.Glouton.Model.Logs.Implementation;
 
 namespace CK.Glouton.Tests
 {
@@ -132,7 +132,7 @@ namespace CK.Glouton.Tests
 
             configuration.SearchAll( ELuceneWantAll.Log );
             result = searcher.Search( configuration );
-            result.Count.Should().Be( 8 ); // TODO: If add log to the index change the number or get an alternative technique.
+            result.Count.Should().Be( LuceneTestIndexBuilder.TotalLogCount );
 
             //
             // Search all document with LogLevel between 0002-01-01 to 9999-01-01
@@ -146,7 +146,7 @@ namespace CK.Glouton.Tests
                 DateEnd = new DateTime( 9999, 01, 01 )
             };
             result = searcher.Search( configuration );
-            result.Count.Should().Be( 8 );
+            result.Count.Should().Be( LuceneTestIndexBuilder.TotalLogCount );
 
             //
             // Search all document with LogLevel between 0002-01-01 to 0003-01-01
@@ -214,7 +214,7 @@ namespace CK.Glouton.Tests
                 Fields = new string[] { LogField.MONITOR_ID }
             };
             result = searcher.Search( configuration );
-            result.Count.Should().Be( 8 );
+            result.Count.Should().Be( LuceneTestIndexBuilder.TotalLogCount );
         }
 
         [Test]
@@ -304,7 +304,7 @@ namespace CK.Glouton.Tests
         }
 
         [Test]
-        public void lucene_statistic_good_value() //TODO: Get a good name...
+        public void lucene_statistics_should_retrieve_values()
         {
             LuceneStatistics luceneStatistics = new LuceneStatistics( LuceneSearcherConfiguration );
             luceneStatistics.AllExceptionCount.Should().BeGreaterThan( 0 );

@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Common\CK.Glouton.Common.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Model.Lucene\CK.Glouton.Model.Lucene.csproj" />
   </ItemGroup>
 
 </Project>

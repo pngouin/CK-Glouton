@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CK.Glouton.Model.Lucene.Logs;
+using CK.Glouton.Model.Web.Services;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using CK.Glouton.Model.Logs;
-using CK.Glouton.Model.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CK.Glouton.Web.Controllers
 {
@@ -21,7 +21,7 @@ namespace CK.Glouton.Web.Controllers
         public LogController( ILuceneSearcherService luceneSearcherService )
         {
             _luceneSearcherService = luceneSearcherService;
-            _cultureInfo = new CultureInfo( "fr-FR" );
+            _cultureInfo = CultureInfo.CurrentCulture;
         }
 
         /// <summary>
@@ -102,7 +102,6 @@ namespace CK.Glouton.Web.Controllers
             logLevel = logLevel.All( d => d == null ) ? null : logLevel.Where( d => d != null ).ToArray();
             appName = appName.All( d => d == null ) ? null : appName.Where( d => d != null ).ToArray();
 
-            // TODO: Maybe set culture in config
             if( !DateTime.TryParse( dateStamp, _cultureInfo, DateTimeStyles.None, out var parsedResult ) )
                 parsedResult = new DateTime();
 

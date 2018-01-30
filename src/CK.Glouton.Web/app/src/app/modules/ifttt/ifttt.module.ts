@@ -7,6 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import {ButtonModule, MessageModule} from 'primeng/primeng';
 import {KeyFilterModule} from 'primeng/keyfilter';
+import {TableModule} from 'primeng/table';
 
 @NgModule({
     imports: [
@@ -14,7 +15,8 @@ import {KeyFilterModule} from 'primeng/keyfilter';
         DropdownModule,
         InputTextModule,
         ButtonModule,
-        BrowserModule, 
+        BrowserModule,
+        TableModule,
         KeyFilterModule,
         MessageModule,
         FormsModule

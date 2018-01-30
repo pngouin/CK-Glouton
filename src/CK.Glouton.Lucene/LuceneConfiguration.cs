@@ -1,6 +1,6 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using CK.Glouton.Common;
 using Lucene.Net.Index;
+using System;
 
 namespace CK.Glouton.Lucene
 {
@@ -8,20 +8,11 @@ namespace CK.Glouton.Lucene
     {
         private string _path;
 
-        private static Regex EnvironmentRegex = new Regex(@"%[A-Za-z0-9\(\)]*%");
-
         public int MaxSearch { get; set; }
-        public string Path {
-            get{ return _path; }
-            set {
-                var isEnvironement = EnvironmentRegex.Match(value);
-                if (isEnvironement.Success)
-                {
-                    var environementValue = isEnvironement.Value;
-                    _path = value.Replace(environementValue, Environment.GetEnvironmentVariable(environementValue.Replace("%", "")));
-                }
-                else _path = value;
-            }
+        public string Path
+        {
+            get => _path;
+            set => _path = value.GetPathWithSpecialFolders();
         }
         public string Directory { get; set; }
         public OpenMode? OpenMode { get; set; }

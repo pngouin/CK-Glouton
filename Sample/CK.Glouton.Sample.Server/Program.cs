@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using CK.Core;
+using CK.Glouton.Common;
 using CK.Glouton.Server;
 using CK.Glouton.Server.Handlers;
 using CK.Monitoring;
@@ -39,8 +40,14 @@ namespace CK.Glouton.Sample.Server
                             MaxCountPerFile = 10000,
                             UseGzipCompression = true
                         },
-                        new LuceneGloutonHandlerConfiguration(),
-                        new AlertHandlerConfiguration()
+                        new LuceneGloutonHandlerConfiguration
+                        {
+                            MaxSearch = 1000
+                        },
+                        new AlertHandlerConfiguration
+                        {
+                            DatabasePath = @"%localappdata%/Glouton/Alerts".GetPathWithSpecialFolders()
+                        }
                     }
                 } );
 

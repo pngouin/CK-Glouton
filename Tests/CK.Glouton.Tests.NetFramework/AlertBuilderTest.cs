@@ -1,9 +1,8 @@
 ﻿using CK.Glouton.Model.Server.Handlers;
-using CK.Glouton.Service.Common;
+using CK.Glouton.Server.Handlers.Common;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
-using CK.Glouton.Server.Handlers.Common;
 
 namespace CK.Glouton.Tests
 {

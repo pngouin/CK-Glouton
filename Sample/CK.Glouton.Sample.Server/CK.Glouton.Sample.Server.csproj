@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\CK.Glouton.Model.Server\CK.Glouton.Model.Server.csproj" />
     <ProjectReference Include="..\..\src\CK.Glouton.Server\CK.Glouton.Server.csproj" />
     <ProjectReference Include="..\..\src\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
   </ItemGroup>

@@ -1,5 +1,5 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Services;
+using CK.Glouton.Model.Web.Services;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;

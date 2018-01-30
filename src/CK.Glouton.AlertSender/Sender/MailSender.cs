@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CK.Glouton.Model.Server.Handlers.Implementation;
+﻿using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace CK.Glouton.AlertSender.Sender
 {

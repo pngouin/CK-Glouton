@@ -1,0 +1,25 @@
+<div class="card card-w-tittle">
+    <h2>Your alerts</h2>
+    <button class="ui-g-offset-11 button" pButton type="button" (click)="update()" icon="fa-refresh"></button>
+    <p-table *ngIf="data.length > 0" [value]="data">
+        <ng-template pTemplate="header">
+            <tr>
+                <th colspan="3">Alert</th>
+                <th rowspan="2">Sender</th>
+            </tr>
+            <tr>
+                <th>Field</th>
+                <th>Operation</th>
+                <th>Body</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-data>
+            <tr *ngFor="let expression of data.expressions; let i = index">
+                <td>{{expression.field}}</td>
+                <td>{{expression.operation}}</td>
+                <td>{{expression.body}}</td>
+                <td [attr.rowspan]="data.expressions.length" *ngIf="i === 0">{{data.senders}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
