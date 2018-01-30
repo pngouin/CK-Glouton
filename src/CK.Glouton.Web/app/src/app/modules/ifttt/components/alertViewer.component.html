@@ -1,0 +1,24 @@
+<div *ngIf="data || data === []" class="card card-w-tittle">
+    <h2>Your alert</h2>
+    <p-table [value]="data">
+        <ng-template pTemplate="header">
+            <tr>
+                <th colspan="3">Alert</th>
+                <th rowspan="2">Sender</th>
+            </tr>
+            <tr>
+                <th>Field</th>
+                <th>Operation</th>
+                <th>Body</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-data>
+            <tr>
+                <td>{{data.expression.field}}</td>
+                <td>{{data.expression.operation}}</td>
+                <td>{{data.expression.body}}</td>
+                <td>{{concatenateSender(data.senders)}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
