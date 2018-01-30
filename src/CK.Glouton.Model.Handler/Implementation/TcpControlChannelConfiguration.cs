@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 
-namespace CK.Glouton.Model.Web.Services.Implementation
+namespace CK.Glouton.Model.Handler.Implementation
 {
     public class TcpControlChannelConfiguration : ITcpControlChannelConfiguration
     {

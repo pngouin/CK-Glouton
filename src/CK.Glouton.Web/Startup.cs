@@ -1,4 +1,5 @@
 ﻿using CK.Glouton.Lucene;
+using CK.Glouton.Model.Handler.Implementation;
 using CK.Glouton.Model.Web.Services;
 using CK.Glouton.Model.Web.Services.Implementation;
 using CK.Glouton.Service;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CK.Glouton.Model.Web.Services
+namespace CK.Glouton.Model.Handler
 {
     public interface ITcpControlChannelConfiguration
     {

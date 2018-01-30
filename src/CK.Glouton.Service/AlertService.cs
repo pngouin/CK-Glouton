@@ -2,6 +2,7 @@
 using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Common;
 using CK.Glouton.Database;
+using CK.Glouton.Model.Handler.Implementation;
 using CK.Glouton.Model.Server.Handlers;
 using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Server.Sender;

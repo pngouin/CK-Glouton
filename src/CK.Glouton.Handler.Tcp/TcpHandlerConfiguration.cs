@@ -1,5 +1,5 @@
 ﻿using CK.Core;
-using CK.Glouton.Model.Web.Services;
+using CK.Glouton.Model.Handler;
 using CK.Monitoring;
 using System;
 using System.Collections;
