@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CK.Glouton.Handler.Tcp\CK.Glouton.Handler.Tcp.csproj" />
+    <ProjectReference Include="..\..\src\CK.Glouton.Model.Server\CK.Glouton.Model.Server.csproj" />
   </ItemGroup>
 
 </Project>

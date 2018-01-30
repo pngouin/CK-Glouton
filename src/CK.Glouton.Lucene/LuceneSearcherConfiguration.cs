@@ -1,5 +1,5 @@
-﻿using CK.Glouton.Model.Logs;
-using CK.Glouton.Model.Lucene;
+﻿using CK.Glouton.Model.Lucene.Logs;
+using CK.Glouton.Model.Lucene.Searcher;
 using System;
 
 namespace CK.Glouton.Lucene

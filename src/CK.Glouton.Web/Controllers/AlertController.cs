@@ -1,5 +1,5 @@
 ﻿using CK.Glouton.Model.Server.Handlers.Implementation;
-using CK.Glouton.Model.Services;
+using CK.Glouton.Model.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CK.Glouton.Web.Controllers

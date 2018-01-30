@@ -1,6 +1,6 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Services;
-using CK.Glouton.Model.Services.Implementation;
+using CK.Glouton.Model.Web.Services;
+using CK.Glouton.Model.Web.Services.Implementation;
 using CK.Glouton.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

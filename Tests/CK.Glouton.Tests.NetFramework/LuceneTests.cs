@@ -1,7 +1,7 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Logs;
-using CK.Glouton.Model.Logs.Implementation;
-using CK.Glouton.Model.Lucene;
+using CK.Glouton.Model.Lucene.Logs;
+using CK.Glouton.Model.Lucene.Logs.Implementation;
+using CK.Glouton.Model.Lucene.Searcher;
 using FluentAssertions;
 using NUnit.Framework;
 using System;

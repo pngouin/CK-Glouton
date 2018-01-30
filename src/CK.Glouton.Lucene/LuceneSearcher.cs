@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CK.Glouton.Model.Logs;
-using CK.Glouton.Model.Logs.Implementation;
-using CK.Glouton.Model.Lucene;
+﻿using CK.Glouton.Model.Lucene.Logs;
+using CK.Glouton.Model.Lucene.Logs.Implementation;
+using CK.Glouton.Model.Lucene.Searcher;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CK.Glouton.Lucene
 {

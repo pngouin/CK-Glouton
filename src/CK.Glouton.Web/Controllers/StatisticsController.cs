@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Model.Services;
+﻿using CK.Glouton.Model.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 

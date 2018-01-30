@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CK.Glouton.Model\CK.Glouton.Model.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Model.Server\CK.Glouton.Model.Server.csproj" />
   </ItemGroup>
 
 </Project>

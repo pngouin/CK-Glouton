@@ -1,4 +1,4 @@
-﻿using CK.Glouton.Model.Lucene;
+﻿using CK.Glouton.Model.Lucene.Searcher;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,7 +39,7 @@ namespace CK.Glouton.Lucene
 
         public int AllLogCount => _luceneSearcher.GetSearcher( _luceneSearcher.AppName.ToArray() ).SearchCount( _allSearchLog );
 
-        public int AllExceptionCount => _luceneSearcher.GetSearcher(_luceneSearcher.AppName.ToArray()).SearchCount(_allSearchException);
+        public int AllExceptionCount => _luceneSearcher.GetSearcher( _luceneSearcher.AppName.ToArray() ).SearchCount( _allSearchException );
 
         public IEnumerable<string> GetAppNames => _luceneSearcher.AppName;
         public int AppNameCount => _luceneSearcher.AppName.Count;

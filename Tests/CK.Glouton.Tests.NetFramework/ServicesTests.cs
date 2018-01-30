@@ -1,6 +1,6 @@
 ﻿using CK.Glouton.Lucene;
-using CK.Glouton.Model.Logs;
-using CK.Glouton.Model.Logs.Implementation;
+using CK.Glouton.Model.Lucene.Logs;
+using CK.Glouton.Model.Lucene.Logs.Implementation;
 using CK.Glouton.Service;
 using FluentAssertions;
 using Lucene.Net.Index;

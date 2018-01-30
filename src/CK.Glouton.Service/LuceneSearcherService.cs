@@ -1,8 +1,8 @@
 ﻿using CK.Glouton.Common;
 using CK.Glouton.Lucene;
-using CK.Glouton.Model.Logs;
-using CK.Glouton.Model.Lucene;
-using CK.Glouton.Model.Services;
+using CK.Glouton.Model.Lucene.Logs;
+using CK.Glouton.Model.Lucene.Searcher;
+using CK.Glouton.Model.Web.Services;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
