@@ -59,31 +59,37 @@ namespace CK.Glouton.Tests
                                 new AlertExpressionModelMock
                                 (
                                     new [] { new [] { "LogLevel", "In", "Fatal" } },
-                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = SingleHttpReceiver.DefaultUrl } }
                                 ),
                                 new AlertExpressionModelMock
                                 (
                                     new [] { new [] { "Text", "Contains", "Send" } },
-                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                    new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = SingleHttpReceiver.DefaultUrl } }
                                 )
                             }
                         }
                     }
                 } );
 
-                using( var httpServer = new HttpServerReceiver( HttpServerReceiver.DefaultUrl ) )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient( activityMonitor );
 
-                    activityMonitor.Info( "send Hello world" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    httpServer.Alerted.Should().BeFalse();
+                    using( var receiver = new SingleHttpReceiver( SingleHttpReceiver.DefaultUrl ) )
+                    {
 
-                    activityMonitor.Fatal( "Fatal Error n°42" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    httpServer.Alerted.Should().BeTrue();
+                        activityMonitor.Info( "Send Hello world" );
+                        Thread.Sleep( TestHelper.DefaultSleepTime * 10 );
+                        receiver.Alerted.Should().BeTrue();
+                    }
+
+                    using( var receiver = new SingleHttpReceiver( SingleHttpReceiver.DefaultUrl ) )
+                    {
+                        activityMonitor.Fatal( "Fatal Error n°42" );
+                        Thread.Sleep( TestHelper.DefaultSleepTime * 10 );
+                        receiver.Alerted.Should().BeTrue();
+                    }
                 }
             }
         }
@@ -101,15 +107,17 @@ namespace CK.Glouton.Tests
                     }
                 } );
 
-                using( var httpServer = new HttpServerReceiver( HttpServerReceiver.DefaultUrl ) )
                 using( var grandOutputClient = GrandOutputHelper.GetNewGrandOutputClient() )
                 {
                     var activityMonitor = new ActivityMonitor( false ) { MinimalFilter = LogFilter.Debug };
                     grandOutputClient.EnsureGrandOutputClient( activityMonitor );
 
-                    activityMonitor.Info( "Hello world" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime );
-                    httpServer.Alerted.Should().BeFalse();
+                    using( var receiver = new SingleHttpReceiver( SingleHttpReceiver.DefaultUrl ) )
+                    {
+                        activityMonitor.Info( "Hello world" );
+                        Thread.Sleep( TestHelper.DefaultSleepTime );
+                        receiver.Alerted.Should().BeFalse();
+                    }
 
                     server.ApplyConfiguration( new HandlersManagerConfiguration
                     {
@@ -122,7 +130,7 @@ namespace CK.Glouton.Tests
                                     new AlertExpressionModelMock
                                     (
                                         new [] { new [] { "Text", "EqualTo", "Hello world" } },
-                                        new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = HttpServerReceiver.DefaultUrl } }
+                                        new IAlertSenderConfiguration[] { new HttpSenderConfiguration { Url = SingleHttpReceiver.DefaultUrl } }
                                     )
                                 }
                             }
@@ -130,9 +138,12 @@ namespace CK.Glouton.Tests
                     } );
                     Thread.Sleep( TestHelper.DefaultSleepTime );
 
-                    activityMonitor.Info( "Hello world" );
-                    Thread.Sleep( TestHelper.DefaultSleepTime * 10 );
-                    httpServer.Alerted.Should().BeTrue();
+                    using( var receiver = new SingleHttpReceiver( SingleHttpReceiver.DefaultUrl ) )
+                    {
+                        activityMonitor.Info( "Hello world" );
+                        Thread.Sleep( TestHelper.DefaultSleepTime * 10 );
+                        receiver.Alerted.Should().BeTrue();
+                    }
                 }
             }
         }
