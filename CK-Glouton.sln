@@ -44,7 +44,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.AlertSender", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Database", "src\CK.Glouton.Database\CK.Glouton.Database.csproj", "{1C610A24-A12E-4A30-8D92-7BD3D2C6911C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Common", "src\CK.Glouton.Common\CK.Glouton.Common.csproj", "{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Glouton.Common", "src\CK.Glouton.Common\CK.Glouton.Common.csproj", "{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Model.Server", "src\CK.Glouton.Model.Server\CK.Glouton.Model.Server.csproj", "{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Model.Lucene", "src\CK.Glouton.Model.Lucene\CK.Glouton.Model.Lucene.csproj", "{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Glouton.Model.Web", "src\CK.Glouton.Model.Web\CK.Glouton.Model.Web.csproj", "{99475759-0A31-4936-9888-7646B01EBB89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -112,6 +118,18 @@ Global
 		{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D96F8506-FBEB-4CAE-B1B9-C3C262FAC8E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E146A5D9-8547-41C3-8BF4-4588D4A9A5E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE0F6F2-2890-4F61-BA0C-E2C750E234DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99475759-0A31-4936-9888-7646B01EBB89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99475759-0A31-4936-9888-7646B01EBB89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99475759-0A31-4936-9888-7646B01EBB89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99475759-0A31-4936-9888-7646B01EBB89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

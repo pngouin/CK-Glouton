@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CK.Glouton.Model.Lucene\CK.Glouton.Model.Lucene.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Model.Server\CK.Glouton.Model.Server.csproj" />
+  </ItemGroup>
+
+</Project>
