@@ -142,7 +142,7 @@ namespace CodeCake
                 .IsDependentOn("NPM-Build")
                 .Does(() =>
                 {
-                    using (var tempSln = Cake.CreateTemporarySolutionFile(solutionName))
+                    using (var tempSln = Cake.CreateTemporarySolutionFile(solutionFileName))
                     {
                         tempSln.ExcludeProjectsFromBuild("CodeCakeBuilder");
                         Cake.DotNetCoreBuild(tempSln.FullPath.FullPath,
