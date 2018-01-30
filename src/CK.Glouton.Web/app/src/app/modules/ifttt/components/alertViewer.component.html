@@ -1,6 +1,7 @@
-<div *ngIf="data || data.length > 0" class="card card-w-tittle">
-    <h2>Your alert</h2>
-    <p-table [value]="data">
+<div class="card card-w-tittle">
+    <h2>Your alerts</h2>
+    <button class="ui-g-offset-11 button" pButton type="button" (click)="update()" icon="fa-refresh"></button>
+    <p-table *ngIf="data.length > 0" [value]="data">
         <ng-template pTemplate="header">
             <tr>
                 <th colspan="3">Alert</th>

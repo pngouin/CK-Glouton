@@ -31,6 +31,7 @@ export class AlerViewerComponent implements OnInit {
 
     private createDataViewModel(alerts: IAlertData[]): void {
         let alertStr: string;
+        this.data = [];
         for (let alert of alerts) {
             alertStr = this.concatenateSender(alert.senders);
             this.data.push({
