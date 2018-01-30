@@ -10,6 +10,8 @@ namespace CK.Glouton.Tests
 {
     public static class LuceneTestIndexBuilder
     {
+        public static int TotalLogCount { get; private set; } = 4;
+
 
         private static bool _initialized;
         public static void ConstructIndex()
@@ -31,8 +33,10 @@ namespace CK.Glouton.Tests
 
                     activityMonitor.Info( "Hello world" );
                     activityMonitor.Error( "CriticalError" );
-                    activityMonitor.Fatal( ThrowAggregateException( 3 ) );
 
+                    TotalLogCount += 2;
+
+                    activityMonitor.Fatal( ThrowAggregateException( 3 ) );
                 }
             }
             _initialized = true;
@@ -65,6 +69,7 @@ namespace CK.Glouton.Tests
                 }
             }
 
+            TotalLogCount += numberOfException;
             return new AggregateException( "Aggregate exceptions list", exceptions );
         }
     }

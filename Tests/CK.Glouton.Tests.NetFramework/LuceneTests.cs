@@ -132,7 +132,7 @@ namespace CK.Glouton.Tests
 
             configuration.SearchAll( ELuceneWantAll.Log );
             result = searcher.Search( configuration );
-            result.Count.Should().Be( 8 );
+            result.Count.Should().Be( LuceneTestIndexBuilder.TotalLogCount );
 
             //
             // Search all document with LogLevel between 0002-01-01 to 9999-01-01
@@ -146,7 +146,7 @@ namespace CK.Glouton.Tests
                 DateEnd = new DateTime( 9999, 01, 01 )
             };
             result = searcher.Search( configuration );
-            result.Count.Should().Be( 8 );
+            result.Count.Should().Be( LuceneTestIndexBuilder.TotalLogCount );
 
             //
             // Search all document with LogLevel between 0002-01-01 to 0003-01-01
@@ -214,7 +214,7 @@ namespace CK.Glouton.Tests
                 Fields = new string[] { LogField.MONITOR_ID }
             };
             result = searcher.Search( configuration );
-            result.Count.Should().Be( 8 );
+            result.Count.Should().Be( LuceneTestIndexBuilder.TotalLogCount );
         }
 
         [Test]

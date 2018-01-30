@@ -1,5 +1,6 @@
 ﻿using CK.Glouton.Lucene;
 using CK.Glouton.Model.Logs;
+using CK.Glouton.Model.Logs.Implementation;
 using CK.Glouton.Service;
 using FluentAssertions;
 using Lucene.Net.Index;
@@ -7,7 +8,6 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Reflection;
-using CK.Glouton.Model.Logs.Implementation;
 
 namespace CK.Glouton.Tests
 {
@@ -103,7 +103,7 @@ namespace CK.Glouton.Tests
 
             var result = searcherService.GetAll( new[] { directory } );
             result.Should().NotBeNull();
-            result.Count.Should().Be( 8 );
+            result.Count.Should().Be( LuceneTestIndexBuilder.TotalLogCount );
         }
 
         [Test]
