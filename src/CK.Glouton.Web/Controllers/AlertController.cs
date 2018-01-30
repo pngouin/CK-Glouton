@@ -18,7 +18,7 @@ namespace CK.Glouton.Web.Controllers
         public object AddAlert( [FromBody] AlertExpressionModel alertExpressionModel )
         {
             if( _alertService.NewAlertRequest( alertExpressionModel ) )
-                return Ok();
+                return NoContent();
             return BadRequest();
         }
 
