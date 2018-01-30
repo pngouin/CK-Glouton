@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { ViewChild } from '@angular/core';
-import { IftttComponent, SenderChooserComponent } from 'app/modules/ifttt/components';
+import { IftttComponent, SenderChooserComponent, AlerViewerComponent } from 'app/modules/ifttt/components';
 import { IAlertExpressionModel, ISender } from 'app/modules/ifttt/models/sender.model';
 import { IftttService } from 'app/_services';
 import { MessageService } from 'primeng/components/common/messageservice';
@@ -15,6 +15,9 @@ import { MessageService } from 'primeng/components/common/messageservice';
     <div class="ui-g-6">
       <senderChooser (onSend)="send()"></senderChooser>
     </div>
+    <div class="ui-g-6">
+      <alertviewer></alertviewer>
+    </div>
   `
 })
 export class IftttPageComponent {
@@ -27,12 +30,14 @@ export class IftttPageComponent {
   @ViewChild(SenderChooserComponent)
   private senderChooserComponent: SenderChooserComponent;
 
+  @ViewChild(AlerViewerComponent)
+  private alerViewerComponent: AlerViewerComponent;
+
   send(): void {
     if (!this.iftttComponent.validate() || !this.senderChooserComponent.validate()) {
       this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'One or more fields are empty.' });
       return;
     }
-
 
     let senders: ISender[] = [];
 
@@ -54,6 +59,7 @@ export class IftttPageComponent {
           severity: 'success', summary: 'Success !', detail: 'Your alert has been correctly created.'
         });
       this.iftttComponent.clear();
+      this.alerViewerComponent.update();
     },
     error => this.messageService.add(
       {

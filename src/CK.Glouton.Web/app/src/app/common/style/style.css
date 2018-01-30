@@ -61,3 +61,7 @@ card h1:first-child {
 .ui-dropdown {
     margin-right: 3px;
 }
+
+.ui-table .ui-table-thead > tr > th, .ui-table .ui-table-tfoot > tr > td {
+    color: #ffffff;
+}
