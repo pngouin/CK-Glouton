@@ -96,7 +96,7 @@ namespace CK.Glouton.Service
                 GroupDepth = groupDepth
             };
             if( configuration.Fields == null )
-                configuration.Fields = new[] { "LogLevel" };
+                configuration.Fields = new[] { LogField.SOURCE_FILE_NAME, LogField.TEXT, LogField.MESSAGE };
 
             var logs = _searcherManager.GetSearcher( appNames )?.Search( configuration ) ?? new List<ILogViewModel>();
             return groupDepth == 0 ? logs : logs.TakeWhileInclusive( l => l.LogType != ELogType.CloseGroup ).ToList();

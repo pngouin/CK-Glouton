@@ -16,6 +16,7 @@
     <ProjectReference Include="..\CK.Glouton.Database\CK.Glouton.Database.csproj" />
     <ProjectReference Include="..\CK.Glouton.Lucene\CK.Glouton.Lucene.csproj" />
     <ProjectReference Include="..\CK.Glouton.Model.Handler\CK.Glouton.Model.Handler.csproj" />
+    <ProjectReference Include="..\CK.Glouton.Model.Lucene\CK.Glouton.Model.Lucene.csproj" />
     <ProjectReference Include="..\CK.Glouton.Model.Server\CK.Glouton.Model.Server.csproj" />
     <ProjectReference Include="..\CK.Glouton.Model.Web\CK.Glouton.Model.Web.csproj" />
   </ItemGroup>
