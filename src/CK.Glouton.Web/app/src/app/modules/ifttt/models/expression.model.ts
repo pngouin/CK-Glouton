@@ -1,15 +1,20 @@
 export interface IExpression {
-    Field : string;
-    Operation : string;
-    Body : string;
+    Field: string;
+    Operation: string;
+    Body: string;
 }
 
 export interface IAlertData {
-    expression: IExpression[];
-    senders: [
-        {
-            senderType: string;
-            configuration: any;
-        }
-    ];
+    expressions: IExpression[];
+    senders: ISenderModel[];
+}
+
+export interface IAlertDataViewModel {
+    expressions: IExpression[];
+    senders: string;
+}
+
+export interface ISenderModel {
+    senderType: string;
+    configuration: any;
 }
