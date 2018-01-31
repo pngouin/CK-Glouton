@@ -15,6 +15,7 @@ namespace CK.Glouton.Web
             WebHost.CreateDefaultBuilder( args )
                 .UseKestrel()
                 .UseContentRoot( Directory.GetCurrentDirectory() )
+                .UseMonitoring()
                 .UseIISIntegration()
                 .UseStartup<Startup>()
                 .UseApplicationInsights()
