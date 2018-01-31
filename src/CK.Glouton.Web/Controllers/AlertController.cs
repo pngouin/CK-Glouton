@@ -1,4 +1,5 @@
-﻿using CK.Glouton.Model.Server.Handlers.Implementation;
+﻿using CK.AspNet;
+using CK.Glouton.Model.Server.Handlers.Implementation;
 using CK.Glouton.Model.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,8 @@ namespace CK.Glouton.Web.Controllers
         [HttpPost( "add" )]
         public object AddAlert( [FromBody] AlertExpressionModel alertExpressionModel )
         {
-            if( _alertService.NewAlertRequest( alertExpressionModel ) )
+            var activityMonitor = HttpContext.GetRequestMonitor();
+            if( _alertService.NewAlertRequest( activityMonitor, alertExpressionModel ) )
                 return NoContent();
             return BadRequest();
         }
@@ -25,7 +27,8 @@ namespace CK.Glouton.Web.Controllers
         [HttpGet( "configuration/{key}" )]
         public object GetConfiguration( string key )
         {
-            if( _alertService.TryGetConfiguration( key, out var configuration ) )
+            var activityMonitor = HttpContext.GetRequestMonitor();
+            if( _alertService.TryGetConfiguration( activityMonitor, key, out var configuration ) )
                 return configuration;
             return BadRequest();
 

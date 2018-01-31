@@ -1,4 +1,5 @@
 ﻿using CK.ControlChannel.Tcp;
+using CK.Core;
 using CK.Glouton.AlertSender.Sender;
 using CK.Glouton.Common;
 using CK.Glouton.Database;
@@ -10,6 +11,7 @@ using CK.Glouton.Model.Web.Services;
 using CK.Glouton.Model.Web.Services.Implementation;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
@@ -52,24 +54,32 @@ namespace CK.Glouton.Service
             _alertTableMock = new AlertTableMock( _databaseConfiguration.Path.GetPathWithSpecialFolders() );
         }
 
-        public bool NewAlertRequest( AlertExpressionModel alertExpression )
+        public bool NewAlertRequest( IActivityMonitor activityMonitor, AlertExpressionModel alertExpression )
         {
             _memoryStream.Seek( 0, SeekOrigin.Begin );
             _memoryStream.Flush();
 
-            foreach( var sender in alertExpression.Senders )
+            try
             {
-                switch( sender.SenderType )
+                foreach( var sender in alertExpression.Senders )
                 {
-                    case "Mail":
-                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<MailSenderConfiguration>();
-                        break;
-                    case "Http":
-                        sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpSenderConfiguration>();
-                        break;
-                    default:
-                        return false;
+                    switch( sender.SenderType )
+                    {
+                        case "Mail":
+                            sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<MailSenderConfiguration>();
+                            break;
+                        case "Http":
+                            sender.Configuration = JObject.FromObject( sender.Configuration ).ToObject<HttpSenderConfiguration>();
+                            break;
+                        default:
+                            return false;
+                    }
                 }
+            }
+            catch( Exception exception )
+            {
+                activityMonitor.Error( "Alert initialization failed.", exception );
+                return false;
             }
 
             _formatter.Serialize( _memoryStream, alertExpression );
@@ -80,7 +90,7 @@ namespace CK.Glouton.Service
 
         private static MailSenderConfiguration _defaultMailSenderConfiguration;
         private static HttpSenderConfiguration _defaultHttpSenderConfiguration;
-        public bool TryGetConfiguration( string key, out IAlertSenderConfiguration configuration )
+        public bool TryGetConfiguration( IActivityMonitor activityMonitor, string key, out IAlertSenderConfiguration configuration )
         {
             configuration = null;
             switch( key )
@@ -96,6 +106,7 @@ namespace CK.Glouton.Service
                     return true;
 
                 default:
+                    activityMonitor.Error( $"Configuration key {key} is unknown." );
                     return false;
             }
         }
