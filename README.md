@@ -18,15 +18,15 @@ Fifth semester's student project for INTECH IT school.
 ## Usage
 
 1. Launch `CK.Glouton.Sample.Server` which is a basic implementation of `CK.Glouton.Server`.
-1. Configure your app to implement an Activicty Monitor with the `CK.Glouton.Handler.Tcp`.
-1. Now you can send some log to the sample server !
+1. Configure your app to implement an Activity Monitor with the `CK.Glouton.Handler.Tcp`.
+1. Now you can send some log to the sample server!
 
 ### If you want to see your log and configure some alert
 
 1. Build the Angular app `npm run build` in `<ProjectFolder>/src/CK.Glouton.Web/app`.
-1. Create a `appsetting.json` from the already here `appsetting.template.json` (the lucene read location needs to be the same as the lucene write location).
+1. Create a `appsetting.json` from the already here `appsetting.template.json` (the Lucene read location needs to be the same as the Lucene write location).
 1. Launch `CK.Glouton.Web`
-1. Go to your site !
+1. Go to your site!
 
 ## Configuration
 
@@ -119,12 +119,12 @@ See `CK.Glouton.Sample.Server` to see more.
 
 | Configuration | Description |
 | ------------ | -------------|
-|Lucene.MaxSearch | The maximun number of logs returned by a single research with Lucene |
-|Lucene.Path | The folder where lucene files will be saved.
+|Lucene.MaxSearch | The maximum number of logs returned by a single research with Lucene |
+|Lucene.Path | The folder where Lucene files will be saved.
 |Lucene.Directory | Custom subfolder for above.
 |TcpControlChannel.Host | IpAddress of your CK.Glouton.Server. |
 |TcpControlChannel.Port | Port of your CK.Glouton.Server. |
-|TcpControlChannel.IsSecure| False by default we didn't implemented a secure connection yet !|
+|TcpControlChannel.IsSecure| False by default we didn't implement a secure connection yet!|
 |Database.Path| The folder where alerts will be saved, consider this as a mocked database.
 
 ## NuGet packages
