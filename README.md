@@ -114,7 +114,15 @@ See `CK.Glouton.Sample.Server` to see more.
   },
   "Database": {
     "Path": "C:/Glouton/Alerts"
-  }
+  },
+  "Monitoring": {
+    "LogPath": "Logs",
+    "LogLevel": "Debug",
+    "GrandOutput": {
+      "Handlers": {
+        "Console": true
+      }
+    }
 ```
 
 | Configuration | Description |
@@ -125,7 +133,10 @@ See `CK.Glouton.Sample.Server` to see more.
 |TcpControlChannel.Host | IpAddress of your CK.Glouton.Server. |
 |TcpControlChannel.Port | Port of your CK.Glouton.Server. |
 |TcpControlChannel.IsSecure| False by default we didn't implemented a secure connection yet !|
-|Database.Path| The folder where alerts will be saved, consider this as a mocked database.
+|Database.Path| The folder where alerts will be saved, consider this as a mocked database.|
+|Monitoring.LogPath| Where log are written in local |
+|Monitoring.Loglevel | Minimum LogLevel |
+|Monitoring.GrandOutput.Handler.Console | Active Log in the console |
 
 ## NuGet packages
 

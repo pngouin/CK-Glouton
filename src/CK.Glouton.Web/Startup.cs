@@ -42,6 +42,7 @@ namespace CK.Glouton.Web
                 app.UseBrowserLink();
             }
 
+            app.UseRequestMonitor();
             app.UseStaticFiles();
 
             app.UseMvc( routes =>
