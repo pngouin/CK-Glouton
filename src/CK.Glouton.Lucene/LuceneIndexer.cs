@@ -5,6 +5,7 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
+using Lucene.Net.Support;
 using Lucene.Net.Util;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace CK.Glouton.Lucene
 
             Directory indexDirectory = FSDirectory.Open( new DirectoryInfo( _luceneConfiguration.ActualPath ) );
             var config = new IndexWriterConfig( LuceneVersion.LUCENE_48, new StandardAnalyzer( LuceneVersion.LUCENE_48 ) );
+            config.SetDefaultWriteLockTimeout( -1 );
 
             if( luceneConfiguration.OpenMode != null )
                 config.OpenMode = (OpenMode)_luceneConfiguration.OpenMode;
