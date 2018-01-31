@@ -21,3 +21,4 @@ Tests/**/Logs
 
 src/CK.Glouton.Web/appsettings.json
 src/CK.Glouton.Web/Properties/launchSettings.json
+*.npmrc
